@@ -275,3 +275,8 @@ h1, h2, h3 {
 .verto-form input[type="submit"] { background: var(--brand); color: var(--brand-foreground); border: none; padding: 0.85rem 1.75rem; font-weight: 500; cursor: pointer; border-radius: 0; transition: all 0.25s; }
 .verto-form input[type="submit"]:hover { filter: brightness(1.06); transform: translateY(-1px); }
 .verto-form .wpcf7-not-valid-tip { font-size: 0.75rem; color: #e0245e; margin-top: 0.25rem; }
+
+/* Section shell used by the installer-built pages */
+.verto-container-pad { padding: 5rem 1.5rem; }
+@media (min-width: 768px) { .verto-container-pad { padding: 6rem 2.5rem; } }
+.verto-container-pad > .elementor-container { max-width: 80rem; margin-inline: auto; }
