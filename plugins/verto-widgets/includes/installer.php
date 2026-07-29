@@ -103,7 +103,7 @@ class Verto_Installer {
 		return [
 			'id'       => self::eid(),
 			'elType'   => 'section',
-			'settings' => array_merge( [ 'layout' => 'full_width', 'css_classes' => $css_class, 'padding' => [ 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '0', 'left' => '0', 'isLinked' => false ] ], $extra ),
+			'settings' => array_merge( [ 'layout' => 'full_width', 'css_classes' => $css_class ], $extra ),
 			'elements' => [ [
 				'id'       => self::eid(),
 				'elType'   => 'column',

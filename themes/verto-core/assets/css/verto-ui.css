@@ -224,8 +224,8 @@ h1, h2, h3 {
 /* ── Brand tiles (logo-led flip cards) ── */
 .verto-tiles { display: grid; gap: 1.5rem; }
 @media (min-width: 1024px) { .verto-tiles { grid-template-columns: repeat(3, 1fr); } }
-.verto-tile { position: relative; display: block; min-height: 420px; perspective: 1400px; text-decoration: none; }
-.verto-tile__flip { position: relative; width: 100%; height: 100%; min-height: 420px; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.verto-tile { position: relative; display: block; min-height: 460px; perspective: 1400px; text-decoration: none; }
+.verto-tile__flip { position: relative; width: 100%; height: 100%; min-height: 460px; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
 .verto-tile:hover .verto-tile__flip, .verto-tile:focus-visible .verto-tile__flip { transform: rotateY(180deg); }
 .verto-tile__face { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--ink); color: var(--ink-foreground); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .verto-tile__face--front { align-items: center; justify-content: center; padding: 2.5rem; }
@@ -371,9 +371,11 @@ body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: f
 
 /* ═════════ v0.4.1 — exact prototype section rhythm + values glow ═════════ */
 
-/* Prototype rhythm: py-24 (6rem) mobile → py-32 (8rem) desktop */
-.verto-container-pad { padding: 6rem 1.5rem; }
-@media (min-width: 1024px) { .verto-container-pad { padding: 8rem 2.5rem; } }
+/* Prototype rhythm: py-24 (6rem) mobile → py-32 (8rem) desktop.
+   !important: Elementor's per-section generated CSS loads after ours and
+   would otherwise zero these out. */
+.verto-container-pad { padding: 6rem 1.5rem !important; }
+@media (min-width: 1024px) { .verto-container-pad { padding: 8rem 2.5rem !important; } }
 /* Values section runs py-28 (7rem) at all sizes in the prototype */
 .verto-container-pad--values { padding-block: 7rem !important; }
 
