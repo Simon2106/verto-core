@@ -368,3 +368,34 @@ body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: f
 /* Ensure installer sections get generous rhythm */
 .verto-container-pad { padding: 6rem 1.5rem; }
 @media (min-width: 768px) { .verto-container-pad { padding: 6rem 2.5rem; } }
+
+/* ═════════ v0.4.1 — exact prototype section rhythm + values glow ═════════ */
+
+/* Prototype rhythm: py-24 (6rem) mobile → py-32 (8rem) desktop */
+.verto-container-pad { padding: 6rem 1.5rem; }
+@media (min-width: 1024px) { .verto-container-pad { padding: 8rem 2.5rem; } }
+/* Values section runs py-28 (7rem) at all sizes in the prototype */
+.verto-container-pad--values { padding-block: 7rem !important; }
+
+/* Intro → content gaps (prototype: mt-14 tiles/quotes, mt-16 values) */
+.verto-intro + .verto-tiles { margin-top: 3.5rem; }
+.verto-intro + .verto-values { margin-top: 4rem; }
+.verto-intro + .verto-quotes { margin-top: 3.5rem; }
+
+/* Values section signature background: gold vignette + drifting shimmer */
+.verto-glow { position: relative; overflow: hidden; }
+.verto-glow::before {
+  content: ""; pointer-events: none; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 85% 100%, color-mix(in oklab, var(--brand) 22%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 5% -10%, color-mix(in oklab, var(--brand) 14%, transparent) 0%, transparent 55%);
+}
+.verto-glow::after {
+  content: ""; pointer-events: none; position: absolute; inset: -6rem -5rem; opacity: 0.07;
+  background: repeating-linear-gradient(115deg, transparent 0 120px, color-mix(in oklab, var(--brand) 80%, transparent) 120px 121px, transparent 121px 260px);
+  animation: verto-glow-drift 22s linear infinite;
+}
+@keyframes verto-glow-drift { to { transform: translate3d(-260px, 0, 0); } }
+@media (prefers-reduced-motion: reduce) { .verto-glow::after { animation: none; } }
+/* keep content above the glow layers */
+.verto-glow > * { position: relative; z-index: 1; }

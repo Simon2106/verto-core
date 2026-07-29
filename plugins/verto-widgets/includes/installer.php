@@ -175,7 +175,7 @@ class Verto_Installer {
 					'body' => "Every desk runs its own market and its own network. What's shared is what we stand for — the five values every person across the group works by.",
 				] ),
 				self::widget( 'verto-values' ),
-			], 'verto-ink verto-container-pad' ),
+			], 'verto-ink verto-glow verto-container-pad verto-container-pad--values' ),
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'What employees say about us',
