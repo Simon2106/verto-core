@@ -57,6 +57,7 @@ class Verto_Installer {
 		self::seed_posts( $media );
 		self::seed_team();
 		self::create_pages( $media );
+		self::create_brand_pages();
 		self::setup_menu();
 
 		wp_safe_redirect( admin_url( 'admin.php?page=verto-setup&built=1' ) );
@@ -141,7 +142,7 @@ class Verto_Installer {
 	}
 
 	/** Create/update a page with Elementor data; returns page ID. */
-	private static function upsert_page( string $slug, string $title, array $elements ): int {
+	private static function upsert_page( string $slug, string $title, array $elements, int $parent = 0 ): int {
 		$pages = get_option( self::PAGES_OPTION, [] );
 		$id    = $pages[ $slug ] ?? 0;
 		if ( ! $id || ! get_post( $id ) ) {
@@ -150,6 +151,7 @@ class Verto_Installer {
 				'post_name'   => $slug,
 				'post_type'   => 'page',
 				'post_status' => 'publish',
+				'post_parent' => $parent,
 			] );
 			$pages[ $slug ] = $id;
 			update_option( self::PAGES_OPTION, $pages );
@@ -313,6 +315,15 @@ class Verto_Installer {
 			], 'verto-container-pad' ),
 			self::section( [ self::widget( 'verto-jobs-board' ) ], 'verto-ink verto-container-pad' ),
 		];
+		// One-time migration: the careers page used to live at /why-join-us.
+		$existing = get_option( self::PAGES_OPTION, [] );
+		if ( ! empty( $existing['why-join-us'] ) && empty( $existing['careers'] ) ) {
+			$existing['careers'] = $existing['why-join-us'];
+			unset( $existing['why-join-us'] );
+			update_option( self::PAGES_OPTION, $existing );
+			wp_update_post( [ 'ID' => $existing['careers'], 'post_name' => 'careers', 'post_title' => 'Careers' ] );
+		}
+
 		$home_id = self::upsert_page( 'home', 'Home', $home );
 
 		/* ── WHY JOIN US ── */
@@ -373,7 +384,7 @@ class Verto_Installer {
 				] ] ),
 			], 'verto-ink verto-container-pad' ),
 		];
-		self::upsert_page( 'why-join-us', 'Why Join Us', $careers );
+		self::upsert_page( 'careers', 'Careers', $careers );
 
 		/* ── ABOUT ── */
 		$about = [
@@ -523,20 +534,56 @@ class Verto_Installer {
 		];
 	}
 
-	private static function setup_menu(): void {
-		$menu = wp_get_nav_menu_object( 'Primary' );
-		if ( $menu ) {
-			// ensure location assignment even on rebuild
-			$locations = get_theme_mod( 'nav_menu_locations', [] );
-			$locations['verto-primary'] = $menu->term_id;
-			set_theme_mod( 'nav_menu_locations', $locations );
-			return; // don't duplicate items on rebuild
+
+	/** Placeholder pages for the three brand sites (each becomes its own install later). */
+	private static function create_brand_pages(): void {
+		$parent = self::upsert_page( 'brands', 'Brands', [
+			self::section( [ self::widget( 'verto-section-intro', [
+				'eyebrow' => 'The Verto Group brands',
+				'lines'   => [ [ 'line' => 'Three specialist brands,', '_id' => self::eid() ], [ 'line' => 'one group.', '_id' => self::eid() ] ],
+				'body'    => 'Edison Lux, ModulR and Vertek each get their own standalone site. Until those launch, these pages hold their place.',
+			] ) ], 'verto-container-pad' ),
+		] );
+		$brands = [
+			'edison-lux' => [ 'Edison Lux', 'Executive search for energy & infrastructure. The standalone Edison Lux site is being built now — this link will point to it at launch.' ],
+			'modulr'     => [ 'ModulR', 'Talent for modular construction & offsite manufacturing. The standalone ModulR site is being built now — this link will point to it at launch.' ],
+			'vertek'     => [ 'Vertek', 'Technical sales, service & engineering recruitment. The standalone Vertek site is being built now — this link will point to it at launch.' ],
+		];
+		foreach ( $brands as $slug => [ $title, $body ] ) {
+			self::upsert_page( $slug, $title, [
+				self::section( [ self::widget( 'verto-section-intro', [
+					'eyebrow'   => 'A Verto Group brand',
+					'lines'     => [ [ 'line' => $title, '_id' => self::eid() ] ],
+					'body'      => $body,
+					'link_text' => 'Back to Verto Group',
+					'link'      => [ 'url' => home_url( '/' ) ],
+				] ) ], 'verto-container-pad' ),
+			], $parent );
 		}
-		$menu_id = wp_create_nav_menu( 'Primary' );
+	}
+
+	private static function setup_menu(): void {
+		$menu    = wp_get_nav_menu_object( 'Primary' );
+		$menu_id = $menu ? $menu->term_id : wp_create_nav_menu( 'Primary' );
+
+		// Rebuild from scratch every time so the menu always matches the prototype
+		// header exactly (order, labels, slugs). Edit nav content via the installer.
+		foreach ( (array) wp_get_nav_menu_items( $menu_id, [ 'post_status' => 'any' ] ) as $item ) {
+			if ( $item ) wp_delete_post( $item->ID, true );
+		}
+
 		$pages = get_option( self::PAGES_OPTION, [] );
-		$order = [ 'home' => 'Home', 'whats-going-on' => "What's Going On", 'about' => 'About', 'why-join-us' => 'Why Join Us', 'contact' => 'Contact' ];
+		$order = [
+			'edison-lux'     => [ 'Edison Lux', 'verto-nav-brand' ],
+			'modulr'         => [ 'ModulR', 'verto-nav-brand' ],
+			'vertek'         => [ 'Vertek', 'verto-nav-brand verto-nav-last-brand' ],
+			'whats-going-on' => [ "What's Going On", '' ],
+			'about'          => [ 'About', '' ],
+			'careers'        => [ 'Careers', '' ],
+			'contact'        => [ 'Contact', '' ],
+		];
 		$i = 1;
-		foreach ( $order as $slug => $title ) {
+		foreach ( $order as $slug => [ $title, $class ] ) {
 			if ( empty( $pages[ $slug ] ) ) continue;
 			wp_update_nav_menu_item( $menu_id, 0, [
 				'menu-item-title'     => $title,
@@ -545,6 +592,7 @@ class Verto_Installer {
 				'menu-item-type'      => 'post_type',
 				'menu-item-status'    => 'publish',
 				'menu-item-position'  => $i++,
+				'menu-item-classes'   => $class,
 			] );
 		}
 		$locations = get_theme_mod( 'nav_menu_locations', [] );

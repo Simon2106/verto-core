@@ -304,6 +304,13 @@ h1, h2, h3 {
   color: var(--foreground); text-decoration: none; opacity: 0.85; transition: opacity 0.2s, color 0.2s;
 }
 .verto-header__menu a:hover, .verto-header__menu .current-menu-item a { opacity: 1; color: var(--accent); }
+/* Divider between the brand links and the group pages (prototype header pipe) */
+.verto-header__menu li.verto-nav-last-brand { display: flex; align-items: center; gap: 2rem; }
+.verto-header__menu li.verto-nav-last-brand::after { content: ''; width: 1px; height: 1rem; background: var(--border); }
+body.verto-nav-open .verto-header__menu li.verto-nav-last-brand { display: block; }
+body.verto-nav-open .verto-header__menu li.verto-nav-last-brand::after { display: none; }
+/* Footer "Group" column reuses the primary menu — keep it to the group pages */
+.verto-footer__menu .verto-nav-brand { display: none; }
 .verto-header__cta {
   display: none; margin-left: 0.5rem; padding: 0.6rem 1.25rem; border-radius: 9999px;
   background: var(--ink); color: var(--ink-foreground); font-size: 0.8125rem; font-weight: 500;
