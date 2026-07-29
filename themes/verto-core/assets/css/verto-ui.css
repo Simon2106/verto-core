@@ -179,3 +179,99 @@ h1, h2, h3 {
     to   { opacity: 1; transform: none; }
   }
 }
+
+/* ═════════════════════ v0.2 — section components ═════════════════════ */
+
+/* Type scale (mirrors prototype display classes) */
+.verto-display-1 { font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1.02; font-weight: 700; letter-spacing: -0.02em; }
+.verto-display-2 { font-family: var(--font-display); font-size: clamp(2.25rem, 5vw, 3.75rem); line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; }
+.verto-display-3 { font-family: var(--font-display); font-size: clamp(1.875rem, 4vw, 3rem); line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
+
+/* Containers */
+.verto-container { margin-inline: auto; width: 100%; max-width: 80rem; padding-inline: 1.5rem; }
+@media (min-width: 768px) { .verto-container { padding-inline: 2.5rem; } }
+
+/* Buttons */
+.verto-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.75rem 1.5rem; font-size: 0.875rem; font-weight: 500;
+  text-decoration: none; border: 1px solid transparent; cursor: pointer;
+  transition: all 0.3s ease;
+}
+.verto-btn--primary { background: var(--brand); color: var(--brand-foreground); }
+.verto-btn--primary:hover { filter: brightness(1.06); transform: translateY(-1px); color: var(--brand-foreground); }
+.verto-btn--outline { background: transparent; color: inherit; border-color: color-mix(in oklab, currentColor 40%, transparent); }
+.verto-btn--outline:hover { border-color: var(--brand); color: var(--brand); }
+
+/* ── Hero (dark ink, V-mask media right, copy left) ── */
+.verto-hero { position: relative; overflow: hidden; background: var(--ink); color: var(--ink-foreground); }
+.verto-hero__inner { position: relative; padding-block: 8rem 5rem; }
+.verto-hero__media { pointer-events: none; position: absolute; inset-block: 0; right: 0; width: 58%; display: none; }
+@media (min-width: 768px) { .verto-hero__media { display: block; } }
+.verto-hero__copy { position: relative; max-width: 42rem; }
+.verto-hero__eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; opacity: 0.7; }
+.verto-hero__body { margin-top: 2rem; max-width: 36rem; font-size: 1.05rem; opacity: 0.8; line-height: 1.6; }
+.verto-hero__ctas { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/* Stats strip */
+.verto-stats { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid color-mix(in oklab, var(--ink-foreground) 14%, transparent); padding-block: 3.5rem 5rem; }
+@media (min-width: 768px) { .verto-stats { grid-template-columns: repeat(4, 1fr); } }
+.verto-stats__item { padding: 0.5rem 1.5rem; text-align: center; }
+.verto-stats__item + .verto-stats__item { border-left: 1px solid color-mix(in oklab, var(--ink-foreground) 12%, transparent); }
+.verto-stats__value { font-family: var(--font-display); font-size: clamp(1.875rem, 3vw, 2.25rem); letter-spacing: -0.02em; color: var(--accent); }
+.verto-stats__label { margin-top: 0.75rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.24em; opacity: 0.6; }
+
+/* ── Brand tiles (logo-led flip cards) ── */
+.verto-tiles { display: grid; gap: 1.5rem; }
+@media (min-width: 1024px) { .verto-tiles { grid-template-columns: repeat(3, 1fr); } }
+.verto-tile { position: relative; display: block; min-height: 420px; perspective: 1400px; text-decoration: none; }
+.verto-tile__flip { position: relative; width: 100%; height: 100%; min-height: 420px; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.verto-tile:hover .verto-tile__flip, .verto-tile:focus-visible .verto-tile__flip { transform: rotateY(180deg); }
+.verto-tile__face { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--ink); color: var(--ink-foreground); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.verto-tile__face--front { align-items: center; justify-content: center; padding: 2.5rem; }
+.verto-tile__face--back { padding: 2rem; transform: rotateY(180deg); }
+.verto-tile__stripe { position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 10; }
+.verto-tile__glow { pointer-events: none; position: absolute; inset: 0; }
+.verto-tile__logo { position: relative; height: 5rem; width: auto; max-width: 80%; object-fit: contain; }
+.verto-tile__focus { position: relative; margin-top: 2rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; opacity: 0.7; }
+.verto-tile__kicker { margin-top: 0.5rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; }
+.verto-tile__name { margin-top: 1rem; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -0.02em; }
+.verto-tile__body { margin-top: 1.25rem; font-size: 1rem; line-height: 1.6; opacity: 0.85; }
+.verto-tile__cta { margin-top: auto; padding-top: 1.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; }
+
+/* ── Values cards ── */
+.verto-values { display: grid; gap: 1px; background: color-mix(in oklab, var(--ink-foreground) 12%, transparent); }
+@media (min-width: 768px) { .verto-values { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .verto-values { grid-template-columns: repeat(5, 1fr); } }
+.verto-value { position: relative; padding: 2rem; background: var(--ink); color: var(--ink-foreground); transition: background 0.4s ease; }
+.verto-value__accent { position: absolute; left: 0; top: 0; height: 1px; width: 100%; background: var(--brand); }
+.verto-value__num { font-family: var(--font-display); font-size: 1.875rem; color: color-mix(in oklab, var(--ink-foreground) 45%, transparent); transition: color 0.3s; }
+.verto-value__title { margin-top: 1.5rem; font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -0.02em; transition: color 0.3s; }
+.verto-value__body { margin-top: 1rem; font-size: 0.95rem; line-height: 1.6; color: color-mix(in oklab, var(--ink-foreground) 68%, transparent); transition: color 0.3s; }
+.verto-value:hover { background: var(--brand); }
+.verto-value:hover .verto-value__accent { background: var(--ink); }
+.verto-value:hover .verto-value__num, .verto-value:hover .verto-value__title, .verto-value:hover .verto-value__body { color: var(--ink); }
+
+/* ── Quote marquee ── */
+.verto-quotes { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); }
+.verto-quotes__track { display: flex; gap: 1.5rem; width: max-content; animation: verto-quotes-scroll 60s linear infinite; }
+.verto-quotes:hover .verto-quotes__track { animation-play-state: paused; }
+@keyframes verto-quotes-scroll { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+.verto-quote { display: flex; flex-direction: column; flex: 0 0 auto; width: 360px; padding: 2rem; border: 1px solid color-mix(in oklab, var(--ink-foreground) 10%, transparent); background: color-mix(in oklab, var(--ink-foreground) 3%, transparent); }
+.verto-quote__mark { font-family: var(--font-display); font-size: 3rem; line-height: 1; color: var(--accent); }
+.verto-quote__text { margin-top: 0.5rem; flex: 1; font-size: 1rem; line-height: 1.6; opacity: 0.9; }
+.verto-quote__who { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid color-mix(in oklab, var(--ink-foreground) 12%, transparent); font-size: 0.875rem; font-weight: 600; }
+.verto-quote__org { margin-top: 0.25rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.6; }
+@media (prefers-reduced-motion: reduce) { .verto-quotes__track { animation: none; } }
+
+/* ── CF7 form skin (.verto-form wrapper around a Contact Form 7 form) ── */
+.verto-form input[type="text"], .verto-form input[type="email"], .verto-form input[type="tel"], .verto-form textarea, .verto-form select {
+  width: 100%; padding: 0.75rem 1rem; font-family: var(--font-sans); font-size: 0.95rem;
+  background: var(--background); color: var(--foreground);
+  border: 1px solid var(--border); border-radius: 0.75rem; transition: border-color 0.2s;
+}
+.verto-form input:focus, .verto-form textarea:focus, .verto-form select:focus { outline: none; border-color: var(--accent); }
+.verto-form label { display: block; margin-bottom: 1rem; font-size: 0.8rem; font-weight: 500; }
+.verto-form input[type="submit"] { background: var(--brand); color: var(--brand-foreground); border: none; padding: 0.85rem 1.75rem; font-weight: 500; cursor: pointer; border-radius: 0; transition: all 0.25s; }
+.verto-form input[type="submit"]:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.verto-form .wpcf7-not-valid-tip { font-size: 0.75rem; color: #e0245e; margin-top: 0.25rem; }

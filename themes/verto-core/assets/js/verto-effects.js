@@ -66,3 +66,31 @@
     });
   });
 })();
+
+/* ── 4. Count-up stats ([data-countup="40"][data-suffix="%"]) ── */
+(function () {
+  "use strict";
+  document.addEventListener("DOMContentLoaded", function () {
+    var els = document.querySelectorAll("[data-countup]");
+    if (!els.length) return;
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        var el = e.target;
+        var target = parseFloat(el.dataset.countup || "0");
+        var suffix = el.dataset.suffix || "";
+        if (reduce) { el.textContent = target.toLocaleString() + suffix; return; }
+        var t0 = performance.now();
+        (function tick(now) {
+          var p = Math.min(1, (now - t0) / 1600);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased).toLocaleString() + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+      });
+    }, { threshold: 0.3 });
+    els.forEach(function (el) { io.observe(el); });
+  });
+})();
