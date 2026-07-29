@@ -361,8 +361,8 @@ body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: f
 @media (prefers-reduced-motion: reduce) { .verto-pillar-glow { animation: none; } }
 
 /* ── Section intro (eyebrow + display heading + body + link) ── */
-.verto-intro { max-width: 42rem; }
-.verto-intro__body { margin-top: 1.5rem; color: var(--muted-foreground); line-height: 1.65; max-width: 36rem; }
+.verto-intro { max-width: 56rem; } /* 2/3 of container — prototype max-w-4xl headline */
+.verto-intro__body { margin-top: 1.5rem; color: var(--muted-foreground); line-height: 1.65; max-width: 42rem; }
 .verto-ink .verto-intro__body { color: color-mix(in oklab, var(--ink-foreground) 68%, transparent); }
 .verto-intro__link { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; font-size: 0.875rem; font-weight: 500; color: var(--accent); text-decoration: none; }
 .verto-intro__link:hover { color: var(--accent); text-decoration: underline; }
