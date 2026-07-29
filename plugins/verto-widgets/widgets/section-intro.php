@@ -17,6 +17,7 @@ class Verto_Widget_Section_Intro extends \Elementor\Widget_Base {
 		$this->add_control( 'eyebrow', [ 'label' => 'Eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'The brands' ] );
 		$rep = new \Elementor\Repeater();
 		$rep->add_control( 'line', [ 'label' => 'Line', 'type' => \Elementor\Controls_Manager::TEXT ] );
+		$this->add_control( 'eyebrow_plain', [ 'label' => 'Plain eyebrow (no dash)', 'type' => \Elementor\Controls_Manager::SWITCHER, 'default' => '' ] );
 		$this->add_control( 'lines', [
 			'label' => 'Heading lines', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ line }}}',
@@ -42,7 +43,8 @@ class Verto_Widget_Section_Intro extends \Elementor\Widget_Base {
 		$tag = in_array( $s['tag'], [ 'h1', 'h2', 'h3' ], true ) ? $s['tag'] : 'h2';
 		echo '<div class="verto-intro">';
 		if ( $s['eyebrow'] ) {
-			printf( '<span class="verto-eyebrow">%s</span>', esc_html( $s['eyebrow'] ) );
+			$plain = ! empty( $s['eyebrow_plain'] ) ? ' verto-eyebrow--plain' : '';
+			printf( '<span class="verto-eyebrow%s">%s</span>', $plain, esc_html( $s['eyebrow'] ) );
 		}
 		printf( '<%s class="verto-title-reveal %s" style="margin-top:1.25rem;">', esc_attr( $tag ), esc_attr( $s['size'] ) );
 		foreach ( $s['lines'] as $i => $item ) {

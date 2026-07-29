@@ -131,8 +131,8 @@ class Verto_Installer {
 			'elType'   => 'section',
 			'settings' => [ 'layout' => 'full_width', 'css_classes' => $css_class ],
 			'elements' => [
-				[ 'id' => self::eid(), 'elType' => 'column', 'settings' => [ '_column_size' => $left ], 'elements' => $widgets_a ],
-				[ 'id' => self::eid(), 'elType' => 'column', 'settings' => [ '_column_size' => 100 - $left ], 'elements' => $widgets_b ],
+				[ 'id' => self::eid(), 'elType' => 'column', 'settings' => [ '_column_size' => $left, '_inline_size' => $left ], 'elements' => $widgets_a ],
+				[ 'id' => self::eid(), 'elType' => 'column', 'settings' => [ '_column_size' => 100 - $left, '_inline_size' => 100 - $left ], 'elements' => $widgets_b ],
 			],
 		];
 	}
@@ -427,7 +427,8 @@ class Verto_Installer {
 			], 'verto-container-pad', 33 ),
 			self::section( [
 				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'The story so far',
+					'eyebrow'       => 'The story so far',
+					'eyebrow_plain' => 'yes',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => '2020 → today.' ] ],
 					'body'    => 'From a lockdown start-up to The Sunday Times Best Places to Work — scroll the journey.',
 				] ),

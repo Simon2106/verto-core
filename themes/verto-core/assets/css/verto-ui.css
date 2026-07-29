@@ -498,7 +498,12 @@ figure.verto-quote { margin: 0; }
 .verto-prose p { margin: 0 0 1.5rem; font-size: 1rem; line-height: 1.65; color: var(--muted-foreground); }
 
 /* ── Timeline (horizontal scroll on ink) ── */
-.verto-timeline { overflow-x: auto; padding-bottom: 1.5rem; -webkit-overflow-scrolling: touch; }
+/* Full-bleed scroll track (prototype: track escapes the container to the viewport edge) */
+.verto-timeline { overflow-x: auto; padding-bottom: 1.5rem; -webkit-overflow-scrolling: touch;
+  width: 100vw; margin-left: calc(50% - 50vw); margin-top: 3.5rem; padding-inline: 1.5rem; }
+@media (min-width: 768px) { .verto-timeline { padding-inline: 2.5rem; } }
+.verto-eyebrow--plain { color: inherit; opacity: 0.6; }
+.verto-eyebrow--plain::before { display: none; }
 .verto-timeline__track { display: flex; width: max-content; align-items: stretch; padding-inline: 0.25rem; }
 .verto-timeline__item { position: relative; width: 240px; flex-shrink: 0; padding-right: 2rem; }
 .verto-timeline__item::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 1px; background: color-mix(in oklab, var(--ink-foreground) 22%, transparent); }
