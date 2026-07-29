@@ -74,6 +74,7 @@ class Verto_Installer {
 			'summit_poster' => 'summit-poster.jpg',
 			'logo_edison'   => 'edison-lux-logo.png',
 			'logo_modulr'   => 'modulr-logo.svg',
+			'logo_modulr_png' => 'modulr-logo.png',
 			'logo_vertek'   => 'vertek-logo-light.png',
 			'ibiza8'        => 'ibiza8.jpg',
 			'ibiza9'        => 'ibiza9.jpg',
@@ -247,18 +248,18 @@ class Verto_Installer {
 
 	private static function brand_tiles_items( array $media ): array {
 		return [
-			[ '_id' => self::eid(), 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5',
+			[ '_id' => self::eid(), 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
 			  'invert_logo' => 'yes',
 			  'logo' => self::media_setting( $media, 'logo_edison' ),
 			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
 			  'link' => [ 'url' => '#' ] ],
-			[ '_id' => self::eid(), 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60',
+			[ '_id' => self::eid(), 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
+			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
+			  'positioning' => "ModulR connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses and award-winning practices.",
+			  'link' => [ 'url' => '#' ] ],
+			[ '_id' => self::eid(), 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60', 'bg' => '#0E1013',
 			  'logo' => self::media_setting( $media, 'logo_vertek' ),
 			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US.',
-			  'link' => [ 'url' => '#' ] ],
-			[ '_id' => self::eid(), 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA',
-			  'logo' => self::media_setting( $media, 'logo_modulr' ),
-			  'positioning' => "ModulR connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses and award-winning practices.",
 			  'link' => [ 'url' => '#' ] ],
 		];
 	}
