@@ -68,3 +68,8 @@ add_action( 'admin_init', function () {
 		}
 	}, 'general' );
 } );
+
+/** Menu location used by the coded header/footer. */
+add_action( 'after_setup_theme', function () {
+	register_nav_menus( [ 'verto-primary' => 'Verto Primary' ] );
+} );

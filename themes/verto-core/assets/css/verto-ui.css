@@ -280,3 +280,91 @@ h1, h2, h3 {
 .verto-container-pad { padding: 5rem 1.5rem; }
 @media (min-width: 768px) { .verto-container-pad { padding: 6rem 2.5rem; } }
 .verto-container-pad > .elementor-container { max-width: 80rem; margin-inline: auto; }
+
+/* ═════════════ v0.4 — header, footer, hero polish, section intro ═════════════ */
+
+/* ── Site header (sticky, blurred, hairline) ── */
+.verto-header {
+  position: sticky; top: 0; z-index: 40;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: color-mix(in oklab, var(--background) 82%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.verto-header__inner {
+  margin-inline: auto; max-width: 80rem; height: 5rem;
+  padding-inline: 1.5rem; display: flex; align-items: center; gap: 1.5rem;
+}
+@media (min-width: 768px) { .verto-header__inner { padding-inline: 2.5rem; } }
+.verto-header__logo img { height: 2rem; width: auto; display: block; }
+.verto-header__nav { display: none; margin-left: auto; }
+@media (min-width: 1024px) { .verto-header__nav { display: block; } }
+.verto-header__menu { display: flex; align-items: center; gap: 2rem; list-style: none; margin: 0; padding: 0; }
+.verto-header__menu a {
+  font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.18em;
+  color: var(--foreground); text-decoration: none; opacity: 0.85; transition: opacity 0.2s, color 0.2s;
+}
+.verto-header__menu a:hover, .verto-header__menu .current-menu-item a { opacity: 1; color: var(--accent); }
+.verto-header__cta {
+  display: none; margin-left: 0.5rem; padding: 0.6rem 1.25rem; border-radius: 9999px;
+  background: var(--ink); color: var(--ink-foreground); font-size: 0.8125rem; font-weight: 500;
+  text-decoration: none; transition: filter 0.2s, transform 0.2s;
+}
+@media (min-width: 1024px) { .verto-header__cta { display: inline-flex; } }
+.verto-header__cta:hover { filter: brightness(1.15); transform: translateY(-1px); color: var(--ink-foreground); }
+.verto-header__burger { display: inline-flex; flex-direction: column; gap: 4px; margin-left: auto; background: none; border: 0; padding: 0.5rem; cursor: pointer; }
+@media (min-width: 1024px) { .verto-header__burger { display: none; } }
+.verto-header__burger span { width: 20px; height: 2px; background: var(--foreground); }
+body.verto-nav-open .verto-header__nav { display: block; position: absolute; top: 5rem; left: 0; right: 0; background: var(--background); border-bottom: 1px solid var(--border); padding: 1.5rem; }
+body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+
+/* ── Footer ── */
+.verto-footer { margin-top: 6rem; background: var(--ink); color: var(--ink-foreground); }
+.verto-footer__inner { margin-inline: auto; max-width: 80rem; padding: 5rem 1.5rem 2rem; }
+@media (min-width: 768px) { .verto-footer__inner { padding-inline: 2.5rem; } }
+.verto-footer__grid { display: grid; gap: 3rem; }
+@media (min-width: 1024px) { .verto-footer__grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+.verto-footer__logo { height: 2rem; width: auto; }
+.verto-footer__strap { margin-top: 1.5rem; max-width: 24rem; font-size: 0.875rem; opacity: 0.8; line-height: 1.6; }
+.verto-footer__locations { margin-top: 1.5rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; }
+.verto-footer__col h4 { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; margin: 0; }
+.verto-footer__menu { list-style: none; margin: 1.25rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.verto-footer__menu a { color: var(--ink-foreground); text-decoration: none; font-size: 0.875rem; opacity: 0.8; transition: opacity 0.2s; }
+.verto-footer__menu a:hover { opacity: 1; }
+.verto-footer__legal { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid color-mix(in oklab, var(--ink-foreground) 10%, transparent); display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; justify-content: space-between; font-size: 0.75rem; opacity: 0.6; }
+.verto-footer__legal a { color: inherit; text-decoration: none; margin-left: 1.5rem; }
+
+/* ── Hero polish: prototype depth + pillars glow line ── */
+.verto-hero__inner { padding-block: 8rem 6rem; }
+@media (min-width: 1024px) { .verto-hero__inner { padding-block: 10rem 6rem; } }
+.verto-stats { padding-block: 3.5rem 8rem; }
+.verto-hero__pillars {
+  margin-top: 4rem; display: flex; flex-wrap: nowrap; align-items: center; gap: 0.75rem;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.26em; white-space: nowrap;
+}
+@media (min-width: 1024px) { .verto-hero__pillars { margin-top: 5rem; font-size: 12px; } }
+.verto-hero__pillars .dot { opacity: 0.4; }
+.verto-pillar-glow {
+  color: color-mix(in oklab, var(--ink-foreground) 55%, transparent);
+  animation: verto-pillar-glow 4.8s ease-in-out infinite;
+}
+@keyframes verto-pillar-glow {
+  0%, 70%, 100% { color: color-mix(in oklab, var(--ink-foreground) 55%, transparent); text-shadow: none; }
+  15%, 30% { color: var(--brand); text-shadow: 0 0 18px color-mix(in oklab, var(--brand) 55%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .verto-pillar-glow { animation: none; } }
+
+/* ── Section intro (eyebrow + display heading + body + link) ── */
+.verto-intro { max-width: 42rem; }
+.verto-intro__body { margin-top: 1.5rem; color: var(--muted-foreground); line-height: 1.65; max-width: 36rem; }
+.verto-ink .verto-intro__body { color: color-mix(in oklab, var(--ink-foreground) 68%, transparent); }
+.verto-intro__link { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; font-size: 0.875rem; font-weight: 500; color: var(--accent); text-decoration: none; }
+.verto-intro__link:hover { color: var(--accent); text-decoration: underline; }
+.verto-intro + .verto-tiles, .verto-intro + .verto-values, .verto-intro + .verto-quotes { margin-top: 3.5rem; }
+
+/* Muted (light) section shell + tile logo invert helper */
+.verto-muted { background: var(--muted); }
+.verto-tile__logo--invert { filter: brightness(0) invert(1); }
+
+/* Ensure installer sections get generous rhythm */
+.verto-container-pad { padding: 6rem 1.5rem; }
+@media (min-width: 768px) { .verto-container-pad { padding: 6rem 2.5rem; } }

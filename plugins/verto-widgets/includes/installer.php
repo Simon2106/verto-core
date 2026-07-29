@@ -137,7 +137,7 @@ class Verto_Installer {
 		}
 		update_post_meta( $id, '_elementor_edit_mode', 'builder' );
 		update_post_meta( $id, '_elementor_template_type', 'wp-page' );
-		update_post_meta( $id, '_wp_page_template', 'elementor_canvas' );
+		update_post_meta( $id, '_wp_page_template', 'elementor_header_footer' );
 		update_post_meta( $id, '_elementor_data', wp_slash( wp_json_encode( $elements ) ) );
 		if ( did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Plugin' ) ) {
 			\Elementor\Plugin::$instance->files_manager->clear_cache();
@@ -153,29 +153,38 @@ class Verto_Installer {
 				'poster' => self::media_setting( $media, 'summit_poster' ),
 			] ) ] ),
 			self::section( [
-				self::widget( 'verto-title-reveal', [
-					'tag'   => 'h2',
-					'lines' => [
-						[ '_id' => self::eid(), 'line' => 'Three brands.' ],
-						[ '_id' => self::eid(), 'line' => 'One process-driven standard.' ],
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'The brands',
+					'lines'   => [
+						[ '_id' => self::eid(), 'line' => 'Three brands. One' ],
+						[ '_id' => self::eid(), 'line' => 'process-driven standard.' ],
 					],
+					'body'      => 'Founded in 2020, Verto connects exceptional technical and commercial people with the businesses that need them. Today, three focused brands — each with its own market, its own network and its own consultants — united by how we work.',
+					'link_text' => 'Explore the Verto brands',
+					'link'      => [ 'url' => '/about' ],
 				] ),
 				self::widget( 'verto-brand-tiles', [ 'items' => self::brand_tiles_items( $media ) ] ),
-			], 'verto-container-pad' ),
+			], 'verto-muted verto-container-pad' ),
 			self::section( [
-				self::widget( 'verto-title-reveal', [
-					'tag'   => 'h2',
-					'lines' => [
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => "Verto's values",
+					'lines'   => [
 						[ '_id' => self::eid(), 'line' => 'Five values.' ],
 						[ '_id' => self::eid(), 'line' => 'Every desk, every day.' ],
 					],
+					'body' => "Every desk runs its own market and its own network. What's shared is what we stand for — the five values every person across the group works by.",
 				] ),
 				self::widget( 'verto-values' ),
 			], 'verto-ink verto-container-pad' ),
 			self::section( [
-				self::widget( 'verto-title-reveal', [
-					'tag'   => 'h2',
-					'lines' => [ [ '_id' => self::eid(), 'line' => "Don't take our word for it." ] ],
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'What employees say about us',
+					'size'    => 'verto-display-1',
+					'lines'   => [
+						[ '_id' => self::eid(), 'line' => "Don't take our" ],
+						[ '_id' => self::eid(), 'line' => 'word for it.' ],
+					],
+					'body' => 'Real quotes from the team are on their way — these are placeholders while we collect them.',
 				] ),
 				self::widget( 'verto-quotes' ),
 			], 'verto-ink verto-container-pad' ),
@@ -239,6 +248,7 @@ class Verto_Installer {
 	private static function brand_tiles_items( array $media ): array {
 		return [
 			[ '_id' => self::eid(), 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5',
+			  'invert_logo' => 'yes',
 			  'logo' => self::media_setting( $media, 'logo_edison' ),
 			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
 			  'link' => [ 'url' => '#' ] ],
@@ -255,11 +265,14 @@ class Verto_Installer {
 
 	private static function setup_menu(): void {
 		$menu = wp_get_nav_menu_object( 'Primary' );
-		if ( ! $menu ) {
-			$menu_id = wp_create_nav_menu( 'Primary' );
-		} else {
+		if ( $menu ) {
+			// ensure location assignment even on rebuild
+			$locations = get_theme_mod( 'nav_menu_locations', [] );
+			$locations['verto-primary'] = $menu->term_id;
+			set_theme_mod( 'nav_menu_locations', $locations );
 			return; // don't duplicate items on rebuild
 		}
+		$menu_id = wp_create_nav_menu( 'Primary' );
 		$pages = get_option( self::PAGES_OPTION, [] );
 		$order = [ 'home' => 'Home', 'about' => 'About', 'why-join-us' => 'Why Join Us', 'contact' => 'Contact' ];
 		$i = 1;
@@ -274,6 +287,9 @@ class Verto_Installer {
 				'menu-item-position'  => $i++,
 			] );
 		}
+		$locations = get_theme_mod( 'nav_menu_locations', [] );
+		$locations['verto-primary'] = $menu_id;
+		set_theme_mod( 'nav_menu_locations', $locations );
 	}
 }
 

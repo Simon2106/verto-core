@@ -37,6 +37,10 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 		$this->add_control( 'cta1_link', [ 'label' => 'Primary CTA link', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/careers' ] ] );
 		$this->add_control( 'cta2_text', [ 'label' => 'Secondary CTA text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Explore the brands' ] );
 		$this->add_control( 'cta2_link', [ 'label' => 'Secondary CTA link', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/brands' ] ] );
+		$this->add_control( 'pillars', [
+			'label' => 'Pillars line (separated with |)', 'type' => \Elementor\Controls_Manager::TEXT,
+			'default' => 'US Energy|Technical Sales & Engineering|Architecture & Data Centres',
+		] );
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'media', [ 'label' => 'V-Mask media' ] );
@@ -69,7 +73,7 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 			. '<polygon points="48.81,39.2 43.2,48.91 43.18,48.94 22.72,13.51 33.97,13.51 34.11,13.75 37.08,18.9 43.2,29.49 48.81,39.2"/>'
 			. '<polygon points="69.09,4.14 43.22,48.94 43.2,48.91 37.59,39.2 43.2,29.49 49.31,18.9 52.28,13.75 57.83,4.14 69.09,4.14"/>'
 			. '</g></svg>';
-		return 'url("data:image/svg+xml,' . rawurlencode( $svg ) . '")';
+		return "url('data:image/svg+xml," . rawurlencode( $svg ) . "')";
 	}
 
 	protected function render() {
@@ -103,6 +107,15 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 								<a class="verto-btn verto-btn--outline" href="<?php echo esc_url( $s['cta2_link']['url'] ?? '#' ); ?>"><?php echo esc_html( $s['cta2_text'] ); ?></a>
 							<?php endif; ?>
 						</div>
+						<?php if ( ! empty( $s['pillars'] ) ) :
+							$pillars = array_map( 'trim', explode( '|', $s['pillars'] ) ); ?>
+							<p class="verto-hero__pillars">
+								<?php foreach ( $pillars as $pi => $pillar ) : ?>
+									<?php if ( $pi > 0 ) : ?><span class="dot">·</span><?php endif; ?>
+									<span class="verto-pillar-glow" style="animation-delay:<?php echo esc_attr( $pi * 1.6 ); ?>s"><?php echo esc_html( $pillar ); ?></span>
+								<?php endforeach; ?>
+							</p>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>

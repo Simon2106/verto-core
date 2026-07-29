@@ -21,7 +21,7 @@ class Verto_Widget_V_Mask_Media extends \Elementor\Widget_Base {
 			. '<polygon points="48.81,39.2 43.2,48.91 43.18,48.94 22.72,13.51 33.97,13.51 34.11,13.75 37.08,18.9 43.2,29.49 48.81,39.2"/>'
 			. '<polygon points="69.09,4.14 43.22,48.94 43.2,48.91 37.59,39.2 43.2,29.49 49.31,18.9 52.28,13.75 57.83,4.14 69.09,4.14"/>'
 			. '</g></svg>';
-		return 'url("data:image/svg+xml,' . rawurlencode( $svg ) . '")';
+		return "url('data:image/svg+xml," . rawurlencode( $svg ) . "')";
 	}
 
 	protected function register_controls() {

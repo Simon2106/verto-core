@@ -21,6 +21,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 		$rep->add_control( 'focus', [ 'label' => 'Focus line', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'positioning', [ 'label' => 'Positioning copy', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
 		$rep->add_control( 'color', [ 'label' => 'Brand colour', 'type' => \Elementor\Controls_Manager::COLOR ] );
+		$rep->add_control( 'invert_logo', [ 'label' => 'Invert logo (for dark logos on the dark tile)', 'type' => \Elementor\Controls_Manager::SWITCHER, 'return_value' => 'yes' ] );
 		$rep->add_control( 'link', [ 'label' => 'Link', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->add_control( 'items', [
 			'label' => 'Tiles', 'type' => \Elementor\Controls_Manager::REPEATER,
@@ -50,7 +51,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 						<div class="verto-tile__stripe" style="background:<?php echo esc_attr( $color ); ?>;"></div>
 						<div class="verto-tile__glow" style="background:radial-gradient(ellipse 70% 50% at 50% 55%, color-mix(in oklab, <?php echo esc_attr( $color ); ?> 16%, transparent) 0%, transparent 70%);"></div>
 						<?php if ( ! empty( $t['logo']['url'] ) ) : ?>
-							<img class="verto-tile__logo" src="<?php echo esc_url( $t['logo']['url'] ); ?>" alt="<?php echo esc_attr( $t['name'] ); ?> logo" loading="lazy" />
+							<img class="verto-tile__logo<?php echo ( $t['invert_logo'] ?? '' ) === 'yes' ? ' verto-tile__logo--invert' : ''; ?>" src="<?php echo esc_url( $t['logo']['url'] ); ?>" alt="<?php echo esc_attr( $t['name'] ); ?> logo" loading="lazy" />
 						<?php else : ?>
 							<div class="verto-tile__name" style="position:relative;"><?php echo esc_html( $t['name'] ); ?></div>
 						<?php endif; ?>

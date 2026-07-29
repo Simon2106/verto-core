@@ -35,6 +35,12 @@ class Verto_Widget_Title_Reveal extends \Elementor\Widget_Base {
 			'options' => [ 'h1' => 'h1', 'h2' => 'h2', 'h3' => 'h3' ],
 			'default' => 'h2',
 		] );
+		$this->add_control( 'size', [
+			'label'   => 'Display size',
+			'type'    => \Elementor\Controls_Manager::SELECT,
+			'options' => [ 'verto-display-1' => 'Display 1 (largest)', 'verto-display-2' => 'Display 2', 'verto-display-3' => 'Display 3', '' => 'Inherit' ],
+			'default' => 'verto-display-2',
+		] );
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style', [ 'label' => 'Style', 'tab' => \Elementor\Controls_Manager::TAB_STYLE ] );
@@ -53,7 +59,7 @@ class Verto_Widget_Title_Reveal extends \Elementor\Widget_Base {
 	protected function render() {
 		$s   = $this->get_settings_for_display();
 		$tag = in_array( $s['tag'], [ 'h1', 'h2', 'h3' ], true ) ? $s['tag'] : 'h2';
-		printf( '<%s class="verto-title-reveal">', esc_attr( $tag ) );
+		printf( '<%s class="verto-title-reveal %s">', esc_attr( $tag ), esc_attr( $s['size'] ?? '' ) );
 		foreach ( $s['lines'] as $i => $item ) {
 			printf(
 				'<span class="line-mask"><span class="line-inner" style="transition-delay:%dms">%s</span></span>',
