@@ -94,3 +94,72 @@
     els.forEach(function (el) { io.observe(el); });
   });
 })();
+
+/* ── 5. Jobs board filtering ── */
+(function () {
+  "use strict";
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("[data-verto-jobs]").forEach(function (board) {
+      var state = { brand: "all", location: "all", level: "all" };
+      var rows = board.querySelectorAll(".verto-jobs__row");
+      var empty = board.querySelector(".verto-jobs__empty");
+      var count = board.querySelector("[data-jobs-count]");
+      var clear = board.querySelector("[data-jobs-clear]");
+
+      function apply() {
+        var shown = 0;
+        rows.forEach(function (r) {
+          var ok =
+            (state.brand === "all" || r.dataset.brand === state.brand) &&
+            (state.location === "all" || r.dataset.location === state.location) &&
+            (state.level === "all" || r.dataset.level === state.level);
+          r.hidden = !ok;
+          if (ok) shown++;
+        });
+        if (empty) empty.hidden = shown !== 0;
+        if (count) count.textContent = shown;
+        var active = Object.keys(state).filter(function (k) { return state[k] !== "all"; }).length;
+        if (clear) {
+          clear.hidden = active === 0;
+          clear.textContent = "Clear (" + active + ")";
+        }
+      }
+
+      board.querySelectorAll("[data-filter-group]").forEach(function (group) {
+        var key = group.dataset.filterGroup;
+        group.addEventListener("click", function (e) {
+          var chip = e.target.closest(".verto-chip");
+          if (!chip) return;
+          state[key] = chip.dataset.value;
+          group.querySelectorAll(".verto-chip").forEach(function (c) { c.classList.remove("is-active"); });
+          chip.classList.add("is-active");
+          apply();
+        });
+      });
+
+      if (clear) clear.addEventListener("click", function () {
+        state = { brand: "all", location: "all", level: "all" };
+        board.querySelectorAll("[data-filter-group]").forEach(function (group) {
+          group.querySelectorAll(".verto-chip").forEach(function (c) {
+            c.classList.toggle("is-active", c.dataset.value === "all");
+          });
+        });
+        apply();
+      });
+    });
+  });
+})();
+
+/* ── 6. Autoplay rescue: if the browser blocked muted autoplay (low power
+      mode, data saver), retry on the first user interaction ── */
+(function () {
+  "use strict";
+  function rescue() {
+    document.querySelectorAll("video.verto-autoplay").forEach(function (v) {
+      if (v.paused) { v.muted = true; v.play().catch(function () {}); }
+    });
+  }
+  ["touchstart", "scroll", "click", "keydown"].forEach(function (evt) {
+    window.addEventListener(evt, rescue, { once: true, passive: true });
+  });
+})();

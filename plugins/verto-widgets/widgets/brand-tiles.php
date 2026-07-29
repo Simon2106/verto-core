@@ -49,9 +49,8 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 			?>
 			<a class="verto-tile" href="<?php echo esc_url( $url ); ?>" aria-label="Enter <?php echo esc_attr( $t['name'] ); ?>">
 				<div class="verto-tile__flip">
-					<div class="verto-tile__face verto-tile__face--front" style="background:<?php echo esc_attr( $bg ); ?>;">
+					<div class="verto-tile__face verto-tile__face--front" style="background:radial-gradient(ellipse 70% 50% at 50% 55%, color-mix(in oklab, <?php echo esc_attr( $color ); ?> 14%, transparent) 0%, transparent 70%) <?php echo esc_attr( $bg ); ?>;">
 						<div class="verto-tile__stripe" style="background:<?php echo esc_attr( $color ); ?>;"></div>
-						<div class="verto-tile__glow" style="background:radial-gradient(ellipse 70% 50% at 50% 55%, color-mix(in oklab, <?php echo esc_attr( $color ); ?> 16%, transparent) 0%, transparent 70%);"></div>
 						<?php if ( ! empty( $t['logo']['url'] ) ) : ?>
 							<img class="verto-tile__logo<?php echo ( $t['invert_logo'] ?? '' ) === 'yes' ? ' verto-tile__logo--invert' : ''; ?>" src="<?php echo esc_url( $t['logo']['url'] ); ?>" alt="<?php echo esc_attr( $t['name'] ); ?> logo" loading="lazy" />
 						<?php else : ?>
