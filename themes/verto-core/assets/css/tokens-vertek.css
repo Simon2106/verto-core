@@ -1,0 +1,21 @@
+/* Vertek — per brand guidelines. Graphite ground, Signal Red accent
+   (a signal, not a field), Silver/Steel neutrals. Saira SemiBold uppercase
+   display, JetBrains Mono labels. */
+:root {
+  --font-display: "Saira", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --background: #15171C;        /* Graphite */
+  --foreground: #F4F5F6;
+  --muted: #22252C;
+  --muted-foreground: #8A9099;  /* Steel */
+  --accent: #F82B60;            /* Signal Red */
+  --accent-foreground: #ffffff;
+  --brand: #F82B60;
+  --brand-foreground: #ffffff;
+  --brand-silver: #DBDBDB;
+  --ink: #0E1013;
+  --ink-foreground: #F4F5F6;
+  --border: rgba(255, 255, 255, 0.12);
+}

@@ -1,0 +1,21 @@
+/* ModulR — per brand guidelines. Deep Navy structural colour, Royal Blue
+   signal expressed as monogram gradient (#0464FA → #00269D). Montserrat
+   Light/Regular display, tight tracking. Royal blue on navy = large only. */
+:root {
+  --font-display: "Montserrat", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --background: #000A3B;        /* Deep Navy */
+  --foreground: #F5F6F8;        /* Mist */
+  --muted: #0A1550;
+  --muted-foreground: color-mix(in oklab, #F5F6F8 68%, #000A3B);
+  --accent: #0464FA;            /* Royal Blue */
+  --accent-foreground: #ffffff;
+  --accent-soft: color-mix(in oklab, #0464FA 55%, white); /* small text on navy */
+  --brand: #0464FA;
+  --brand-foreground: #ffffff;
+  --brand-gradient: linear-gradient(135deg, #0464FA 0%, #00269D 100%);
+  --ink: #000724;
+  --ink-foreground: #F5F6F8;
+  --border: rgba(255, 255, 255, 0.10);
+}

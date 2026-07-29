@@ -1,0 +1,21 @@
+/* Edison Lux — per brand guidelines. Navy ground, energy gradient
+   (#3CC739 → #2B8EE5, always green→blue). Green is decorative-only on white;
+   text accents on light use Electric Blue. Jost display, Light headlines. */
+:root {
+  --font-display: "Jost", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --background: #ffffff;
+  --foreground: #0B1A2B;
+  --muted: #EFF3F7;             /* Cloud */
+  --muted-foreground: #64748B;  /* Slate */
+  --accent: #2B8EE5;            /* Electric Blue */
+  --accent-foreground: #ffffff;
+  --brand: #2B8EE5;
+  --brand-foreground: #ffffff;
+  --brand-green: #3CC739;       /* Energy Green — fills & gradient only */
+  --brand-gradient: linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%);
+  --ink: #0B1A2B;
+  --ink-foreground: #ffffff;
+  --border: color-mix(in oklab, #64748B 24%, transparent);
+}

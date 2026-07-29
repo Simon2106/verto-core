@@ -1,0 +1,181 @@
+/* ─────────────────────────────────────────────────────────────
+ * Verto UI — shared styles across all four brand sites.
+ * Ported from the React prototype (see prototype repo verto-site).
+ * ───────────────────────────────────────────────────────────── */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+}
+
+/* Eyebrow label with leading rule */
+.verto-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+.verto-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+}
+
+/* Dark ink section helper */
+.verto-ink {
+  background: var(--ink);
+  color: var(--ink-foreground);
+}
+
+/* ── Scroll reveal (sections fade/slide up on load & in view) ── */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-init {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.7s ease var(--reveal-delay, 0ms),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+  }
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+  }
+  header, .elementor-location-header {
+    animation: verto-header-drop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes verto-header-drop {
+    from { transform: translateY(-14px); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+  }
+}
+
+/* ── Headline line-by-line reveal (TitleReveal widget) ── */
+.verto-title-reveal .line-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.verto-title-reveal .line-inner {
+  display: block;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .verto-title-reveal .line-inner {
+    transform: translateY(115%);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .verto-title-reveal.is-in .line-inner {
+    transform: none;
+  }
+}
+
+/* ── V-mask media (video/image clipped inside the Verto V mark) ── */
+.verto-v-mask {
+  position: relative;
+}
+.verto-v-mask > .verto-v-mask__media {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+}
+.verto-v-mask video,
+.verto-v-mask img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Tooltip (brand sector on hover) ── */
+.verto-tip {
+  position: relative;
+  cursor: help;
+}
+.verto-tip__bubble {
+  pointer-events: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  z-index: 20;
+  margin-bottom: 0.5rem;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  background: var(--ink-foreground);
+  color: var(--ink);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+.verto-tip:hover .verto-tip__bubble {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ── Vincere jobs board skin (LHi layout: list 2/3, sticky filters 1/3) ──
+   Applied around whichever Vincere plugin/embed we adopt; the plugin's
+   markup gets wrapped in .verto-jobs and styled to match the prototype. */
+.verto-jobs__layout {
+  display: grid;
+  gap: 2.5rem;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .verto-jobs__layout {
+    grid-template-columns: 2fr 1fr;
+    gap: 3.5rem;
+  }
+  .verto-jobs__filters {
+    position: sticky;
+    top: 7rem;
+  }
+}
+.verto-jobs__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem 0 1.5rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  border-left: 3px solid var(--brand);
+}
+/* Brand colour-coding via Vincere brand tag → class on the row */
+.verto-jobs__row--edison-lux { border-left-color: #3CC739; }
+.verto-jobs__row--vertek     { border-left-color: #F82B60; }
+.verto-jobs__row--modulr     { border-left-color: color-mix(in oklab, #0464FA 55%, white); }
+.verto-jobs__row--verto      { border-left-color: var(--accent); }
+
+/* ── Cross-document view transitions (MPA page-change animation) ── */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root) { animation: vt-fade-out 0.28s ease both; }
+  ::view-transition-new(root) { animation: vt-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes vt-fade-out { to { opacity: 0; } }
+  @keyframes vt-fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+}
