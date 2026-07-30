@@ -7,6 +7,8 @@
 
   --background: #ffffff;
   --foreground: #0B1A2B;
+  --surface: #ffffff;
+  --surface-foreground: #0B1A2B;
   --muted: #EFF3F7;             /* Cloud */
   --muted-foreground: #64748B;  /* Slate */
   --accent: #2B8EE5;            /* Electric Blue */

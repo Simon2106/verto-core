@@ -1,17 +1,26 @@
 <?php
 /**
- * Posts index — the "What's Going On" hub, styled to match the prototype.
+ * Posts index — the "What's Going On" hub (Verto) or the brand "Insights"
+ * listing (modulr / vertek / edison-lux), styled to match the prototype.
  */
+$verto_brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
+$verto_hub   = [
+	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Incentive trips, awards, promotions and the occasional market note — straight from the team.' ],
+	'modulr'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'architecture & data centres.', 'body' => 'The thinking from the consultants closest to the architecture & data centres market.' ],
+	'vertek'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'technical sales, service & engineering.', 'body' => 'The thinking from the consultants closest to the technical sales, service & engineering market.' ],
+	'edison-lux' => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'US energy staffing.', 'body' => 'The thinking from the consultants closest to the US energy staffing market.' ],
+];
+$verto_head  = $verto_hub[ $verto_brand ] ?? $verto_hub['verto'];
 get_header();
 ?>
 <main class="verto-container">
 	<div class="verto-hub-head">
-		<span class="verto-eyebrow">What's going on</span>
+		<span class="verto-eyebrow"><?php echo esc_html( $verto_head['eyebrow'] ); ?></span>
 		<h1 class="verto-title-reveal verto-display-1" style="margin-top:1.25rem;">
-			<span class="line-mask"><span class="line-inner">What's going on</span></span>
-			<span class="line-mask"><span class="line-inner" style="transition-delay:110ms">at Verto.</span></span>
+			<span class="line-mask"><span class="line-inner"><?php echo esc_html( $verto_head['l1'] ); ?></span></span>
+			<span class="line-mask"><span class="line-inner" style="transition-delay:110ms"><?php echo esc_html( $verto_head['l2'] ); ?></span></span>
 		</h1>
-		<p class="verto-intro__body">Incentive trips, awards, promotions and the occasional market note — straight from the team.</p>
+		<p class="verto-intro__body"><?php echo esc_html( $verto_head['body'] ); ?></p>
 	</div>
 	<?php if ( have_posts() ) : ?>
 		<div class="verto-posts" style="padding-bottom:6rem;">

@@ -23,19 +23,48 @@ class Verto_Widget_Posts_Grid extends \Elementor\Widget_Base {
 		$this->add_control( 'kicker', [
 			'label' => 'Card kicker', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Verto Group',
 		] );
+		$this->add_control( 'category', [
+			'label' => 'Category slug filter (brand sites)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '',
+		] );
+		$this->add_control( 'header_eyebrow', [ 'label' => 'Header eyebrow (optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'header_heading', [ 'label' => 'Header heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'header_link_text', [ 'label' => 'Header link text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'header_link', [ 'label' => 'Header link', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->end_controls_section();
 	}
 
 	protected function render() {
-		$s = $this->get_settings_for_display();
-		$q = new \WP_Query( [
+		$s    = $this->get_settings_for_display();
+		$args = [
 			'post_type'      => 'post',
 			'posts_per_page' => (int) ( $s['count'] ?: 3 ),
 			'post_status'    => 'publish',
-		] );
+		];
+		if ( ! empty( $s['category'] ) ) {
+			$args['category_name'] = sanitize_title( $s['category'] );
+		}
+		$q = new \WP_Query( $args );
 		if ( ! $q->have_posts() ) {
 			echo '<p style="opacity:.7">No posts yet — publish a post and it appears here.</p>';
 			return;
+		}
+		if ( ! empty( $s['header_heading'] ) ) {
+			echo '<div class="vbs-insights__head">';
+			echo '<div>';
+			if ( ! empty( $s['header_eyebrow'] ) ) {
+				printf( '<span class="eyebrow">%s</span>', esc_html( $s['header_eyebrow'] ) );
+			}
+			printf( '<h2 class="display-2 vbs-mt5">%s</h2>', esc_html( $s['header_heading'] ) );
+			echo '</div>';
+			if ( ! empty( $s['header_link_text'] ) ) {
+				printf(
+					'<a class="vbs-insights__all" style="color:var(--brand);" href="%s">%s %s</a>',
+					esc_url( $s['header_link']['url'] ?? '#' ),
+					esc_html( $s['header_link_text'] ),
+					function_exists( 'verto_icon' ) ? verto_icon( 'arrow-up-right', [ 'class' => 'vbs-icon-16' ] ) : ''
+				);
+			}
+			echo '</div>';
 		}
 		echo '<div class="verto-posts">';
 		while ( $q->have_posts() ) {

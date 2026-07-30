@@ -560,3 +560,453 @@ figure.verto-quote { margin: 0; }
 
 /* Posts hub (blog index) header */
 .verto-hub-head { padding: 5rem 0 3rem; }
+
+/* ═════════════════════════════════════════════════════════════════════
+ * v0.6 — BRAND SITES (ModulR first)
+ * Exact port of the React prototype's brand pages (brands.$brand.*.tsx +
+ * styles.css). Tailwind translated 1:1 — breakpoints sm 640 / md 768 /
+ * lg 1024, text-[11px] → 11px, tracking-[0.22em] → 0.22em, p-8 → 2rem,
+ * rounded-3xl → 1.5rem, etc. Component classes are prefixed .vbs-*.
+ * ═════════════════════════════════════════════════════════════════════ */
+
+/* ── Elementor shell reset for brand-site sections (.verto-bs) ── */
+.verto-bs > .elementor-container { max-width: none; }
+.verto-bs .elementor-widget-wrap { padding: 0; }
+.verto-bs .elementor-widget { margin-bottom: 0; }
+
+/* Zero-specificity UA/WP margin reset inside brand-site components */
+:where(.vbs-hero, .vbs-features, .vbs-statstrip, .vbs-asplit, .vbs-story, .vbs-spec,
+       .vbs-marquee, .vbs-aud, .vbs-rail, .vbs-chips, .vbs-band, .vbs-proof,
+       .vbs-ctaband, .vbs-team, .vbs-insights__head)
+:where(h1, h2, h3, h4, p, ul, ol, li, figure, blockquote, figcaption) {
+  margin: 0;
+  padding: 0;
+}
+:where(.vbs-aud, .vbs-rail, .vbs-proof) :where(ul, ol) { list-style: none; }
+
+/* ── Prototype utilities (styles.css @layer components) ── */
+.container-wide { margin-inline: auto; width: 100%; max-width: 80rem; padding-inline: 1.5rem; }
+@media (min-width: 768px) { .container-wide { padding-inline: 2.5rem; } }
+.container-narrow { margin-inline: auto; width: 100%; max-width: 72rem; padding-inline: 1.5rem; }
+@media (min-width: 768px) { .container-narrow { padding-inline: 2.5rem; } }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.22em;
+  color: var(--accent);
+}
+.eyebrow::before { content: ""; display: inline-block; width: 1.75rem; height: 1px; background: currentColor; }
+
+.display-1 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 3rem; line-height: 1.02; }
+@media (min-width: 768px)  { .display-1 { font-size: 4.5rem; } }
+@media (min-width: 1024px) { .display-1 { font-size: 5.5rem; } }
+.display-2 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 2.25rem; line-height: 1.05; }
+@media (min-width: 768px)  { .display-2 { font-size: 3.75rem; } }
+.display-3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 1.875rem; line-height: 1.1; }
+@media (min-width: 768px)  { .display-3 { font-size: 3rem; } }
+.display-4 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 1.5rem; line-height: 1.15; }
+@media (min-width: 768px)  { .display-4 { font-size: 2.25rem; } }
+.vbs-mt5 { margin-top: 1.25rem; }
+.vbs-mt6 { margin-top: 1.5rem; }
+
+.btn-base {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  border-radius: 0; padding: 0.75rem 1.5rem;
+  font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+  text-decoration: none; cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-primary { background: var(--brand); color: var(--brand-foreground); }
+.btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); color: var(--brand-foreground); }
+.btn-ghost-outline { background: transparent; color: var(--foreground); border: 1px solid color-mix(in oklab, var(--foreground) 25%, transparent); }
+.btn-ghost-outline:hover { border-color: var(--brand); color: var(--brand); }
+
+.card-surface {
+  background: var(--surface, var(--background));
+  color: var(--surface-foreground, var(--foreground));
+  border: 1px solid var(--border);
+}
+.hairline-top { border-top: 1px solid var(--border); }
+.hairline-bottom { border-bottom: 1px solid var(--border); }
+
+/* Shared display-font pieces (prototype .font-display = 700 / -0.02em) */
+.vbs-feature__title, .vbs-asplit__headline, .vbs-story__headline, .vbs-spec__num,
+.vbs-spec__title, .vbs-aud__headline, .vbs-rail__num, .vbs-rail__num3,
+.vbs-rail__title3, .vbs-rail__title4, .vbs-rail__stoptitle, .vbs-band__statvalue,
+.vbs-band__mark, .vbs-proof__num, .vbs-team__name, .vbs-statstrip__value,
+.vbs-statcard__value {
+  font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em;
+}
+
+.vbs-dash { display: block; height: 2px; width: 2.5rem; }        /* h-[2px] w-10 */
+.vbs-kicker { font-size: 11px; text-transform: uppercase; letter-spacing: 0.22em; font-weight: 700; }
+.vbs-dot { display: inline-block; width: 0.375rem; height: 0.375rem; border-radius: 9999px; flex-shrink: 0; }
+.vbs-icon-16 { width: 1rem; height: 1rem; }
+
+/* Parallax image (ParallaxImage.tsx — JS in verto-effects.js §7) */
+.verto-parallax { position: absolute; inset: 0; overflow: hidden; }
+.verto-parallax img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; will-change: transform;
+}
+
+/* ── Brand hero (verto-brand-hero) ── */
+.vbs-hero { position: relative; overflow: hidden; background: var(--ink); color: var(--ink-foreground); }
+.vbs-hero__media { pointer-events: none; position: absolute; top: 0; bottom: 0; right: 0; width: 100%; }
+@media (min-width: 1024px) { .vbs-hero__media { width: 78%; } }
+.vbs-hero__wash {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink) 12%,
+    color-mix(in oklab, var(--ink) 85%, transparent) 28%,
+    color-mix(in oklab, var(--ink) 55%, transparent) 48%,
+    color-mix(in oklab, var(--ink) 25%, transparent) 68%, transparent 92%);
+}
+.vbs-hero__inner { position: relative; padding-top: 5rem; padding-bottom: 6rem; }
+@media (min-width: 1024px) { .vbs-hero__inner { padding-top: 7rem; padding-bottom: 9rem; } }
+.vbs-hero__copy { max-width: 36rem; }
+.vbs-hero__title { text-transform: uppercase; letter-spacing: -0.025em; }
+.vbs-hero__sub { margin-top: 2rem; font-size: 1rem; line-height: 1.5rem; opacity: 0.8; max-width: 28rem; }
+@media (min-width: 768px) { .vbs-hero__sub { font-size: 1.125rem; line-height: 1.75rem; } }
+.vbs-hero__ctas { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.vbs-hero__cta1 { text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.75rem; line-height: 1rem; }
+.vbs-hero__cta2 {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 1rem 1.75rem; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em;
+  font-weight: 600; border: 1px solid; text-decoration: none;
+  transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vbs-hero__cta2:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* ── Feature row (verto-feature-row) ── */
+.vbs-features__pad { padding-block: 4rem; }
+@media (min-width: 1024px) { .vbs-features__pad { padding-block: 5rem; } }
+.vbs-features__grid { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 768px)  { .vbs-features__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .vbs-features__grid { grid-template-columns: repeat(4, 1fr); } }
+.vbs-feature { padding: 1.5rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; }
+@media (min-width: 1024px) { .vbs-feature { padding-inline: 2rem; } }
+.vbs-feature__icon { width: 2.5rem; height: 2.5rem; }
+.vbs-feature__title { font-size: 1.25rem; line-height: 1.375; }
+.vbs-feature__body { font-size: 1rem; line-height: 1.625; }
+
+/* Stats strip variant (clients page, muted, centred) */
+.vbs-statstrip { padding-block: 4rem; background: var(--muted); }
+.vbs-statstrip__grid { display: grid; gap: 2.5rem; text-align: center; }
+@media (min-width: 768px) { .vbs-statstrip__grid { grid-template-columns: repeat(3, 1fr); } }
+.vbs-statstrip__value { font-size: 3rem; line-height: 1; }
+.vbs-statstrip__label { margin-top: 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.7; }
+
+/* ── About split / SplitFeature (verto-about-split) ── */
+.vbs-asplit__grid { display: grid; align-items: stretch; }
+@media (min-width: 1024px) { .vbs-asplit__grid { grid-template-columns: repeat(2, 1fr); } }
+.vbs-asplit__copywrap { display: flex; align-items: center; padding: 4rem 1.5rem; }
+@media (min-width: 768px)  { .vbs-asplit__copywrap { padding-inline: 3rem; } }
+@media (min-width: 1024px) { .vbs-asplit__copywrap { padding: 6rem 5rem; } }
+.vbs-asplit__copy { max-width: 28rem; }
+.vbs-asplit__kick { display: flex; flex-direction: column; gap: 0.5rem; }
+.vbs-asplit__headline { margin-top: 1.25rem; font-size: 2.25rem; line-height: 1.05; letter-spacing: -0.025em; }
+@media (min-width: 768px) { .vbs-asplit__headline { font-size: 3rem; } }
+.vbs-asplit__body { margin-top: 1.5rem; font-size: 1rem; line-height: 1.625; }
+.vbs-asplit__body p + p { margin-top: 1rem; }
+.vbs-asplit__body--panel { opacity: 0.85; }
+.vbs-outline-cta {
+  display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 2rem;
+  padding: 0.875rem 1.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em;
+  font-weight: 700; border: 1px solid; text-decoration: none;
+  transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vbs-outline-cta:hover { background: var(--brand); color: #ffffff !important; }
+.vbs-asplit__imgwrap { position: relative; min-height: 420px; }
+@media (min-width: 1024px) { .vbs-asplit__imgwrap { min-height: 540px; } }
+.vbs-asplit__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* Black stats overlay card (#0a0a0a, 4px radius, deep drop shadow) */
+.vbs-statcard {
+  position: absolute; right: 1.5rem; top: 1.5rem; width: 78%; padding: 1.75rem;
+  background: #0a0a0a; color: #ffffff; border-radius: 4px;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+}
+@media (min-width: 768px) { .vbs-statcard { right: 2.5rem; top: 2.5rem; width: 300px; padding: 2rem; } }
+.vbs-asplit--reverse .vbs-statcard { right: auto; left: 1.5rem; }
+@media (min-width: 768px) { .vbs-asplit--reverse .vbs-statcard { left: 2.5rem; } }
+.vbs-statcard__row--sep { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.15); }
+.vbs-statcard__dash { display: block; height: 2px; width: 2rem; }
+.vbs-statcard__value { margin-top: 0.75rem; font-size: 1.875rem; line-height: 2.25rem; font-weight: 800; letter-spacing: normal; font-family: var(--font-sans); }
+@media (min-width: 768px) { .vbs-statcard__value { font-size: 2.25rem; line-height: 2.5rem; } }
+.vbs-statcard__label { margin-top: 0.5rem; font-size: 8px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.8; }
+
+/* Story variant (about page editorial split) */
+.vbs-story { padding-block: 6rem; background: var(--background); }
+@media (min-width: 1024px) { .vbs-story { padding-block: 8rem; } }
+.vbs-story__grid { display: grid; grid-template-columns: 1fr; gap: 4rem; align-items: start; }
+@media (min-width: 1024px) {
+  .vbs-story__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6rem; }
+  .vbs-story__narr { grid-column: span 7 / span 7; }
+  .vbs-story__side { grid-column: span 5 / span 5; }
+}
+.vbs-story__narr { display: flex; flex-direction: column; gap: 2.5rem; }
+.vbs-story__head { display: flex; flex-direction: column; gap: 1.25rem; }
+.vbs-story__kick { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em; }
+.vbs-story__headline { font-size: 1.875rem; line-height: 1.05; letter-spacing: -0.025em; }
+@media (min-width: 768px) { .vbs-story__headline { font-size: 3rem; } }
+.vbs-italic { font-style: italic; }
+.vbs-story__paras { display: flex; flex-direction: column; gap: 2rem; font-size: 1.125rem; line-height: 1.625; }
+@media (min-width: 768px) { .vbs-story__paras { font-size: 1.25rem; } }
+.vbs-story__side { padding-top: 1rem; display: flex; flex-direction: column; gap: 2.5rem; }
+@media (min-width: 1024px) { .vbs-story__side { padding-top: 5rem; } }
+.vbs-story__logo { height: 2.5rem; width: auto; align-self: flex-start; }
+@media (min-width: 768px) { .vbs-story__logo { height: 3rem; } }
+.vbs-story__statcol { display: grid; grid-template-columns: 1fr; gap: 3rem; padding-left: 2rem; border-left: 1px solid; }
+@media (min-width: 1024px) { .vbs-story__statcol { padding-left: 3rem; } }
+.vbs-story__stat { display: flex; flex-direction: column; gap: 0.5rem; }
+.vbs-story__statrow { display: flex; align-items: baseline; gap: 0.5rem; }
+.vbs-story__statvalue { font-family: var(--font-display); font-weight: 300; line-height: 1.25; font-size: 2.25rem; }
+.vbs-story__statvalue--sm { font-size: 1.5rem; }
+.vbs-story__statlabel { font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.375; }
+
+/* ── Specialisms (verto-specialisms) ── */
+.vbs-spec { padding-block: 6rem; }
+.vbs-spec__head { max-width: 42rem; }
+.vbs-spec__grid { margin-top: 3.5rem; display: grid; gap: 1rem; }
+@media (min-width: 768px)  { .vbs-spec__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .vbs-spec__grid { grid-template-columns: repeat(3, 1fr); } }
+/* Shared hover-bar card (specialisms / process / solutions / pillars) */
+.vbs-card { position: relative; overflow: hidden; padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; transition: background-color 0.3s, color 0.3s; }
+.vbs-card--p7 { padding: 1.75rem; }
+.vbs-card--p8 { padding: 2rem; }
+.vbs-card--drop { transform: translateY(2rem); }
+.vbs-card__bar {
+  position: absolute; top: 0; left: 0; height: 3px; width: 100%;
+  transform-origin: left; transform: scaleX(0); transition: transform 0.5s;
+}
+.vbs-card:hover .vbs-card__bar, .vbs-card:focus-within .vbs-card__bar { transform: scaleX(1); }
+.vbs-spec__icon { width: 2.25rem; height: 2.25rem; }
+.vbs-spec__num { margin-top: 1rem; font-size: 0.875rem; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.6; }
+.vbs-spec__title { margin-top: 0.5rem; font-size: 1.5rem; line-height: 2rem; }
+.vbs-spec__body { margin-top: 0.75rem; font-size: 1rem; line-height: 1.625; opacity: 0.75; }
+
+/* ── Logo marquee (verto-logo-marquee) ── */
+.vbs-marquee { padding-block: 4rem; overflow: hidden; }
+@media (min-width: 1024px) { .vbs-marquee { padding-block: 5rem; } }
+.vbs-marquee__head { margin-bottom: 2.5rem; }
+.vbs-marquee__logo { height: 2.5rem; width: auto; object-fit: contain; opacity: 0.6; transition: opacity 0.15s; }
+@media (min-width: 768px) { .vbs-marquee__logo { height: 3rem; } }
+.vbs-marquee__logo:hover { opacity: 1; }
+.logo-marquee {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+          mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+.logo-marquee-track { display: flex; width: max-content; gap: 4rem; align-items: center; animation: logo-marquee-scroll 45s linear infinite; }
+.logo-marquee-track:hover { animation-play-state: paused; }
+.logo-marquee-item { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; min-width: 140px; }
+@keyframes logo-marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .logo-marquee-track { animation: none; } }
+
+/* ── Audience cards (verto-audience-cards) ── */
+.vbs-aud { padding-block: 6rem; }
+.vbs-aud__grid { display: grid; gap: 1.5rem; }
+@media (min-width: 1024px) { .vbs-aud__grid { grid-template-columns: repeat(2, 1fr); } }
+.vbs-aud__card { border-radius: 1.5rem; padding: 2.5rem; display: flex; flex-direction: column; }
+@media (min-width: 1024px) { .vbs-aud__card { padding: 3rem; } }
+.vbs-aud__kicker { font-size: 10px; text-transform: uppercase; letter-spacing: 0.28em; opacity: 0.7; }
+.vbs-aud__headline { margin-top: 1.25rem; font-size: 1.875rem; line-height: 1.25; }
+@media (min-width: 768px) { .vbs-aud__headline { font-size: 2.25rem; } }
+.vbs-aud__body { margin-top: 1.25rem; font-size: 1rem; line-height: 1.5rem; opacity: 0.8; }
+.vbs-aud__bullets { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem; }
+.vbs-aud__bullets li { display: flex; gap: 0.75rem; }
+.vbs-aud__bullets .vbs-dot { margin-top: 0.5rem; }
+.vbs-aud__cta { align-self: flex-start; margin-top: 2rem; }
+
+/* ── Process rail (verto-process-rail) ── */
+.vbs-rail { padding-block: 6rem; }
+.vbs-rail__head { max-width: 42rem; }
+.vbs-rail__head--split { max-width: none; display: grid; gap: 2rem; align-items: end; }
+@media (min-width: 1024px) { .vbs-rail__head--split { grid-template-columns: repeat(2, 1fr); } }
+.vbs-rail__side { font-size: 1rem; opacity: 0.75; max-width: 28rem; }
+@media (min-width: 1024px) { .vbs-rail__side { justify-self: end; } }
+.vbs-rail__grid3 { margin-top: 3.5rem; display: grid; gap: 1rem; }
+@media (min-width: 1024px) { .vbs-rail__grid3 { grid-template-columns: repeat(3, 1fr); } }
+.vbs-rail__grid4 { margin-top: 3.5rem; display: grid; gap: 1rem; }
+@media (min-width: 768px)  { .vbs-rail__grid4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .vbs-rail__grid4 { grid-template-columns: repeat(4, 1fr); } }
+.vbs-rail__numrow { align-self: stretch; display: flex; align-items: baseline; justify-content: space-between; }
+.vbs-rail__num3 { font-size: 1.875rem; line-height: 2.25rem; }
+.vbs-rail__num { font-size: 1.5rem; line-height: 2rem; }
+.vbs-rail__title3 { margin-top: 1.5rem; font-size: 1.5rem; line-height: 2rem; }
+.vbs-rail__title4 { margin-top: 0.75rem; font-size: 1.25rem; line-height: 1.75rem; }
+.vbs-rail__kicker { margin-top: 0.25rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.65; }
+.vbs-rail__body3 { margin-top: 1.25rem; font-size: 1rem; line-height: 1.625; opacity: 0.8; }
+.vbs-rail__body { margin-top: 0.75rem; font-size: 1rem; line-height: 1.625; opacity: 0.75; }
+.vbs-rail__bullets { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem; opacity: 0.85; }
+.vbs-rail__bullets li { display: flex; gap: 0.75rem; }
+.vbs-rail__bullets .vbs-dot { margin-top: 0.5rem; }
+.vbs-rail__track { margin-top: 3.5rem; position: relative; }
+.vbs-rail__connector { display: none; position: absolute; left: 0; right: 0; top: 1rem; height: 1px; }
+@media (min-width: 768px) { .vbs-rail__connector { display: block; } }
+.vbs-rail__cols { display: grid; gap: 2.5rem; }
+@media (min-width: 768px)  { .vbs-rail__cols { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .vbs-rail__cols { grid-template-columns: repeat(4, 1fr); } }
+.vbs-rail__stop { position: relative; }
+.vbs-rail__dotmark { display: block; height: 0.75rem; width: 0.75rem; border-radius: 9999px; box-shadow: 0 0 0 4px var(--background); }
+.vbs-rail__stophead { margin-top: 1.5rem; display: flex; align-items: baseline; gap: 0.75rem; }
+.vbs-rail__stoptitle { font-size: 1.25rem; line-height: 1.75rem; }
+
+/* ── Chip grid (verto-chip-grid) ── */
+.vbs-chips { padding-block: 6rem; }
+.vbs-chips__head { display: grid; gap: 2rem; align-items: end; margin-bottom: 3rem; }
+@media (min-width: 1024px) { .vbs-chips__head { grid-template-columns: 1fr 1.5fr; } }
+.vbs-chips__frame { display: grid; gap: 1px; }
+.vbs-chips__grid { display: grid; gap: 1px; }
+@media (min-width: 640px)  { .vbs-chips__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .vbs-chips__grid { grid-template-columns: repeat(4, 1fr); } }
+.vbs-chips__cell { padding: 1.5rem; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.75rem; }
+.vbs-chips__num { font-family: var(--font-display); font-size: 0.75rem; opacity: 0.5; }
+
+/* ── Quote band (verto-quote-band): dark parallax bands ── */
+.vbs-band { position: relative; overflow: hidden; }
+.vbs-band__wash { position: absolute; inset: 0; }
+.vbs-band__inner { position: relative; }
+.vbs-band__inner--hero { padding-top: 6rem; padding-bottom: 6rem; }
+@media (min-width: 1024px) { .vbs-band__inner--hero { padding-top: 8rem; padding-bottom: 8rem; } }
+.vbs-band__inner--band { padding-block: 7rem; }
+.vbs-band__copy { max-width: 48rem; }
+.vbs-band__copy--right { margin-left: auto; max-width: 42rem; }
+.vbs-band__heading { margin-top: 1.5rem; letter-spacing: -0.025em; white-space: pre-line; }
+.vbs-band__inner--band .vbs-band__heading { margin-top: 1.25rem; max-width: 42rem; }
+.vbs-band__body { margin-top: 2rem; max-width: 36rem; font-size: 1.125rem; line-height: 1.75rem; }
+.vbs-band__ctas { margin-top: 2.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.vbs-band__stat { margin-top: 3rem; max-width: 220px; padding: 1.5rem; }
+@media (min-width: 1024px) { .vbs-band__stat { position: absolute; right: 2rem; bottom: 2rem; margin-top: 0; } }
+.vbs-band__statvalue { margin-top: 0.75rem; font-size: 1.875rem; line-height: 2.25rem; }
+.vbs-band__statlabel { margin-top: 0.5rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.8; }
+.vbs-band__cols { margin-top: 4rem; display: grid; gap: 2.5rem; }
+@media (min-width: 1024px) { .vbs-band__cols { grid-template-columns: repeat(3, 1fr); } }
+.vbs-band__col { padding-left: 1.5rem; border-left: 1px solid; }
+.vbs-band__collabel { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.22em; }
+.vbs-band__colbody { margin-top: 1.25rem; font-size: 1rem; line-height: 1.625; opacity: 0.9; }
+.vbs-band__quotes { margin-top: 3.5rem; display: grid; gap: 2.5rem; }
+@media (min-width: 768px) {
+  .vbs-band__quotes { grid-template-columns: repeat(2, 1fr); }
+  .vbs-band__quote--drop { margin-top: 4rem; }
+}
+.vbs-band__mark { font-size: 3.75rem; line-height: 1; }
+.vbs-band__quote blockquote {
+  margin-top: 0.5rem; font-size: 1.125rem; line-height: 1.625; opacity: 0.95;
+  font-style: normal; border: none; background: none; quotes: none;
+}
+.vbs-band__quote blockquote::before, .vbs-band__quote blockquote::after { content: none; }
+.vbs-band__quote figcaption { margin-top: 1.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.7; font-style: normal; }
+
+/* ── Proof list (verto-proof-list) ── */
+.vbs-proof { padding-block: 6rem; }
+.vbs-proof__head { max-width: 42rem; }
+.vbs-proof__grid { margin-top: 3.5rem; display: grid; gap: 2.5rem 4rem; }
+@media (min-width: 768px) { .vbs-proof__grid { grid-template-columns: repeat(2, 1fr); } }
+.vbs-proof__item { display: flex; gap: 1.5rem; }
+.vbs-proof__item--drop { transform: translateY(2rem); }
+.vbs-proof__num { font-size: 3rem; line-height: 1; flex-shrink: 0; }
+.vbs-proof__text { font-size: 1rem; line-height: 1.625; opacity: 0.85; padding-top: 0.25rem; }
+
+/* ── CTA band (verto-cta-band) ── */
+.vbs-ctaband { padding-block: 6rem; }
+.vbs-ctaband__card { border-radius: 1.5rem; padding: 3rem; text-align: center; }
+.vbs-ctaband__heading { max-width: 42rem; margin-inline: auto; }
+.vbs-ctaband__ctas { margin-top: 2rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
+
+/* ── Team strip (verto-team-grid mode=strip, TeamStrip.tsx) ── */
+.vbs-team { padding-block: 6rem; }
+.vbs-team__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
+.vbs-team__intro { max-width: 36rem; }
+.vbs-team__body { margin-top: 1.5rem; color: var(--muted-foreground); }
+.vbs-team__grid { margin-top: 3rem; display: grid; gap: 1.5rem; }
+@media (min-width: 640px)  { .vbs-team__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .vbs-team__grid { grid-template-columns: repeat(4, 1fr); } }
+.vbs-team__card { position: relative; aspect-ratio: 1 / 1; width: 100%; overflow: hidden; border-radius: 1rem; }
+.vbs-team__card .vbs-team__photo {
+  position: absolute; inset: 0; height: 100%; width: 100%;
+  object-fit: cover; object-position: top; transition: transform 0.5s;
+  border-radius: 0;
+}
+.vbs-team__card:hover .vbs-team__photo { transform: scale(1.05); }
+.vbs-team__initials { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 3.75rem; }
+.vbs-team__overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 1.25rem; opacity: 0; transition: opacity 0.3s;
+}
+.vbs-team__card:hover .vbs-team__overlay, .vbs-team__card:focus-within .vbs-team__overlay { opacity: 1; }
+.vbs-team__name { font-size: 1.25rem; line-height: 1.25; letter-spacing: -0.025em; }
+.vbs-team__role { margin-top: 0.25rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.9; }
+.vbs-team__focus { margin-top: 0.5rem; font-size: 0.875rem; line-height: 1.375; opacity: 0.9; }
+
+/* ── Insights trio section + contact section shells ── */
+.vbs-insights-sec { padding: 6rem 1.5rem !important; border-top: 1px solid var(--border); }
+@media (min-width: 768px) { .vbs-insights-sec { padding-inline: 2.5rem !important; } }
+.vbs-insights-sec > .elementor-container { max-width: 80rem; margin-inline: auto; }
+.vbs-insights__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 3rem; }
+.vbs-insights__all { font-size: 0.875rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+.vbs-contact { padding: 6rem 1.5rem !important; }
+@media (min-width: 768px) { .vbs-contact { padding-inline: 2.5rem !important; } }
+.vbs-contact > .elementor-container { max-width: 80rem; margin-inline: auto; }
+.vbs-bullets { list-style: none; margin: 2rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; font-size: 0.875rem; }
+.vbs-bullets li { display: flex; gap: 0.75rem; }
+.vbs-bullets .vbs-dot { margin-top: 0.5rem; }
+.vbs-form-card { border-radius: 1.5rem; padding: 2rem; }
+@media (min-width: 768px) { .vbs-form-card { padding: 2.5rem; } }
+
+/* ── Brand-site header/footer variants ── */
+.verto-header--brand { background: color-mix(in oklab, var(--background) 85%, transparent); }
+.verto-header--brand .verto-header__menu a {
+  font-size: 0.875rem; font-weight: 500; text-transform: none; letter-spacing: 0;
+  opacity: 0.8; color: var(--foreground);
+}
+.verto-header--brand .verto-header__menu a:hover { opacity: 1; color: var(--foreground); }
+.verto-header--brand .verto-header__menu .current-menu-item a,
+.verto-header--brand .verto-header__menu .current_page_item a { opacity: 1; color: var(--brand); }
+.verto-header__cta--brand {
+  background: var(--brand); color: var(--brand-foreground);
+  border-radius: 9999px; padding: 10px 20px; font-size: 0.8125rem; font-weight: 500;
+}
+.verto-header__cta--brand:hover { filter: brightness(1.05); transform: translateY(-1px); color: var(--brand-foreground); }
+.verto-footer--brand .verto-footer__inner { padding: 4rem 1.5rem; }
+@media (min-width: 768px) { .verto-footer--brand .verto-footer__inner { padding-inline: 2.5rem; } }
+.verto-footer--brand .verto-footer__logo { height: 2rem; }
+@media (min-width: 768px) { .verto-footer--brand .verto-footer__logo { height: 2.5rem; } }
+.verto-footer--brand .verto-footer__strap { opacity: 0.7; }
+.verto-footer--brand .verto-footer__legal { margin-top: 3rem; }
+
+/* ── ModulR brand overrides (port of [data-brand="modulr"] in styles.css) ── */
+body.verto-brand-modulr {
+  background:
+    radial-gradient(ellipse 80% 60% at 85% 110%, color-mix(in oklab, #0464FA 38%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% -10%, color-mix(in oklab, #00269D 45%, transparent) 0%, transparent 55%),
+    var(--background);
+}
+body.verto-brand-modulr .display-1,
+body.verto-brand-modulr .display-2 { font-weight: 300; letter-spacing: -0.02em; text-transform: none; }
+body.verto-brand-modulr .display-3,
+body.verto-brand-modulr .display-4 { font-weight: 400; letter-spacing: -0.01em; text-transform: none; }
+/* Montserrat "font-display" pieces run Regular with tighter tracking */
+body.verto-brand-modulr .vbs-feature__title,
+body.verto-brand-modulr .vbs-asplit__headline,
+body.verto-brand-modulr .vbs-story__headline,
+body.verto-brand-modulr .vbs-spec__title,
+body.verto-brand-modulr .vbs-aud__headline,
+body.verto-brand-modulr .vbs-rail__num,
+body.verto-brand-modulr .vbs-rail__num3,
+body.verto-brand-modulr .vbs-rail__title3,
+body.verto-brand-modulr .vbs-rail__title4,
+body.verto-brand-modulr .vbs-rail__stoptitle,
+body.verto-brand-modulr .vbs-band__statvalue,
+body.verto-brand-modulr .vbs-band__mark,
+body.verto-brand-modulr .vbs-proof__num,
+body.verto-brand-modulr .vbs-team__name,
+body.verto-brand-modulr .vbs-statstrip__value { font-weight: 400; letter-spacing: -0.01em; }
+/* font-extrabold caps at SemiBold for ModulR */
+body.verto-brand-modulr .vbs-statcard__value { font-family: var(--font-display); font-weight: 600; }
+/* Royal blue at 11px on navy fails contrast — lift small labels */
+body.verto-brand-modulr .eyebrow { color: var(--accent-soft); font-family: var(--font-display); font-weight: 600; letter-spacing: 0.22em; }
+body.verto-brand-modulr .btn-primary { background: var(--brand-gradient); color: #fff; }
+body.verto-brand-modulr .verto-header__cta--brand { background: var(--brand-gradient); color: #fff; }
+/* The landing hero headline stays uppercase on every brand (prototype:
+   "display-2 uppercase tracking-tight") — outranks the display-2 override */
+body .vbs-hero .vbs-hero__title { text-transform: uppercase; }

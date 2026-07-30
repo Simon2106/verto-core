@@ -7,6 +7,10 @@
 
   --background: #000A3B;        /* Deep Navy */
   --foreground: #F5F6F8;        /* Mist */
+  --surface: #06124A;           /* raised card surface */
+  --surface-foreground: #F5F6F8;
+  --card: #081552;
+  --card-foreground: #F5F6F8;
   --muted: #0A1550;
   --muted-foreground: color-mix(in oklab, #F5F6F8 68%, #000A3B);
   --accent: #0464FA;            /* Royal Blue */

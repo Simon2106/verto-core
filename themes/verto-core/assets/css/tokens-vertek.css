@@ -8,6 +8,8 @@
 
   --background: #15171C;        /* Graphite */
   --foreground: #F4F5F6;
+  --surface: #1B1E24;
+  --surface-foreground: #F4F5F6;
   --muted: #22252C;
   --muted-foreground: #8A9099;  /* Steel */
   --accent: #F82B60;            /* Signal Red */

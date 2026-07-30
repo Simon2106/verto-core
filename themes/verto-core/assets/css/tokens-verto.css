@@ -5,6 +5,8 @@
 
   --background: oklch(0.985 0.005 85);
   --foreground: oklch(0.18 0.025 260);
+  --surface: oklch(1 0 0);
+  --surface-foreground: oklch(0.18 0.025 260);
   --muted: oklch(0.95 0.008 85);
   --muted-foreground: oklch(0.45 0.015 260);
   --accent: oklch(0.72 0.105 75);

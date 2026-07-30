@@ -150,6 +150,54 @@
   });
 })();
 
+/* ── 7. Parallax images (.verto-parallax) — vanilla port of the
+      prototype's ParallaxImage: moves at `speed`× scroll, optional
+      scale/offset, disabled for reduced-motion and coarse pointers ── */
+(function () {
+  "use strict";
+  document.addEventListener("DOMContentLoaded", function () {
+    var els = document.querySelectorAll(".verto-parallax");
+    if (!els.length) return;
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var coarse = window.matchMedia("(pointer: coarse)").matches;
+    if (reduced || coarse) return; // prototype leaves the image untransformed
+
+    var items = [];
+    els.forEach(function (el) {
+      var img = el.querySelector("img");
+      if (!img) return;
+      items.push({
+        el: el,
+        img: img,
+        speed: parseFloat(el.dataset.parallaxSpeed || "0.25"),
+        scale: parseFloat(el.dataset.parallaxScale || "1.18"),
+        offsetY: parseFloat(el.dataset.parallaxOffset || "0"),
+      });
+    });
+    if (!items.length) return;
+
+    var raf = 0;
+    function update() {
+      raf = 0;
+      var vh = window.innerHeight;
+      items.forEach(function (it) {
+        var rect = it.el.getBoundingClientRect();
+        // progress from -1 (below screen) to 1 (above screen) — prototype math
+        var progress = (rect.top + rect.height / 2 - vh / 2) / (vh + rect.height / 2);
+        var offset = -progress * rect.height * it.speed + it.offsetY;
+        it.img.style.transform = "translate3d(0, " + offset.toFixed(2) + "px, 0) scale(" + it.scale + ")";
+      });
+    }
+    function onScroll() {
+      if (raf) return;
+      raf = window.requestAnimationFrame(update);
+    }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+  });
+})();
+
 /* ── 6. Autoplay rescue: if the browser blocked muted autoplay (low power
       mode, data saver), retry on the first user interaction ── */
 (function () {

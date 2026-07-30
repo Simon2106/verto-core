@@ -53,6 +53,20 @@ class Verto_Installer {
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Nope.' );
 		check_admin_referer( 'verto_build_site' );
 
+		$brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
+
+		if ( 'verto' !== $brand ) {
+			// Brand-site install (modulr / vertek / edison-lux): build that
+			// brand's standalone site instead of the Verto Group site.
+			$media = self::import_media();
+			self::seed_team();
+			self::seed_brand_posts( $brand, $media );
+			self::create_brand_site_pages( $brand, $media );
+			self::setup_brand_menu( $brand );
+			wp_safe_redirect( admin_url( 'admin.php?page=verto-setup&built=1' ) );
+			exit;
+		}
+
 		$media = self::import_media();
 		self::seed_posts( $media );
 		self::seed_team();
@@ -85,6 +99,12 @@ class Verto_Installer {
 			'skyline_uk'    => 'skyline-uk.jpg',
 			'skyline_us'    => 'skyline-us.jpg',
 			'skyline_eu'    => 'skyline-eu.jpg',
+			// Brand-site media (ModulR)
+			'modulr_hero'       => 'modulr-hero.png',
+			'modulr_datacentre' => 'modulr-datacentre.webp',
+			'about_image'       => 'about-image.jpg',
+			'insight_datacentre'   => 'insight-datacentre.jpg',
+			'insight_architecture' => 'insight-architecture.jpg',
 		];
 
 		foreach ( $files as $key => $file ) {
@@ -125,11 +145,11 @@ class Verto_Installer {
 	}
 
 	/** Two-column section: widgets_a left, widgets_b right (size = left col %). */
-	private static function section2( array $widgets_a, array $widgets_b, string $css_class = '', int $left = 66 ): array {
+	private static function section2( array $widgets_a, array $widgets_b, string $css_class = '', int $left = 66, array $extra = [] ): array {
 		return [
 			'id'       => self::eid(),
 			'elType'   => 'section',
-			'settings' => [ 'layout' => 'full_width', 'css_classes' => $css_class ],
+			'settings' => array_merge( [ 'layout' => 'full_width', 'css_classes' => $css_class ], $extra ),
 			'elements' => [
 				[ 'id' => self::eid(), 'elType' => 'column', 'settings' => [ '_column_size' => $left, '_inline_size' => $left ], 'elements' => $widgets_a ],
 				[ 'id' => self::eid(), 'elType' => 'column', 'settings' => [ '_column_size' => 100 - $left, '_inline_size' => 100 - $left ], 'elements' => $widgets_b ],
@@ -189,10 +209,14 @@ class Verto_Installer {
 			$base = pathinfo( $file, PATHINFO_FILENAME );
 			// only person photos: brand-prefixed or the three leaders
 			$is_person = isset( $special[ $base ] ) || preg_match( '/^(edison|vertek|modulr)-/', $base );
-			if ( ! $is_person || in_array( $base, [ 'skyline-uk', 'skyline-us', 'skyline-eu', 'ibiza8', 'ibiza9', 'summit-poster' ], true ) ) continue;
+			if ( ! $is_person || in_array( $base, [ 'skyline-uk', 'skyline-us', 'skyline-eu', 'ibiza8', 'ibiza9', 'summit-poster', 'vertek-hero', 'modulr-hero', 'modulr-datacentre', 'vertek-logo-light' ], true ) ) continue;
 			$name_part = preg_replace( '/^(edison|vertek|modulr)-/', '', $base );
 			$name      = ucwords( str_replace( '-', ' ', $name_part ) );
 			$meta      = $special[ $base ] ?? [ 'role' => 'Consultant' ];
+			$brand_of  = '';
+			if ( preg_match( '/^(edison|vertek|modulr)-/', $base, $bm ) ) {
+				$brand_of = 'edison' === $bm[1] ? 'edison-lux' : $bm[1];
+			}
 			$post_id   = wp_insert_post( [
 				'post_title'  => $name,
 				'post_type'   => 'verto_team',
@@ -202,6 +226,7 @@ class Verto_Installer {
 			$order++;
 			if ( ! $post_id || is_wp_error( $post_id ) ) continue;
 			update_post_meta( $post_id, '_verto_role', $meta['role'] );
+			if ( $brand_of ) update_post_meta( $post_id, '_verto_brand', $brand_of );
 			if ( ! empty( $meta['leader'] ) ) update_post_meta( $post_id, '_verto_leader', '1' );
 			$tmp = wp_tempnam( basename( $file ) );
 			copy( $file, $tmp );
@@ -561,6 +586,455 @@ class Verto_Installer {
 				] ) ], 'verto-container-pad' ),
 			], $parent );
 		}
+	}
+
+	/* ═══════════════════ Brand sites (ModulR first) ═══════════════════ */
+
+	/**
+	 * All per-brand copy, ported verbatim from the prototype's
+	 * src/lib/brands.ts BRANDS[...] (+ FEATURES / HERO_SUB /
+	 * SPECIALISM_ICONS in brands.$brand.index.tsx).
+	 * Vertek / Edison Lux later = fill in their arrays here; the page
+	 * builders below are brand-agnostic.
+	 */
+	private static function brand_content( string $brand ): array {
+		$all = [
+			'modulr' => [
+				'name'        => 'Modulr',
+				'focus'       => 'Architecture & Data Centres',
+				'focus_lower' => 'architecture & data centres',
+				'hero'        => [
+					'line1'  => 'Connecting talent.',
+					'line2'  => 'Powering progress',
+					'sub'    => "Modulr connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses, award-winning practices and the projects you won't find advertised.",
+					'image'  => 'modulr_hero',
+					'alt'    => 'Glowing globe at night with arcs of light connecting cities',
+					'scale'  => 1,
+					'offset' => 30,
+				],
+				'features' => [
+					[ 'icon' => 'globe-2',   'title' => 'UK, EU & US',             'body' => 'Hyperscale, colocation and celebrated US architecture — three regions, one network.' ],
+					[ 'icon' => 'compass',   'title' => 'Curated Introductions',   'body' => 'Considered shortlists with real context. Never CVs into the void.' ],
+					[ 'icon' => 'lock',      'title' => 'NDA-Grade Discretion',    'body' => 'Sensitive, pre-announcement and competitor-adjacent search handled as standard.' ],
+					[ 'icon' => 'handshake', 'title' => 'Long-Game Relationships', 'body' => 'We track careers and project pipelines to add value before the urgent need arises.' ],
+				],
+				'about'        => [
+					'headline' => 'Considered introductions, not CVs into the void.',
+					'mission'  => "Build teams for the projects that will define a generation — staffing what others can't, working quickly and discreetly, and to the standard those projects demand.",
+					'vision'   => 'A world where no exceptional architect or built-environment professional is stuck because the right opportunity was invisible to them — and the first call every project director makes when they need to scale.',
+					'purpose'  => 'Championing the professionals who build our world — opening doors that don\'t exist yet, so the most ambitious projects in architecture and critical infrastructure are built by the best people, not whoever applied first.',
+				],
+				'about_image'     => 'modulr_datacentre',
+				'about_image_alt' => 'Data centre corridor lined with server racks and glowing status lights',
+				'stats' => [
+					[ 'value' => '3 regions',      'label' => 'UK, EU and US coverage' ],
+					[ 'value' => 'Full lifecycle', 'label' => 'Concept design to commissioning' ],
+					[ 'value' => 'NDA-grade',      'label' => 'Discretion on every search' ],
+				],
+				'specialisms' => [
+					[ 'icon' => 'server',          'title' => 'Hyperscale Data Centres', 'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
+					[ 'icon' => 'network',         'title' => 'Colocation & Edge',       'description' => 'Delivery and operations talent for colo and edge programmes at every stage.' ],
+					[ 'icon' => 'building-2',      'title' => 'US Architecture',         'description' => 'Registered architects, project architects, directors, principals and partners.' ],
+					[ 'icon' => 'zap',             'title' => 'MEP Engineering',         'description' => 'Mechanical, electrical and plumbing leadership across the US project landscape.' ],
+					[ 'icon' => 'layers',          'title' => 'Project Lifecycle',       'description' => 'CD → SD → DD → CD → CA. Concept design through construction administration.' ],
+					[ 'icon' => 'heart-handshake', 'title' => 'Inclusion & EDI',         'description' => 'Championing women in architecture and EDI across technical built-environment roles.' ],
+				],
+				'audiences' => [
+					'company' => [
+						'headline' => "Your next project is out there. It just isn't advertised.",
+						'body'     => "Whether you're scaling a data centre programme or shaping a skyline, one conversation opens doors that don't exist yet. Considered introductions, never CVs into the void — and discretion as standard.",
+						'bullets'  => "Curated introductions, not mass outreach\nConfidential and NDA-grade search handled as standard\nProject team builds — contract and permanent\nLong-game relationships across the project pipeline",
+						'cta'      => 'Scale your project team',
+					],
+					'candidate' => [
+						'headline' => 'The best projects are rarely advertised.',
+						'body'     => 'The best talent is rarely searching. Modulr exists in that gap — making precise, considered introductions rather than firing CVs into the void, and protecting reputations on every engagement.',
+						'bullets'  => "Hyperscale, colo, US architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
+						'cta'      => 'Find your next project',
+					],
+				],
+				'about_hero' => [ 'pre' => 'The projects that define', 'accent' => 'a generation.', 'post' => 'Built by the right people.' ],
+				'positioning' => "Modulr connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses, award-winning practices, and the projects you won't find advertised.",
+				'what_we_do' => [
+					'headline'   => 'Embedded in the projects that define a generation.',
+					'paragraphs' => "Hyperscale data centres, colocation and edge, US architecture, MEP engineering and the full concept-to-commissioning lifecycle — this is where our network runs deepest. Every consultant works one part of the built environment, not the whole map.\n\nFor project directors, developers and practice principals, we operate as a discreet extension of the leadership team — considered introductions rather than CVs into the void, with NDA-grade discretion as standard.",
+				],
+				'proof' => [
+					'Trusted by global operators, developers and celebrated US practices',
+					'Active networks across the UK, EU and US markets',
+					'NDA-grade discretion on every sensitive and pre-announcement search',
+					'Inclusion work championing women in architecture and EDI in technical built-environment roles',
+				],
+				'team_focus' => 'Built environment search.',
+				'insights'   => [
+					[ 'title' => 'Case study: scaling a hyperscale build team across three regions in 90 days',
+					  'excerpt' => 'How we delivered a 14-strong project leadership team for a Tier-1 operator under NDA, on schedule, with zero attrition.',
+					  'image' => 'insight_datacentre' ],
+					[ 'title' => 'US Architecture & AOR market update — Q2 2026',
+					  'excerpt' => 'Where the principals, directors and partners are moving across mixed-use, hospitality and healthcare practices.',
+					  'image' => 'insight_architecture' ],
+					[ 'title' => 'Building the women-in-architecture pipeline: what actually works',
+					  'excerpt' => 'Three years of EDI-led search work distilled into the interventions that move the needle on retention and promotion.',
+					  'image' => 'insight_architecture' ],
+				],
+			],
+			// 'vertek' and 'edison-lux' land here later — data arrays only.
+		];
+		return $all[ $brand ] ?? [];
+	}
+
+	/** Seed the brand's insight posts + category (once). */
+	private static function seed_brand_posts( string $brand, array $media ): void {
+		if ( get_option( 'verto_installer_posts' ) ) return;
+		$c = self::brand_content( $brand );
+		if ( ! $c ) return;
+		$cat    = wp_insert_term( $c['name'], 'category', [ 'slug' => $brand ] );
+		$cat_id = is_wp_error( $cat ) ? ( get_term_by( 'slug', $brand, 'category' )->term_id ?? 0 ) : $cat['term_id'];
+		$ids    = [];
+		foreach ( $c['insights'] as $post ) {
+			$id = wp_insert_post( [
+				'post_title'    => $post['title'],
+				'post_excerpt'  => $post['excerpt'],
+				'post_content'  => $post['excerpt'] . "\n\n⚠️ Placeholder insight from the prototype — replace with the real article.",
+				'post_status'   => 'publish',
+				'post_type'     => 'post',
+				'post_category' => $cat_id ? [ $cat_id ] : [],
+			] );
+			if ( $id && ! is_wp_error( $id ) && ! empty( $media[ $post['image'] ]['id'] ) ) {
+				set_post_thumbnail( $id, $media[ $post['image'] ]['id'] );
+			}
+			$ids[] = $id;
+		}
+		update_option( 'verto_installer_posts', $ids );
+	}
+
+	/** Build the standalone brand site: Home, About, Clients, Candidates, Insights. */
+	private static function create_brand_site_pages( string $brand, array $media ): void {
+		$c = self::brand_content( $brand );
+		if ( ! $c ) return;
+
+		$name       = $c['name'];
+		$logo_key   = [ 'modulr' => 'logo_modulr_png', 'vertek' => 'logo_vertek', 'edison-lux' => 'logo_edison' ][ $brand ] ?? '';
+		$stats      = array_map( fn( $st ) => [ '_id' => self::eid() ] + $st, $c['stats'] );
+		$team_strip = self::widget( 'verto-team-grid', [
+			'mode'       => 'strip',
+			'brand'      => $brand,
+			'eyebrow'    => 'The team',
+			'heading'    => "Meet the $name desk.",
+			'body'       => "Operators, engineers and market specialists. The people you'll actually talk to when you engage $name.",
+			'focus_text' => $c['team_focus'],
+		] );
+		$contact = function ( string $eyebrow, string $heading, string $bullets ) {
+			$lis = '';
+			foreach ( array_filter( array_map( 'trim', explode( "\n", $bullets ) ) ) as $bp ) {
+				$lis .= '<li><span class="vbs-dot" style="background:var(--brand);"></span><span>' . esc_html( $bp ) . '</span></li>';
+			}
+			return self::section2( [
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => $eyebrow,
+					'lines'   => [ [ '_id' => self::eid(), 'line' => $heading ] ],
+				] ),
+				self::widget( 'text-editor', [ 'editor' => '<ul class="vbs-bullets">' . $lis . '</ul>' ] ),
+			], [
+				self::widget( 'text-editor', [
+					'editor'       => '<div class="card-surface vbs-form-card"><div class="verto-form">[CF7-SHORTCODE-HERE — create the form in Contact → Contact Forms, then paste its shortcode into this text widget]</div></div>',
+				] ),
+			], 'verto-bs vbs-contact', 45, [ '_element_id' => 'contact' ] );
+		};
+
+		/* ── HOME ── */
+		$home = [
+			self::section( [ self::widget( 'verto-brand-hero', [
+				'line1'           => $c['hero']['line1'],
+				'line2'           => $c['hero']['line2'],
+				'sub'             => $c['hero']['sub'],
+				'image'           => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt'       => $c['hero']['alt'],
+				'parallax_scale'  => $c['hero']['scale'],
+				'parallax_offset' => $c['hero']['offset'],
+				'cta1_text'       => 'Our Solutions',
+				'cta1_link'       => [ 'url' => '/clients' ],
+				'cta2_text'       => "Discover $name",
+				'cta2_link'       => [ 'url' => '/about' ],
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-feature-row', [
+				'items' => array_map( fn( $f ) => [ '_id' => self::eid() ] + $f, $c['features'] ),
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-about-split', [
+				'variant'   => 'landing',
+				'eyebrow'   => "About $name",
+				'headline'  => $c['about']['headline'],
+				'body'      => $c['about']['mission'],
+				'cta_text'  => 'Learn more about us',
+				'cta_link'  => [ 'url' => '/about' ],
+				'image'     => self::media_setting( $media, $c['about_image'] ),
+				'image_alt' => $c['about_image_alt'],
+				'stats'     => $stats,
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-specialisms', [
+				'items' => array_map( fn( $sp ) => [ '_id' => self::eid() ] + $sp, $c['specialisms'] ),
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-logo-marquee', [] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-audience-cards', [ 'items' => [
+				[ '_id' => self::eid(), 'style' => 'ink', 'kicker' => 'For companies',
+				  'headline' => $c['audiences']['company']['headline'], 'body' => $c['audiences']['company']['body'],
+				  'bullets' => $c['audiences']['company']['bullets'], 'cta_text' => $c['audiences']['company']['cta'],
+				  'cta_link' => [ 'url' => '/clients' ] ],
+				[ '_id' => self::eid(), 'style' => 'surface', 'kicker' => 'For candidates',
+				  'headline' => $c['audiences']['candidate']['headline'], 'body' => $c['audiences']['candidate']['body'],
+				  'bullets' => $c['audiences']['candidate']['bullets'], 'cta_text' => $c['audiences']['candidate']['cta'],
+				  'cta_link' => [ 'url' => '/candidates' ] ],
+			] ] ) ], 'verto-bs' ),
+			self::section( [ $team_strip ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-posts-grid', [
+				'count'            => 3,
+				'kicker'           => $name,
+				'category'         => $brand,
+				'header_eyebrow'   => 'Insights',
+				'header_heading'   => 'From inside the market.',
+				'header_link_text' => 'View all',
+				'header_link'      => [ 'url' => '/insights' ],
+			] ) ], 'verto-bs vbs-insights-sec' ),
+		];
+		$home_id = self::upsert_page( 'home', 'Home', $home );
+
+		/* ── ABOUT ── */
+		$about_hero_body = $c['about']['headline'] . " — and it's how we've built $name into the firm clients and candidates in " . $c['focus_lower'] . ' reach out to first.';
+		$about = [
+			self::section( [ self::widget( 'verto-quote-band', [
+				'image'          => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt'      => $c['hero']['alt'],
+				'overlay'        => 'hero-left',
+				'pad'            => 'hero',
+				'parallax_speed' => 0.3,
+				'eyebrow'        => "About $name",
+				'eyebrow_style'  => 'brand',
+				'heading_pre'    => $c['about_hero']['pre'],
+				'heading_accent' => $c['about_hero']['accent'],
+				'heading_post'   => $c['about_hero']['post'],
+				'body'           => $about_hero_body,
+				'stat_value'     => $c['stats'][0]['value'],
+				'stat_label'     => $c['stats'][0]['label'],
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-about-split', [
+				'variant'         => 'story',
+				'eyebrow'         => "About $name",
+				'headline'        => 'The story behind',
+				'headline_italic' => "$name.",
+				'body'            => $c['positioning'] . "\n\nWe started in technical sales in 2011 — the roots of the Verto Group. $name is the brand built specifically for the part of the market we know best: the engineers, operators and commercial leaders our sector runs on.",
+				'logo'            => self::media_setting( $media, $logo_key ),
+				'stats'           => $stats,
+				'cta_text'        => '',
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-about-split', [
+				'variant'   => 'panel',
+				'reverse'   => 'yes',
+				'eyebrow'   => 'What we do today',
+				'headline'  => $c['what_we_do']['headline'],
+				'body'      => $c['what_we_do']['paragraphs'],
+				'image'     => self::media_setting( $media, 'about_image' ),
+				'image_alt' => 'A specialist team at work',
+				'panel_bg'  => '#ffffff',
+				'stats'     => [],
+				'cta_text'  => '',
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-quote-band', [
+				'image'          => self::media_setting( $media, $c['hero']['image'] ),
+				'overlay'        => 'mission',
+				'pad'            => 'band',
+				'parallax_speed' => 0.35,
+				'eyebrow'        => 'The compass',
+				'eyebrow_style'  => 'dim',
+				'heading_pre'    => 'Mission. Vision. Purpose.',
+				'heading_accent' => '',
+				'heading_post'   => '',
+				'heading_size'   => 'display-3',
+				'body'           => '',
+				'stat_value'     => '',
+				'stat_label'     => '',
+				'columns'        => [
+					[ '_id' => self::eid(), 'label' => 'Mission', 'body' => $c['about']['mission'] ],
+					[ '_id' => self::eid(), 'label' => 'Vision',  'body' => $c['about']['vision'] ],
+					[ '_id' => self::eid(), 'label' => 'Purpose', 'body' => $c['about']['purpose'] ],
+				],
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-proof-list', [
+				'items' => array_map( fn( $p ) => [ '_id' => self::eid(), 'text' => $p ], $c['proof'] ),
+			] ) ], 'verto-bs' ),
+			self::section( [ $team_strip ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-cta-band', [
+				'heading'   => 'Ready to talk?',
+				'cta1_text' => "Hire with $name",
+				'cta1_link' => [ 'url' => '/clients' ],
+				'cta2_text' => 'Explore roles',
+				'cta2_link' => [ 'url' => '/candidates' ],
+			] ) ], 'verto-bs' ),
+		];
+		self::upsert_page( 'about', 'About', $about );
+
+		/* ── CLIENTS (prototype for-companies) ── */
+		$co      = $c['audiences']['company'];
+		$clients = [
+			self::section( [ self::widget( 'verto-quote-band', [
+				'image'          => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt'      => $c['hero']['alt'],
+				'overlay'        => 'hero-left',
+				'pad'            => 'hero',
+				'parallax_speed' => 0.3,
+				'eyebrow'        => 'For companies',
+				'eyebrow_style'  => 'dim',
+				'heading_pre'    => $co['headline'],
+				'heading_accent' => '',
+				'heading_post'   => '',
+				'body'           => $co['body'],
+				'cta1_text'      => 'Submit a vacancy',
+				'cta1_link'      => [ 'url' => '#contact' ],
+				'cta2_text'      => "How $name works",
+				'cta2_link'      => [ 'url' => '/about' ],
+				'stat_value'     => '',
+				'stat_label'     => '',
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-about-split', [
+				'variant'   => 'panel',
+				'eyebrow'   => "About $name",
+				'headline'  => 'A partnership, not a placement.',
+				'body'      => "We exist to find you the best technical commercial talent on the market — and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
+				'image'     => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt' => $c['hero']['alt'],
+				'grayscale' => 'yes',
+				'panel_bg'  => '#ffffff',
+				'stats'     => [
+					[ '_id' => self::eid(), 'value' => '94%', 'label' => 'Clients hire with us a second time' ],
+					[ '_id' => self::eid(), 'value' => $c['stats'][0]['value'], 'label' => $c['stats'][0]['label'] ],
+					[ '_id' => self::eid(), 'value' => '1:1', 'label' => 'Consultant handles brief to offer' ],
+				],
+				'cta_text'  => "How $name works",
+				'cta_link'  => [ 'url' => '/about' ],
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-process-rail', [
+				'layout'    => 'cards3',
+				'bg'        => 'muted',
+				'eyebrow'   => 'Hiring solutions',
+				'heading'   => "Sized to the project.\nBuilt for the market.",
+				'side_text' => "We construct a tailored hiring plan to meet your requirements — whether you're filling one role or building an entire commercial team.",
+				'items'     => [
+					[ '_id' => self::eid(), 'title' => 'Engaged Search', 'kicker' => 'Our flagship model',
+					  'body' => 'A committed partnership with a structured process — market mapping, verified shortlists, offer management. Built to remove the chance of failure and get it right first time. 100% success rate on the Engage model.',
+					  'bullets' => "Exclusive partnership\nStructured milestones\nFrequent read-outs" ],
+					[ '_id' => self::eid(), 'title' => 'Retained Executive Search', 'kicker' => 'Director and C-suite mandates',
+					  'body' => "Discreet, confidential search for VP, MD, director and C-suite appointments. Off-market approaches, NDA-protected mandates and full lifecycle stakeholder management for the roles that can't be advertised.",
+					  'bullets' => "Retained, fully confidential\nNDA-protected searches\nStakeholder & offer management" ],
+					[ '_id' => self::eid(), 'title' => 'Team Builds', 'kicker' => 'Partnerships, not placements',
+					  'body' => 'When a new plant, project or region needs staffing from the ground up — we build the whole team. Proactively, against your timeline, reducing time-to-hire and the cost of the empty seat.',
+					  'bullets' => "Land-and-expand\nContract and permanent\nAgainst your project timeline" ],
+				],
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-feature-row', [
+				'variant' => 'stats',
+				'items'   => array_map( fn( $st ) => [ '_id' => self::eid(), 'icon' => '', 'title' => $st['value'], 'body' => $st['label'] ], $c['stats'] ),
+			] ) ], 'verto-bs' ),
+			self::section( [ $team_strip ], 'verto-bs' ),
+			$contact( 'Talk to us', 'Tell us what you need to build.', $co['bullets'] ),
+		];
+		self::upsert_page( 'clients', 'Clients', $clients );
+
+		/* ── CANDIDATES (prototype for-candidates) ── */
+		$ca         = $c['audiences']['candidate'];
+		$candidates = [
+			self::section( [ self::widget( 'verto-quote-band', [
+				'image'          => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt'      => $c['hero']['alt'],
+				'overlay'        => 'hero-right',
+				'pad'            => 'hero',
+				'align'          => 'right',
+				'parallax_speed' => 0.3,
+				'eyebrow'        => 'For candidates',
+				'eyebrow_style'  => 'brand',
+				'heading_pre'    => $ca['headline'],
+				'heading_accent' => '',
+				'heading_post'   => '',
+				'body'           => $ca['body'],
+				'cta1_text'      => 'Start a conversation',
+				'cta1_link'      => [ 'url' => '#contact' ],
+				'cta2_text'      => "About $name",
+				'cta2_link'      => [ 'url' => '/about' ],
+				'stat_value'     => '',
+				'stat_label'     => '',
+			] ) ], 'verto-bs' ),
+			self::section( [ self::widget( 'verto-about-split', [
+				'variant'   => 'panel',
+				'reverse'   => 'yes',
+				'eyebrow'   => 'Represented properly',
+				'headline'  => 'Sold on your merits.',
+				'body'      => "A job posted on LinkedIn gets hundreds of CVs. Working with $name means you and your experience are put front and centre — sold to the hiring manager before your first interview.\n\nWe only call when there's a role genuinely worth your time. Honest feedback, no fluff, no promises we can't deliver.",
+				'image'     => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt' => $c['hero']['alt'],
+				'grayscale' => 'yes',
+				'panel_bg'  => '#ffffff',
+				'stats'     => [
+					[ '_id' => self::eid(), 'value' => '72h',  'label' => 'First feedback after your intro call' ],
+					[ '_id' => self::eid(), 'value' => '100%', 'label' => 'Confidential — always' ],
+					[ '_id' => self::eid(), 'value' => '1:1',  'label' => 'Same consultant, brief to offer' ],
+				],
+				'cta_text'  => "About $name",
+				'cta_link'  => [ 'url' => '/about' ],
+			] ) ], 'verto-bs' ),
+			self::section( [ $team_strip ], 'verto-bs' ),
+			$contact( 'Start a conversation', 'A confidential chat. No spam, no fluff.', $ca['bullets'] ),
+		];
+		self::upsert_page( 'candidates', 'Candidates', $candidates );
+
+		/* ── INSIGHTS (posts archive page) ── */
+		$pages = get_option( self::PAGES_OPTION, [] );
+		if ( empty( $pages['insights'] ) || ! get_post( $pages['insights'] ) ) {
+			$insights_id = wp_insert_post( [
+				'post_title'  => 'Insights',
+				'post_name'   => 'insights',
+				'post_type'   => 'page',
+				'post_status' => 'publish',
+			] );
+			$pages['insights'] = $insights_id;
+			update_option( self::PAGES_OPTION, $pages );
+		}
+		update_option( 'page_for_posts', $pages['insights'] );
+
+		/* Front page */
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $home_id );
+	}
+
+	/** Brand-site Primary menu: Home · About · Clients · Candidates · Insights. */
+	private static function setup_brand_menu( string $brand ): void {
+		$menu    = wp_get_nav_menu_object( 'Primary' );
+		$menu_id = $menu ? $menu->term_id : wp_create_nav_menu( 'Primary' );
+
+		foreach ( (array) wp_get_nav_menu_items( $menu_id, [ 'post_status' => 'any' ] ) as $item ) {
+			if ( $item ) wp_delete_post( $item->ID, true );
+		}
+
+		$pages = get_option( self::PAGES_OPTION, [] );
+		$order = [
+			'home'       => 'Home',
+			'about'      => 'About',
+			'clients'    => 'Clients',
+			'candidates' => 'Candidates',
+			'insights'   => 'Insights',
+		];
+		$i = 1;
+		foreach ( $order as $slug => $title ) {
+			if ( empty( $pages[ $slug ] ) ) continue;
+			wp_update_nav_menu_item( $menu_id, 0, [
+				'menu-item-title'     => $title,
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $pages[ $slug ],
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
+				'menu-item-position'  => $i++,
+			] );
+		}
+		$locations = get_theme_mod( 'nav_menu_locations', [] );
+		$locations['verto-primary'] = $menu_id;
+		set_theme_mod( 'nav_menu_locations', $locations );
 	}
 
 	private static function setup_menu(): void {
