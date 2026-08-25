@@ -254,11 +254,29 @@ class Verto_Installer {
 	 *  category chips on the WGO hub — all four terms are created so the
 	 *  client can file new stories straight away. */
 	private static function seed_posts( array $media ): void {
-		if ( get_option( 'verto_installer_posts' ) ) return;
 		$cat_ids = [];
 		foreach ( [ 'Trips', 'Wins', 'Community', 'News' ] as $cat_name ) {
 			$t = wp_insert_term( $cat_name, 'category' );
 			$cat_ids[ $cat_name ] = is_wp_error( $t ) ? ( get_term_by( 'name', $cat_name, 'category' )->term_id ?? 0 ) : $t['term_id'];
+		}
+		// Migration: earlier builds filed the seeded posts under "Life at Verto" —
+		// on rebuild, move any seeded post still in that category to its new one.
+		$existing = get_option( 'verto_installer_posts' );
+		if ( $existing ) {
+			$map = [ 'Sunday Times' => 'Wins', 'Prague' => 'Trips', 'Ibiza' => 'Trips' ];
+			foreach ( (array) $existing as $pid ) {
+				$post = get_post( $pid );
+				if ( ! $post ) continue;
+				foreach ( $map as $needle => $cat ) {
+					if ( str_contains( $post->post_title, $needle ) && ! empty( $cat_ids[ $cat ] ) ) {
+						wp_set_post_categories( $pid, [ $cat_ids[ $cat ] ] );
+						break;
+					}
+				}
+			}
+			$old = get_term_by( 'name', 'Life at Verto', 'category' );
+			if ( $old && 0 === (int) $old->count ) wp_delete_term( $old->term_id, 'category' );
+			return; // posts already seeded — categories now corrected
 		}
 		$posts = [
 			[ 'title' => 'Verto named in The Sunday Times Best Places to Work 2026',
