@@ -44,7 +44,7 @@ class Verto_Widget_Timeline extends \Elementor\Widget_Base {
 
 	protected function render() {
 		$s = $this->get_settings_for_display();
-		echo '<div class="verto-timeline"><div class="verto-timeline__track">';
+		echo '<div class="verto-timeline" tabindex="0" aria-label="Company timeline — scrolls automatically, swipe or scroll to browse"><div class="verto-timeline__track">';
 		foreach ( $s['items'] as $item ) {
 			printf(
 				'<div class="verto-timeline__item%s"><div class="verto-timeline__dot"></div><div class="verto-timeline__date">%s</div><div class="verto-timeline__title">%s</div></div>',

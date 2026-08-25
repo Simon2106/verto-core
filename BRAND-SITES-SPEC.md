@@ -75,4 +75,52 @@ in brands.$brand.index.tsx). Port verbatim into installer defaults.
       case nav, "Our Solutions" → /clients CTA (gradient on modulr);
       footer.php ports BrandFooter (Explore / Other brands / Connect);
       home.php doubles as the brand Insights archive header.
-- [ ] Forge guide modulr-wp.on-forge.com (VERTO_BRAND in wp-config)
+- [x] Edison Lux brand data — brand_content('edison-lux') filled verbatim from
+      BRANDS['edison-lux'] (+ FEATURES/HERO_SUB/SPECIALISM_ICONS); hero scale
+      1.18 / offset 0 (non-modulr parallax); 3 edison insight posts seeded
+      (category edison-lux, insight-power / insight-epc images); team_focus
+      "US power & energy search."; icons.php gained flame / wind / hard-hat /
+      wrench / atom / briefcase. Edison has no pillars / values / journey /
+      process / testimonials / caseStudy / sectorsServed in the prototype —
+      those sections are conditionally omitted there, so the ModulR-shaped
+      pages are already exact.
+- [x] Edison Lux assets into assets/import/ — edison-hero.webp (dam.webp),
+      edison-pylon.webp (pylon-2.webp landingAbout), insight-power.jpg,
+      insight-epc.jpg; import_media() keys edison_hero / edison_pylon /
+      insight_power / insight_epc; header logo via imported edison-lux-logo.png
+      (logo_edison); tokens-edison-lux.css already carries every var the
+      widgets use; gradient stat-card override already in verto-ui.css.
+- [x] Forge guide modulr-wp.on-forge.com (VERTO_BRAND in wp-config) —
+      MODULR-DEPLOY.md; vertek-wp / edisonlux-wp steps in BRAND-DEPLOY.md.
+- [x] Vertek brand data — brand_content('vertek') filled verbatim from
+      BRANDS['vertek'] (+ FEATURES/HERO_SUB/SPECIALISM_ICONS); hero
+      "Engineering / what's next", scale 1.18 / offset 0; about_image falls
+      back to vertek_hero (no images.landingAbout in the prototype); 3
+      vertek insight posts seeded (category vertek, insight-fluidpower /
+      insight-manufacturing / insight-hvac images — 4th prototype insight
+      "Interview prep" left out, three-per-brand convention); team_focus
+      "Technical sales & engineering search."; icons.php gained gauge /
+      thermometer / cog / factory / cpu / line-chart.
+- [x] Vertek-ONLY sections wired (prototype renders these conditionally;
+      modulr/edison have no data for them): About = pillars (process-rail
+      cards3) + values (new verto-values-accordion widget) + journey
+      (process-rail line_style=journey, brand-colour years); Clients =
+      process (process-rail line) + caseStudy (quote-band case_client/
+      case_sector + Challenge/Solution/Result grid) + testimonials
+      (quote-band quotes_style=light); Candidates = sectorsServed
+      (chip-grid) + candidateProcess (process-rail zigzag) + testimonials
+      slice(2,4) (quote-band testimonial overlay). Page builders stay
+      brand-agnostic — sections appear for any brand that adds the data.
+- [x] Vertek assets into assets/import/ — vertek-hero.jpg (already present,
+      now registered as vertek_hero) + insight-fluidpower/-manufacturing/
+      -hvac.jpg; tokens-vertek.css gained --card/--card-foreground/
+      --brand-steel (+ flat --brand-gradient alias — guidelines: Signal Red
+      is a signal, not a field, so no real gradient); verto-ui.css gained
+      the body.verto-brand-vertek scope (Saira SemiBold uppercase display,
+      JetBrains Mono eyebrows, squared CTAs).
+- [x] v0.9.0 group-site design round (both codebases): WGO magazine hub
+      (featured newest story + category chips Trips/Wins/Community/News +
+      Stories video placeholders + Instagram) in home.php / whats-going-on
+      .tsx; About photo collage (verto-collage widget) + Community & DE&I
+      placeholder cards; timeline auto-carousel (verto-effects.js §8 /
+      TimelineCarousel in about.tsx). Rebuild required on existing installs.

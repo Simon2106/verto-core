@@ -24,6 +24,14 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 			'options' => [ 'cards3' => '3-up staggered cards', 'zigzag' => '4-up zigzag cards', 'line' => 'Horizontal rail' ],
 			'default' => 'cards3',
 		] );
+		$this->add_control( 'line_style', [
+			'label' => 'Rail style (Horizontal rail only)', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [
+				'process' => 'Process — 01 number + title',
+				'journey' => 'Journey — brand-colour year, no number',
+			],
+			'default' => 'process',
+		] );
 		$this->add_control( 'bg', [
 			'label' => 'Section background', 'type' => \Elementor\Controls_Manager::SELECT,
 			'options' => [ 'default' => 'Page background', 'muted' => 'Muted' ], 'default' => 'muted',
@@ -76,17 +84,23 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 					<?php if ( $s['side_text'] ) : ?><p class="vbs-rail__side"><?php echo esc_html( $s['side_text'] ); ?></p><?php endif; ?>
 				</div>
 
-				<?php if ( 'line' === $layout ) : ?>
+				<?php if ( 'line' === $layout ) :
+					$journey = 'journey' === ( $s['line_style'] ?? 'process' );
+					?>
 					<div class="vbs-rail__track">
 						<div class="vbs-rail__connector" style="background:color-mix(in oklab, var(--brand) 30%, transparent);"></div>
 						<div class="vbs-rail__cols">
 							<?php foreach ( $s['items'] as $i => $it ) : ?>
 								<div class="vbs-rail__stop">
 									<span class="vbs-rail__dotmark" style="background:var(--brand);"></span>
-									<div class="vbs-rail__stophead">
-										<div class="vbs-rail__num" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
-										<h3 class="vbs-rail__stoptitle"><?php echo esc_html( $it['title'] ); ?></h3>
-									</div>
+									<?php if ( $journey ) : // prototype journey rail: brand-colour year, no 01 index ?>
+										<div class="vbs-rail__year" style="color:var(--brand);"><?php echo esc_html( $it['title'] ); ?></div>
+									<?php else : ?>
+										<div class="vbs-rail__stophead">
+											<div class="vbs-rail__num" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
+											<h3 class="vbs-rail__stoptitle"><?php echo esc_html( $it['title'] ); ?></h3>
+										</div>
+									<?php endif; ?>
 									<p class="vbs-rail__body"><?php echo esc_html( $it['body'] ); ?></p>
 								</div>
 							<?php endforeach; ?>

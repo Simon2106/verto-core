@@ -90,12 +90,14 @@ class Verto_Installer {
 			'summit_video'  => 'summit-video.mp4',
 			'summit_poster' => 'summit-poster.jpg',
 			'logo_edison'   => 'edison-lux-logo.png',
+			'logo_edison_colour' => 'edison-lux-logo-colour.png',
 			'logo_modulr'   => 'modulr-logo.svg',
 			'logo_modulr_png' => 'modulr-logo.png',
 			'logo_vertek'   => 'vertek-logo-light.png',
 			'ibiza8'        => 'ibiza8.jpg',
 			'ibiza9'        => 'ibiza9.jpg',
 			'award_bptw'    => 'BPTW_2026_SMALL_ORGANISATION_WHITE.png',
+			'award_recruiter' => 'weve-been-shortlisted.png',
 			'skyline_uk'    => 'skyline-uk.jpg',
 			'skyline_us'    => 'skyline-us.jpg',
 			'skyline_eu'    => 'skyline-eu.jpg',
@@ -105,6 +107,17 @@ class Verto_Installer {
 			'about_image'       => 'about-image.jpg',
 			'insight_datacentre'   => 'insight-datacentre.jpg',
 			'insight_architecture' => 'insight-architecture.jpg',
+			// Brand-site media (Edison Lux)
+			'edison_hero'   => 'edison-hero.webp',
+			'edison_pylon'  => 'edison-pylon.webp',
+			'insight_power' => 'insight-power.jpg',
+			'insight_epc'   => 'insight-epc.jpg',
+			// Brand-site media (Vertek) — hero doubles as the landing-about
+			// image (no images.landingAbout override in the prototype data)
+			'vertek_hero'           => 'vertek-hero.jpg',
+			'insight_fluidpower'    => 'insight-fluidpower.jpg',
+			'insight_manufacturing' => 'insight-manufacturing.jpg',
+			'insight_hvac'          => 'insight-hvac.jpg',
 		];
 
 		foreach ( $files as $key => $file ) {
@@ -209,7 +222,7 @@ class Verto_Installer {
 			$base = pathinfo( $file, PATHINFO_FILENAME );
 			// only person photos: brand-prefixed or the three leaders
 			$is_person = isset( $special[ $base ] ) || preg_match( '/^(edison|vertek|modulr)-/', $base );
-			if ( ! $is_person || in_array( $base, [ 'skyline-uk', 'skyline-us', 'skyline-eu', 'ibiza8', 'ibiza9', 'summit-poster', 'vertek-hero', 'modulr-hero', 'modulr-datacentre', 'vertek-logo-light' ], true ) ) continue;
+			if ( ! $is_person || in_array( $base, [ 'skyline-uk', 'skyline-us', 'skyline-eu', 'ibiza8', 'ibiza9', 'summit-poster', 'vertek-hero', 'modulr-hero', 'modulr-datacentre', 'vertek-logo-light', 'edison-hero', 'edison-pylon', 'edison-lux-logo' ], true ) ) continue;
 			$name_part = preg_replace( '/^(edison|vertek|modulr)-/', '', $base );
 			$name      = ucwords( str_replace( '-', ' ', $name_part ) );
 			$meta      = $special[ $base ] ?? [ 'role' => 'Consultant' ];
@@ -236,24 +249,31 @@ class Verto_Installer {
 		update_option( 'verto_installer_team', 1 );
 	}
 
-	/** Seed the three "What's going on" placeholder posts (once). */
+	/** Seed the three "What's going on" placeholder posts (once).
+	 *  Magazine categories (Trips / Wins / Community / News) power the
+	 *  category chips on the WGO hub — all four terms are created so the
+	 *  client can file new stories straight away. */
 	private static function seed_posts( array $media ): void {
 		if ( get_option( 'verto_installer_posts' ) ) return;
-		$cat = wp_insert_term( 'Life at Verto', 'category' );
-		$cat_id = is_wp_error( $cat ) ? ( get_term_by( 'name', 'Life at Verto', 'category' )->term_id ?? 0 ) : $cat['term_id'];
+		$cat_ids = [];
+		foreach ( [ 'Trips', 'Wins', 'Community', 'News' ] as $cat_name ) {
+			$t = wp_insert_term( $cat_name, 'category' );
+			$cat_ids[ $cat_name ] = is_wp_error( $t ) ? ( get_term_by( 'name', $cat_name, 'category' )->term_id ?? 0 ) : $t['term_id'];
+		}
 		$posts = [
 			[ 'title' => 'Verto named in The Sunday Times Best Places to Work 2026',
 			  'excerpt' => "Officially one of the UK's best small organisations to work for. Six years from a lockdown start-up to a Sunday Times listing — built on the same five values we started with.",
-			  'image' => 'award_bptw' ],
+			  'image' => 'award_bptw', 'category' => 'Wins' ],
 			[ 'title' => 'Prague 2026 — the whole company, one incentive trip',
 			  'excerpt' => 'Our second international incentive trip. Everyone who hit target, flights and all — this is what the 2× annual holiday incentive actually looks like.',
-			  'image' => 'ibiza8' ],
+			  'image' => 'ibiza8', 'category' => 'Trips' ],
 			[ 'title' => 'Next stop: Ibiza — the 2026 summer incentive revealed',
 			  'excerpt' => 'Barcelona 2025. Prague, January 2026. And this summer, the team that delivers gets Ibiza. The countdown is on.',
-			  'image' => 'ibiza9' ],
+			  'image' => 'ibiza9', 'category' => 'Trips' ],
 		];
 		$ids = [];
 		foreach ( $posts as $post ) {
+			$cat_id = $cat_ids[ $post['category'] ] ?? 0;
 			$id = wp_insert_post( [
 				'post_title'   => $post['title'],
 				'post_excerpt' => $post['excerpt'],
@@ -290,17 +310,24 @@ class Verto_Installer {
 				] ),
 				self::widget( 'verto-brand-tiles', [ 'items' => self::brand_tiles_items( $media ) ] ),
 			], 'verto-muted verto-container-pad' ),
+			// Client feedback round 3, item 3 — home order: Hero → Brands →
+			// Jobs → What's Going On → Employee voices/quotes + awards →
+			// Values → Instagram. Standalone sector coverage is gone from
+			// Home (it lives on the brand tiles' hover faces); it stays on About.
+			self::section( [ self::widget( 'verto-jobs-board' ) ], 'verto-ink verto-container-pad' ),
 			self::section( [
 				self::widget( 'verto-section-intro', [
-					'eyebrow' => "Verto's values",
+					'eyebrow' => "What's going on",
 					'lines'   => [
-						[ '_id' => self::eid(), 'line' => 'Five values.' ],
-						[ '_id' => self::eid(), 'line' => 'Every desk, every day.' ],
+						[ '_id' => self::eid(), 'line' => 'Life inside' ],
+						[ '_id' => self::eid(), 'line' => 'the group.' ],
 					],
-					'body' => "Every desk runs its own market and its own network. What's shared is what we stand for — the five values every person across the group works by.",
+					'body'      => 'Incentive trips, awards, sales days and everything in between — straight from the team, not a marketing department.',
+					'link_text' => "See everything that's going on",
+					'link'      => [ 'url' => '/whats-going-on' ],
 				] ),
-				self::widget( 'verto-values' ),
-			], 'verto-ink verto-glow verto-container-pad verto-container-pad--values' ),
+				self::widget( 'verto-posts-grid' ),
+			], 'verto-container-pad' ),
 			self::section2( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'What employees say about us',
@@ -323,22 +350,26 @@ class Verto_Installer {
 				self::widget( 'verto-quotes' ),
 			], 'verto-ink verto-quotes-strip' ),
 			self::section( [
-				self::widget( 'verto-awards-strip', [ 'badge' => self::media_setting( $media, 'award_bptw' ) ] ),
+				self::widget( 'verto-awards-strip', [
+					'badge'  => self::media_setting( $media, 'award_bptw' ),
+					'badge2' => self::media_setting( $media, 'award_recruiter' ),
+				] ),
 			], 'verto-ink verto-awards-pad' ),
+			// Values moved below the voices/awards block (round 3, item 3 swap
+			// with What's Going On, which now sits directly under the jobs board).
 			self::section( [
 				self::widget( 'verto-section-intro', [
-					'eyebrow' => "What's going on",
+					'eyebrow' => "Verto's values",
 					'lines'   => [
-						[ '_id' => self::eid(), 'line' => 'Life inside' ],
-						[ '_id' => self::eid(), 'line' => 'the group.' ],
+						[ '_id' => self::eid(), 'line' => 'Five values.' ],
+						[ '_id' => self::eid(), 'line' => 'Every desk, every day.' ],
 					],
-					'body'      => 'Incentive trips, awards, sales days and everything in between — straight from the team, not a marketing department.',
-					'link_text' => "See everything that's going on",
-					'link'      => [ 'url' => '/whats-going-on' ],
+					'body' => "Every desk runs its own market and its own network. What's shared is what we stand for — the five values every person across the group works by.",
 				] ),
-				self::widget( 'verto-posts-grid' ),
-			], 'verto-container-pad' ),
-			self::section( [ self::widget( 'verto-jobs-board' ) ], 'verto-ink verto-container-pad' ),
+				self::widget( 'verto-values' ),
+			], 'verto-ink verto-glow verto-container-pad verto-container-pad--values' ),
+			// Client feedback round 2, item 13: Instagram feed on the homepage.
+			self::section( [ self::widget( 'verto-socials' ) ], 'verto-container-pad' ),
 		];
 		// One-time migration: the careers page used to live at /why-join-us.
 		$existing = get_option( self::PAGES_OPTION, [] );
@@ -424,16 +455,15 @@ class Verto_Installer {
 					],
 					'body' => 'We opened our doors in February 2020 — and you know what happened next. Powered by determination and a lack of other options, Verto took its first steps as many others shut down. Today that lockdown business is all grown up: three specialist brands, a life sciences desk, and teams across the UK and US.',
 				] ),
-				self::widget( 'image', [
-					'image'        => self::media_setting( $media, 'ibiza9' ),
-					'image_size'   => 'full',
-					'_css_classes' => 'verto-rounded-photo',
-				] ),
-				self::widget( 'heading', [
-					'title'        => 'Ibiza — the 2026 summer incentive',
-					'header_size'  => 'div',
-					'_css_classes' => 'verto-photo-caption',
-				] ),
+				// Photo collage replaces the single Ibiza hero image (approved design).
+				self::widget( 'verto-collage', [ 'items' => [
+					[ '_id' => self::eid(), 'size' => 'big',  'image' => self::media_setting( $media, 'ibiza9' ),        'alt' => 'The Verto team in Ibiza',            'caption' => 'Ibiza — the 2026 summer incentive' ],
+					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_poster' ), 'alt' => 'The Verto summer summit',            'caption' => 'The summer summit' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'ibiza8' ),        'alt' => 'The team on an incentive trip',      'caption' => '' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'about_image' ),   'alt' => 'The team at work',                   'caption' => '' ],
+					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'skyline_uk' ),    'alt' => 'Solent, UK — where it started',      'caption' => 'Solent, UK' ],
+					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'skyline_us' ),    'alt' => 'Austin, TX — the US build-out',      'caption' => 'Austin, TX' ],
+				] ] ),
 			], 'verto-container-pad' ),
 			self::section2( [
 				self::widget( 'verto-section-intro', [
@@ -470,6 +500,8 @@ class Verto_Installer {
 				] ),
 				self::widget( 'verto-brand-tiles', [ 'items' => self::brand_tiles_items( $media ) ] ),
 			], 'verto-muted verto-container-pad' ),
+			// Sector coverage duplicated onto About (client feedback round 2, item 9).
+			self::section( [ self::widget( 'verto-sector-coverage' ) ], 'verto-muted verto-container-pad' ),
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'The Verto standard',
@@ -503,6 +535,16 @@ class Verto_Installer {
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Everyone. Not just the leadership page.' ] ],
 				] ),
 				self::widget( 'verto-team-grid', [ 'mode' => 'all' ] ),
+			], 'verto-container-pad' ),
+			// Community & DE&I — placeholder cards awaiting client photography
+			// (approved design; sits directly before the socials section).
+			self::section( [
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'Community & DE&I',
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'More than the numbers.' ] ],
+					'body'    => 'Gala nights, fundraising and a genuine commitment to building a diverse group — the parts of Verto that never make a sales deck.',
+				] ),
+				self::widget( 'text-editor', [ 'editor' => self::community_cards_html() ] ),
 			], 'verto-container-pad' ),
 			self::section( [ self::widget( 'verto-socials', [ 'eyebrow' => 'Behind the scenes', 'heading' => 'Us, off the phones.' ] ) ], 'verto-container-pad' ),
 		];
@@ -542,18 +584,48 @@ class Verto_Installer {
 		update_option( 'page_on_front', $home_id );
 	}
 
+	/** Community & DE&I placeholder cards (⚠ photos coming from client). */
+	private static function community_cards_html(): string {
+		$cards = [
+			[ 'Gala nights', 'Black-tie charity galas — including the night that raised £15,504 for the Amelia-Mae Foundation.' ],
+			[ 'Charity & fundraising', 'Every office backs a cause the team chooses — fundraisers, sponsored events and hands-on volunteering through the year.' ],
+			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments — and the numbers behind them — publish here soon.' ],
+		];
+		$html = '<div class="verto-community">';
+		foreach ( $cards as [ $title, $body ] ) {
+			$html .= '<article class="verto-community__card">'
+				. '<div class="verto-community__ph">'
+				. ( function_exists( 'verto_icon' ) ? verto_icon( 'camera' ) : '' )
+				. '<span class="verto-community__phnote">Photos coming from client</span>'
+				. '</div>'
+				. '<div class="verto-community__body">'
+				. '<h3 class="verto-community__title">' . esc_html( $title ) . '</h3>'
+				. '<p class="verto-community__text">' . esc_html( $body ) . '</p>'
+				. '</div>'
+				. '</article>';
+		}
+		return $html . '</div>';
+	}
+
 	private static function brand_tiles_items( array $media ): array {
 		return [
 			[ '_id' => self::eid(), 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
-			  'invert_logo' => 'yes',
-			  'logo' => self::media_setting( $media, 'logo_edison' ),
+			  // Client feedback round 3, item 2: the tile shows the COLOURED
+			  // Edison primary logo (gradient mark + dark text). It clashes on
+			  // the round-2 gradient face, so the face is white/very-light with
+			  // dark text and no blue top stripe.
+			  'light_face' => 'yes',
+			  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
+			  'logo' => self::media_setting( $media, 'logo_edison_colour' ),
 			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
 			  'link' => [ 'url' => '#' ] ],
 			[ '_id' => self::eid(), 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
+			  'sectors' => "Hyperscale Data Centres\nUS Architecture\nMEP Engineering\nInterior Design & Fit-out",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
 			  'positioning' => "ModulR connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses and award-winning practices.",
 			  'link' => [ 'url' => '#' ] ],
 			[ '_id' => self::eid(), 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60', 'bg' => '#0E1013',
+			  'sectors' => "Fluid Power & Hydraulics\nHVAC & Refrigeration\nAdvanced Manufacturing\nInstrumentation & Controls",
 			  'logo' => self::media_setting( $media, 'logo_vertek' ),
 			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US.',
 			  'link' => [ 'url' => '#' ] ],
@@ -678,7 +750,234 @@ class Verto_Installer {
 					  'image' => 'insight_architecture' ],
 				],
 			],
-			// 'vertek' and 'edison-lux' land here later — data arrays only.
+			'edison-lux' => [
+				'name'        => 'Edison Lux',
+				'focus'       => 'US Energy Staffing',
+				'focus_lower' => 'us energy staffing',
+				'hero'        => [
+					'line1'  => 'Powering progress.',
+					'line2'  => 'Together',
+					'sub'    => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
+					'image'  => 'edison_hero',
+					'alt'    => 'Hydroelectric dam releasing water through spillway gates with forested mountains behind',
+					'scale'  => 1.18,
+					'offset' => 0,
+				],
+				'features' => [
+					[ 'icon' => 'users',       'title' => "US Energy.\nNothing Else.",   'body' => "It's all we do — so no client brief sits outside our knowledge base." ],
+					[ 'icon' => 'star',        'title' => 'Basement To Boardroom',       'body' => 'Control room operators, shift supervisors, VPs, C-suite — the full talent hierarchy staffed.' ],
+					[ 'icon' => 'handshake',   'title' => "World-Class\nNPS",            'body' => 'Feedback captured from every candidate and client interaction — and it shows.' ],
+					[ 'icon' => 'trending-up', 'title' => "100% Engaged\nSuccess",       'body' => "Speed and accuracy together — because when a COD is at risk, you shouldn't have to choose." ],
+				],
+				'about'        => [
+					'headline' => 'One market, known completely.',
+					'mission'  => 'Deliver talent solutions with the precision the industry demands — speed and accuracy together, so when a plant is short-staffed or a COD is at risk you never have to choose between them.',
+					'vision'   => "To be the staffing partner the US energy sector reaches out to first — the most knowledgeable and connected specialist in America's energy transition.",
+					'purpose'  => 'Named for the man who lit up the world, Edison Lux shines a light on the talent that powers everything — bridging the energy skills gap before it becomes a crisis.',
+				],
+				'about_image'     => 'edison_pylon',
+				'about_image_alt' => 'Silhouetted electricity transmission pylons at sunset with a substation on the horizon',
+				'stats' => [
+					[ 'value' => '100%',                 'label' => 'Success rate on engaged search' ],
+					[ 'value' => 'Basement → Boardroom', 'label' => 'Operator to C-suite coverage' ],
+					[ 'value' => 'US-only',              'label' => 'Undivided sector focus' ],
+				],
+				'specialisms' => [
+					[ 'icon' => 'flame',     'title' => 'Critical & Mission-Critical Power',   'description' => 'Control rooms, O&M and engineering leadership for facilities where uptime is non-negotiable.' ],
+					[ 'icon' => 'wind',      'title' => 'Combined Cycle & Gas Generation',     'description' => 'Combined cycle, simple cycle, recips and gas compression — outages, upgrades and permanent operations.' ],
+					[ 'icon' => 'hard-hat',  'title' => 'Renewables & Energy Transition',      'description' => 'Solar, wind, battery storage, hydrogen and RNG — construction, commissioning and operations.' ],
+					[ 'icon' => 'wrench',    'title' => 'Biomass, EFW & Waste-to-Energy',      'description' => 'Biomass, EfW, coal and CHP — teams that know the fuel, the plant and the regulations.' ],
+					[ 'icon' => 'atom',      'title' => 'Nuclear',                             'description' => 'New build, SMR, fusion, decommissioning and defence — engineering, operations and maintenance.' ],
+					[ 'icon' => 'briefcase', 'title' => 'EPC — Construction & Commissioning',  'description' => "FEED, detailed design, construction, commissioning and project delivery." ],
+				],
+				'audiences' => [
+					'company' => [
+						'headline' => 'The right people. The right level. Zero compromise on calibre.',
+						'body'     => "Whether you're staffing a single critical seat or building a team for a new asset, one conversation is all it takes to put our network to work. VPs of engineering and plant owners don't have time to run a search — we run it for you.",
+						'bullets'  => "Engaged search — our flagship model, 100% success rate\nRetained executive search for boardroom-level appointments\nTeam builds for new plants, projects and regions\nDirect hire and contract across the full talent hierarchy",
+						'cta'      => 'Staff your asset',
+					],
+					'candidate' => [
+						'headline' => "Power your career.\nOn your terms.",
+						'body'     => "Shift supervisor moving up. EPC director chasing COD. VP of engineering eyeing the next chapter. We only call when there's a role worth your time — and we sell your experience before you sit in an interview.",
+						'bullets'  => "Confidential, partnership-led conversations\nRoles across critical power, renewables, EPC and nuclear\nRelocation, comp and market intelligence guidance\nWe sell your experience before the first interview",
+						'cta'      => 'Power your career',
+					],
+				],
+				'about_hero' => [ 'pre' => 'One sector.', 'accent' => "\nUS energy, end to end.", 'post' => 'Lived, not learned.' ],
+				'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators and shift supervisors to the directors and C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
+				'what_we_do' => [
+					'headline'   => 'Embedded in the industries that keep the lights on.',
+					'paragraphs' => "Critical power, combined-cycle and gas generation, renewables and energy transition, biomass and EFW, nuclear, and EPC construction — these are the corners of US energy we know inside out. Every consultant lives in the sector, not adjacent to it.\n\nFor plant owners, developers, EPCs and VPs of engineering, we operate as an extension of the leadership team — discreet, accountable and never transactional. When a COD is at risk or a plant is short-staffed, one conversation is all it takes.",
+				],
+				'proof' => [
+					'100% success rate on engaged search assignments',
+					'World-class NPS across operators, developers and EPCs',
+					'Feedback captured from every candidate and client interaction',
+					'US-only focus — no client brief sits outside our knowledge base',
+				],
+				'team_focus' => 'US power & energy search.',
+				'insights'   => [
+					[ 'title' => "The US Energy Skills Gap: who's hiring, who's leaving, and what it costs",
+					  'excerpt' => "America is building more generating capacity than at any point in a generation. The talent pipeline isn't keeping up — here's what plant owners and EPCs need to know in 2026.",
+					  'image' => 'insight_power' ],
+					[ 'title' => 'CCGT Shift Supervisor Salary Guide — US, 2026',
+					  'excerpt' => 'Base, shift premium, total comp and relocation packages benchmarked across PJM, ERCOT and CAISO.',
+					  'image' => 'insight_power' ],
+					[ 'title' => 'Reducing time-to-COD on large-scale EPC projects',
+					  'excerpt' => "Why the bottleneck is rarely concrete, steel or turbines — and almost always the people you can't find fast enough.",
+					  'image' => 'insight_epc' ],
+				],
+			],
+			'vertek' => [
+				'name'        => 'Vertek',
+				'focus'       => 'Technical Sales, Service & Engineering',
+				'focus_lower' => 'technical sales, service & engineering',
+				'hero'        => [
+					'line1'  => 'Engineering',
+					'line2'  => "what's next",
+					'sub'    => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US. Every consultant owns one product area.',
+					'image'  => 'vertek_hero',
+					'alt'    => 'Cable-stayed bridge at night with crimson motion light trails',
+					'scale'  => 1.18,
+					'offset' => 0,
+				],
+				'features' => [
+					[ 'icon' => 'crosshair',   'title' => 'Product-Owned Desks', 'body' => 'Every consultant owns one product area. Fluid power, HVAC, rotating equipment, automation — no generalists.' ],
+					[ 'icon' => 'bar-chart-3', 'title' => 'Verto Engage',        'body' => 'Our committed model, 100% success rate. Structured process, guaranteed shortlist, get it right first time.' ],
+					[ 'icon' => 'shield',      'title' => '94% Second Hire',     'body' => "Nearly all our clients come back. We're an extension of the commercial team, not a vendor." ],
+					[ 'icon' => 'leaf',        'title' => '14,000+ On CRM',      'body' => "A specialist database of technical sales, service and engineering talent LinkedIn can't surface." ],
+				],
+				'about'        => [
+					'headline' => 'One product area, per consultant. Every time.',
+					'mission'  => 'Deliver the right hire, first time — combining a 14,000-strong specialist database with a process refined over years so speed never comes at the cost of quality.',
+					'vision'   => 'To be the firm every VP of Sales, MD and founder in technical sales and engineering reaches out to first — on both sides of the Atlantic.',
+					'purpose'  => "Product knowledge can't be faked. Neither can ours. We exist so that manufacturers and distributors never have to explain their own product to their recruiter — and so that engineers get sold on their merits.",
+				],
+				// No images.landingAbout override in the prototype — the hero
+				// image doubles as the landing about visual (getBrandImage fallback).
+				'about_image'     => 'vertek_hero',
+				'about_image_alt' => 'Cable-stayed bridge at night with crimson motion light trails',
+				'stats' => [
+					[ 'value' => '14,000+', 'label' => 'Technical sales candidates on CRM' ],
+					[ 'value' => '100%',    'label' => 'Success rate on Verto Engage' ],
+					[ 'value' => '94%',     'label' => 'Of clients hire with us again' ],
+				],
+				'specialisms' => [
+					[ 'icon' => 'gauge',       'title' => 'Fluid Power & Flow Control',              'description' => 'Hydraulics, pneumatics, compressed air, pumps, valves, actuators, instrumentation, filtration and seals.' ],
+					[ 'icon' => 'thermometer', 'title' => 'Rotating Equipment & Turbomachinery',     'description' => 'Steam turbines, gas compression, electric motors, gearboxes and power transmission.' ],
+					[ 'icon' => 'cog',         'title' => 'HVAC',                                    'description' => 'Air handlers, ventilation, refrigeration, heat pumps, boilers, plumbing and aftermarket — UK and US.' ],
+					[ 'icon' => 'factory',     'title' => 'CNC & Precision Engineering (US)',        'description' => 'Cutting tools, workholding, toolholding, metrology, CMM and metalworking.' ],
+					[ 'icon' => 'cpu',         'title' => 'Industrial Automation (US)',              'description' => 'Sensors, PLCs, HMI, connectors, automated machinery and conveyors.' ],
+					[ 'icon' => 'line-chart',  'title' => 'Advanced Manufacturing (US)',             'description' => 'Defence, aerospace, space, semiconductor and robotics — ITAR and clearance handled.' ],
+				],
+				'audiences' => [
+					'company' => [
+						'headline' => 'Straightforward. No overpromising. Just the right hire.',
+						'body'     => "Tell us the product, the patch and the profile. We'll tell you honestly whether we can deliver — and then we will. Every consultant specialises by product because our clients and candidates don't generalise either.",
+						'bullets'  => "Verto Engage — our committed model, 100% success rate\nDirect hire across 14,000+ specialist candidates\nTeam builds — land one hire, then scale the function\nFrequent updates, structured briefings, no surprises",
+						'cta'      => 'Build your team',
+					],
+					'candidate' => [
+						'headline' => 'Options, not applications.',
+						'body'     => 'Put a role on a job board and it gets hundreds of resumes. Work with us and it works the other way round — we put you and your experience front and centre, and we sell the opportunity before you sit in an interview.',
+						'bullets'  => "UK, EU and US roles across the product landscape\nTotal comp, equity, progression and work-life on the table\nTime-served engineers and product specialists — spoken to as equals\nHonest feedback. No oversell. No fluff.",
+						'cta'      => 'See live roles',
+					],
+				],
+				'about_hero' => [ 'pre' => 'Product knowledge,', 'accent' => 'one desk at a time.', 'post' => 'Never generalist.' ],
+				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US. Every consultant owns one product area. That's why it works.",
+				'what_we_do' => [
+					'headline'   => 'Embedded in the industries that build the world.',
+					'paragraphs' => "Fluid power, HVAC, rotating equipment, industrial automation and US advanced manufacturing — these are the industries we know inside out. Every consultant specialises in a product area and stays close enough to add genuine insight to every conversation.\n\nFor VPs of Sales, Managing Directors and Founders, we operate as an extension of the leadership team — discreet, accountable and never transactional.",
+				],
+				'proof' => [
+					'100% success rate on Verto Engage',
+					'94% of clients return for a second hire',
+					'14,000+ specialist sales and engineering candidates on the CRM',
+					'Feedback captured from every candidate and client interaction — then acted on',
+				],
+				'team_focus' => 'Technical sales & engineering search.',
+				'insights'   => [
+					[ 'title' => 'Fluid Power Sales Engineer Salary Guide — UK & US, 2026',
+					  'excerpt' => 'Base, OTE, equity and benefit benchmarks across hydraulics, pneumatics and compressed air distributors.',
+					  'image' => 'insight_fluidpower' ],
+					[ 'title' => 'Advanced manufacturing talent trends: defence, semis and robotics',
+					  'excerpt' => 'Where the next wave of US engineering and commercial talent will come from — and what founders are paying to secure it.',
+					  'image' => 'insight_manufacturing' ],
+					[ 'title' => 'The HVAC aftermarket hiring playbook',
+					  'excerpt' => 'Service managers, aftermarket sales leads and field engineers — building the commercial muscle behind the install base.',
+					  'image' => 'insight_hvac' ],
+				],
+				/* ── Vertek-only data (the prototype renders these sections
+				      conditionally; modulr / edison-lux carry none of them) ── */
+				'pillars' => [
+					[ 'title' => 'Product-owned desks',
+					  'body'  => "Every Vertek consultant owns a product area — fluid power, HVAC, rotating equipment, automation, advanced manufacturing. We don't generalise across engineering because our clients and candidates don't. Anyone can post a job spec; very few can tell the difference between a fluid power sales engineer with real product experience and one who just learned the words." ],
+					[ 'title' => 'Partnership, not transaction',
+					  'body'  => "94% of our clients come back. The other 6% haven't had a second role yet. We earn that by understanding the business properly, representing it well in the market and operating as an extension of the commercial team — not a vendor." ],
+					[ 'title' => 'Process over chance',
+					  'body'  => "Structured briefings, frequent updates at every stage and a methodology built over years to get it right first time. Recruitment isn't luck — and our 100% success rate on Verto Engage proves it." ],
+				],
+				'values' => [
+					[ 'title' => 'Straightforward. No overpromising.',
+					  'body'  => "We say what we mean and mean what we say. Candidates are sold on their merits, feedback is honest, and we never promise what we can't deliver." ],
+					[ 'title' => 'Process over chance.',
+					  'body'  => "Great recruitment isn't luck. Our methodology has been built over years to get it right first time — frequent updates, thorough briefings, structure that removes failure at every stage." ],
+					[ 'title' => 'An extension of your team.',
+					  'body'  => '94% of our clients work with us again. We understand the business properly, represent it well and build relationships that outlast a single hire.' ],
+					[ 'title' => 'High-conviction introductions.',
+					  'body'  => "We sell the opportunity as hard as we'd want someone to sell ours. The right candidates come energised, not just informed." ],
+					[ 'title' => 'Product knowledge, non-negotiable.',
+					  'body'  => "Every consultant specialises in a product area. We don't generalise across engineering because our clients and candidates don't — and neither should we." ],
+				],
+				'journey' => [
+					[ 'year' => '2011', 'title' => 'Founded in technical sales — the roots of the Verto Group' ],
+					[ 'year' => '2020', 'title' => 'Vertek brand established for sales, service and engineering search' ],
+					[ 'year' => '2022', 'title' => 'US expansion into fluid power, HVAC and rotating equipment' ],
+					[ 'year' => '2024', 'title' => 'Advanced manufacturing practice launched — defence, aerospace, semiconductor, robotics' ],
+					[ 'year' => '2026', 'title' => '14,000+ specialist candidates on the CRM and counting' ],
+				],
+				'testimonials' => [
+					[ 'quote' => "Vertek's understanding of our product, our distribution model and the talent market was the difference. They didn't send resumes — they sent the right people, fully briefed, every time.",
+					  'attribution' => 'VP of Sales, Global Fluid Power Manufacturer' ],
+					[ 'quote' => "We've used a lot of recruiters. Vertek is the only one that consistently understood the difference between a sales engineer who can talk hydraulics and one who's actually time-served. That's why we keep coming back.",
+					  'attribution' => 'Managing Director, UK Pneumatics Distributor' ],
+					[ 'quote' => 'They built our entire US commercial team from the ground up — sales engineers, service leaders, a regional director — in under twelve months. No drama, no surprises, no oversell.',
+					  'attribution' => 'Founder, US Advanced Manufacturing OEM' ],
+					[ 'quote' => "I wasn't actively looking. Vertek took the time to understand what I actually wanted next, brought one opportunity, and represented me brilliantly. I started six weeks later.",
+					  'attribution' => 'HVAC Service Manager (now Regional Director)' ],
+				],
+				'process' => [
+					[ 'title' => 'Discover', 'body' => 'We sit down with the business, the product line and the territory — not just the job spec. Success at 90 days, 6 months and 12 months is mapped before we name a single candidate.' ],
+					[ 'title' => 'Map',      'body' => 'We map the entire competitor, manufacturer and distributor landscape on patch. Time-served engineers, sales specialists, service leaders — visible and invisible.' ],
+					[ 'title' => 'Engage',   'body' => 'Every approach is briefed properly — your product, your culture, the opportunity. No mass outreach. No resumes into the void.' ],
+					[ 'title' => 'Deliver',  'body' => "Structured shortlist, candidate context resumes can't capture, offer management and post-placement check-ins. Frequent updates throughout. No surprises." ],
+				],
+				'case_study' => [
+					'client'    => 'Global Fluid Power OEM',
+					'sector'    => 'Hydraulics & motion control',
+					'challenge' => 'A European fluid power manufacturer needed to build a US commercial team from scratch — Regional Sales Director, three product-specialist sales engineers and a service manager — in a market where time-served hydraulics talent is notoriously hard to find. Two previous contingent partners had stalled out.',
+					'solution'  => "Vertek mapped every relevant hydraulics, motion control and pneumatics OEM and distributor across the target US regions. We worked exclusively on engaged terms, ran weekly market read-outs and represented the client's story end-to-end — including total comp, equity and relocation context the client had previously underplayed.",
+					'result'    => "All five hires made within 10 months. 100% retention at 18 months. Vertek has since been engaged on a further 14 mandates including a VP of Sales appointment and the company's first US service leadership team.",
+				],
+				'candidate_process' => [
+					[ 'title' => 'Confidential conversation', 'body' => 'We start by understanding what you actually want next — product area, market, total comp, relocation, work-life. No oversell. We only bring you roles that genuinely fit.' ],
+					[ 'title' => 'Briefed representation',    'body' => 'We sell your experience before the first interview. Hiring managers see your context, your patch and your product knowledge — not just a resume.' ],
+					[ 'title' => 'Interview preparation',     'body' => "Full briefing on the company, the panel, the product line and the likely lines of questioning. We've usually placed there before." ],
+					[ 'title' => 'Offer & beyond',            'body' => "Honest comp guidance, equity context for US advanced manufacturing, counter-offer support and check-ins long after you've started." ],
+				],
+				'sectors_served' => [
+					'Fluid power & flow control',
+					'HVAC & refrigeration',
+					'Rotating equipment & turbomachinery',
+					'CNC & precision engineering (US)',
+					'Industrial automation (US)',
+					'Advanced manufacturing (US)',
+					'MRO & aftermarket',
+					'Commercial leadership (VP / GM / Director)',
+				],
+			],
 		];
 		return $all[ $brand ] ?? [];
 	}
@@ -826,6 +1125,26 @@ class Verto_Installer {
 				'stats'           => $stats,
 				'cta_text'        => '',
 			] ) ], 'verto-bs' ),
+		];
+		// Pillars — staggered 3-up cards (prototype: only brands with `pillars`;
+		// currently Vertek). process-rail cards3 without kicker/bullets.
+		if ( ! empty( $c['pillars'] ) ) {
+			$about[] = self::section( [ self::widget( 'verto-process-rail', [
+				'layout'    => 'cards3',
+				'bg'        => 'default',
+				'eyebrow'   => 'What separates us',
+				'heading'   => "Three principles.\nApplied to every search.",
+				'side_text' => '',
+				'items'     => array_map( fn( $p ) => [ '_id' => self::eid(), 'kicker' => '', 'bullets' => '' ] + $p, $c['pillars'] ),
+			] ) ], 'verto-bs' );
+		}
+		// Values — sticky-intro accordion (Vertek-only in the prototype data).
+		if ( ! empty( $c['values'] ) ) {
+			$about[] = self::section( [ self::widget( 'verto-values-accordion', [
+				'items' => array_map( fn( $v ) => [ '_id' => self::eid() ] + $v, $c['values'] ),
+			] ) ], 'verto-bs' );
+		}
+		$about_tail = [
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',
 				'reverse'   => 'yes',
@@ -858,18 +1177,37 @@ class Verto_Installer {
 					[ '_id' => self::eid(), 'label' => 'Purpose', 'body' => $c['about']['purpose'] ],
 				],
 			] ) ], 'verto-bs' ),
-			self::section( [ self::widget( 'verto-proof-list', [
-				'items' => array_map( fn( $p ) => [ '_id' => self::eid(), 'text' => $p ], $c['proof'] ),
-			] ) ], 'verto-bs' ),
-			self::section( [ $team_strip ], 'verto-bs' ),
-			self::section( [ self::widget( 'verto-cta-band', [
-				'heading'   => 'Ready to talk?',
-				'cta1_text' => "Hire with $name",
-				'cta1_link' => [ 'url' => '/clients' ],
-				'cta2_text' => 'Explore roles',
-				'cta2_link' => [ 'url' => '/candidates' ],
-			] ) ], 'verto-bs' ),
 		];
+		$about = array_merge( $about, $about_tail );
+		// Journey — horizontal rail with brand-colour years (Vertek-only data).
+		if ( ! empty( $c['journey'] ) ) {
+			$about[] = self::section( [ self::widget( 'verto-process-rail', [
+				'layout'     => 'line',
+				'line_style' => 'journey',
+				'bg'         => 'default',
+				'eyebrow'    => 'Our story so far',
+				'heading'    => 'Built decade by decade.',
+				'side_text'  => '',
+				'items'      => array_map( fn( $m ) => [
+					'_id'     => self::eid(),
+					'title'   => $m['year'],
+					'kicker'  => '',
+					'body'    => $m['title'],
+					'bullets' => '',
+				], $c['journey'] ),
+			] ) ], 'verto-bs' );
+		}
+		$about[] = self::section( [ self::widget( 'verto-proof-list', [
+			'items' => array_map( fn( $p ) => [ '_id' => self::eid(), 'text' => $p ], $c['proof'] ),
+		] ) ], 'verto-bs' );
+		$about[] = self::section( [ $team_strip ], 'verto-bs' );
+		$about[] = self::section( [ self::widget( 'verto-cta-band', [
+			'heading'   => 'Ready to talk?',
+			'cta1_text' => "Hire with $name",
+			'cta1_link' => [ 'url' => '/clients' ],
+			'cta2_text' => 'Explore roles',
+			'cta2_link' => [ 'url' => '/candidates' ],
+		] ) ], 'verto-bs' );
 		self::upsert_page( 'about', 'About', $about );
 
 		/* ── CLIENTS (prototype for-companies) ── */
@@ -929,13 +1267,67 @@ class Verto_Installer {
 					  'bullets' => "Land-and-expand\nContract and permanent\nAgainst your project timeline" ],
 				],
 			] ) ], 'verto-bs' ),
-			self::section( [ self::widget( 'verto-feature-row', [
-				'variant' => 'stats',
-				'items'   => array_map( fn( $st ) => [ '_id' => self::eid(), 'icon' => '', 'title' => $st['value'], 'body' => $st['label'] ], $c['stats'] ),
-			] ) ], 'verto-bs' ),
-			self::section( [ $team_strip ], 'verto-bs' ),
-			$contact( 'Talk to us', 'Tell us what you need to build.', $co['bullets'] ),
 		];
+		// Process — horizontal rail with connector line (Vertek-only data).
+		if ( ! empty( $c['process'] ) ) {
+			$clients[] = self::section( [ self::widget( 'verto-process-rail', [
+				'layout'     => 'line',
+				'line_style' => 'process',
+				'bg'         => 'default',
+				'eyebrow'    => 'How we work',
+				'heading'    => 'A process built to remove chance.',
+				'side_text'  => '',
+				'items'      => array_map( fn( $st ) => [ '_id' => self::eid(), 'kicker' => '', 'bullets' => '' ] + $st, $c['process'] ),
+			] ) ], 'verto-bs' );
+		}
+		// Case study — dark parallax band, Client/Sector meta + C/S/R grid.
+		if ( ! empty( $c['case_study'] ) ) {
+			$cs = $c['case_study'];
+			$clients[] = self::section( [ self::widget( 'verto-quote-band', [
+				'image'          => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt'      => $c['hero']['alt'],
+				'overlay'        => 'case',
+				'pad'            => 'band',
+				'parallax_speed' => 0.32,
+				'eyebrow'        => 'Case study',
+				'eyebrow_style'  => 'dim',
+				'heading_pre'    => 'We make success happen for those we partner with.',
+				'heading_accent' => '',
+				'heading_post'   => '',
+				'body'           => '',
+				'stat_value'     => '',
+				'stat_label'     => '',
+				'case_client'    => $cs['client'],
+				'case_sector'    => $cs['sector'],
+				'columns'        => [
+					[ '_id' => self::eid(), 'label' => 'Challenge', 'body' => $cs['challenge'] ],
+					[ '_id' => self::eid(), 'label' => 'Solution',  'body' => $cs['solution'] ],
+					[ '_id' => self::eid(), 'label' => 'Result',    'body' => $cs['result'] ],
+				],
+			] ) ], 'verto-bs' );
+		}
+		// Testimonials — light section, brand-rule quotes (Vertek-only data).
+		if ( ! empty( $c['testimonials'] ) ) {
+			$clients[] = self::section( [ self::widget( 'verto-quote-band', [
+				'quotes_style'   => 'light',
+				'pad'            => 'band',
+				'eyebrow'        => 'In their words',
+				'eyebrow_style'  => 'brand',
+				'heading_pre'    => 'Trusted by the businesses we serve.',
+				'heading_accent' => '',
+				'heading_post'   => '',
+				'body'           => '',
+				'stat_value'     => '',
+				'stat_label'     => '',
+				'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['testimonials'] ),
+			] ) ], 'verto-bs' );
+		}
+		$clients[] = self::section( [ self::widget( 'verto-feature-row', [
+			'variant' => 'stats',
+			'items'   => array_map( fn( $st ) => [ '_id' => self::eid(), 'icon' => '', 'title' => $st['value'], 'body' => $st['label'] ], $c['stats'] ),
+		] ) ], 'verto-bs' );
+		$clients[] = self::section( [ $team_strip ], 'verto-bs' );
+		$clients[] = $contact( 'Talk to us', 'Tell us what you need to build.', $co['bullets'] );
 		self::upsert_page( 'clients', 'Clients', $clients );
 
 		/* ── CANDIDATES (prototype for-candidates) ── */
@@ -979,9 +1371,47 @@ class Verto_Installer {
 				'cta_text'  => "About $name",
 				'cta_link'  => [ 'url' => '/about' ],
 			] ) ], 'verto-bs' ),
-			self::section( [ $team_strip ], 'verto-bs' ),
-			$contact( 'Start a conversation', 'A confidential chat. No spam, no fluff.', $ca['bullets'] ),
 		];
+		// Sectors served — dense chip grid (Vertek-only data).
+		if ( ! empty( $c['sectors_served'] ) ) {
+			$candidates[] = self::section( [ self::widget( 'verto-chip-grid', [
+				'eyebrow' => 'Where we recruit',
+				'heading' => 'Specialists across the industries we serve.',
+				'items'   => array_map( fn( $sec ) => [ '_id' => self::eid(), 'label' => $sec ], $c['sectors_served'] ),
+			] ) ], 'verto-bs' );
+		}
+		// Candidate process — 4-up zigzag cards (Vertek-only data).
+		if ( ! empty( $c['candidate_process'] ) ) {
+			$candidates[] = self::section( [ self::widget( 'verto-process-rail', [
+				'layout'    => 'zigzag',
+				'bg'        => 'default',
+				'eyebrow'   => 'What to expect',
+				'heading'   => 'From first call to first day — and beyond.',
+				'side_text' => '',
+				'items'     => array_map( fn( $st ) => [ '_id' => self::eid(), 'kicker' => '', 'bullets' => '' ] + $st, $c['candidate_process'] ),
+			] ) ], 'verto-bs' );
+		}
+		// Candidate testimonials — dark parallax band, quotes 3–4 (prototype slice(2, 4)).
+		if ( ! empty( $c['testimonials'] ) && count( $c['testimonials'] ) > 2 ) {
+			$candidates[] = self::section( [ self::widget( 'verto-quote-band', [
+				'image'          => self::media_setting( $media, $c['hero']['image'] ),
+				'image_alt'      => '',
+				'overlay'        => 'testimonial',
+				'pad'            => 'band',
+				'parallax_speed' => 0.32,
+				'eyebrow'        => "From the people we've placed",
+				'eyebrow_style'  => 'dim',
+				'heading_pre'    => 'Career moves that actually fit.',
+				'heading_accent' => '',
+				'heading_post'   => '',
+				'body'           => '',
+				'stat_value'     => '',
+				'stat_label'     => '',
+				'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, array_slice( $c['testimonials'], 2, 2 ) ),
+			] ) ], 'verto-bs' );
+		}
+		$candidates[] = self::section( [ $team_strip ], 'verto-bs' );
+		$candidates[] = $contact( 'Start a conversation', 'A confidential chat. No spam, no fluff.', $ca['bullets'] );
 		self::upsert_page( 'candidates', 'Candidates', $candidates );
 
 		/* ── INSIGHTS (posts archive page) ── */

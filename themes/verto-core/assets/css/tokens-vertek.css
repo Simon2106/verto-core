@@ -12,11 +12,18 @@
   --surface-foreground: #F4F5F6;
   --muted: #22252C;
   --muted-foreground: #8A9099;  /* Steel */
+  --card: #1D2026;
+  --card-foreground: #F4F5F6;
   --accent: #F82B60;            /* Signal Red */
   --accent-foreground: #ffffff;
   --brand: #F82B60;
   --brand-foreground: #ffffff;
   --brand-silver: #DBDBDB;
+  --brand-steel: #8A9099;
+  /* Vertek has no gradient in the guidelines (Signal Red is "a signal, not a
+     field") — --brand-gradient resolves to the flat signal so any shared
+     component referencing it stays on-brand. */
+  --brand-gradient: linear-gradient(90deg, #F82B60 0%, #F82B60 100%);
   --ink: #0E1013;
   --ink-foreground: #F4F5F6;
   --border: rgba(255, 255, 255, 0.12);

@@ -74,6 +74,19 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 			'label' => 'Quotes', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $quotes->get_controls(), 'title_field' => '{{{ attribution }}}', 'default' => [],
 		] );
+		$this->add_control( 'quotes_style', [
+			'label' => 'Section style', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [
+				'band'  => 'Dark parallax band (default)',
+				'light' => 'Light testimonials — page background, brand-rule quotes',
+			],
+			'default' => 'band',
+		] );
+		// Case study mode (prototype clients page): when a client name is set,
+		// the columns render as the Client/Sector meta + Challenge/Solution/
+		// Result grid instead of the staggered Mission/Vision/Purpose layout.
+		$this->add_control( 'case_client', [ 'label' => 'Case study — client (enables case layout)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'case_sector', [ 'label' => 'Case study — sector', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->end_controls_section();
 	}
 
@@ -89,24 +102,28 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 	}
 
 	protected function render() {
-		$s = $this->get_settings_for_display();
+		$s     = $this->get_settings_for_display();
+		$light = 'light' === ( $s['quotes_style'] ?? 'band' );
+		$fg    = $light ? 'var(--foreground)' : 'var(--ink-foreground)';
 		$eyebrow_style = 'dim' === $s['eyebrow_style']
-			? 'color:color-mix(in oklab, var(--ink-foreground) 65%, transparent);'
+			? sprintf( 'color:color-mix(in oklab, %s 65%%, transparent);', $fg )
 			: 'color:var(--brand);';
 		?>
-		<div class="vbs-band" style="color:var(--ink-foreground);background:var(--ink);">
-			<?php if ( ! empty( $s['image']['url'] ) ) : ?>
+		<div class="vbs-band<?php echo $light ? ' vbs-band--light' : ''; ?>" style="<?php echo $light ? 'color:var(--foreground);' : 'color:var(--ink-foreground);background:var(--ink);'; ?>">
+			<?php if ( ! $light && ! empty( $s['image']['url'] ) ) : ?>
 				<div class="verto-parallax" data-parallax-speed="<?php echo esc_attr( $s['parallax_speed'] !== '' ? $s['parallax_speed'] : 0.3 ); ?>">
 					<img src="<?php echo esc_url( $s['image']['url'] ); ?>" alt="<?php echo esc_attr( $s['image_alt'] ); ?>" loading="lazy" />
 				</div>
 			<?php endif; ?>
-			<div class="vbs-band__wash" style="background:<?php echo esc_attr( $this->overlay_css( $s['overlay'] ) ); ?>;"></div>
+			<?php if ( ! $light ) : ?>
+				<div class="vbs-band__wash" style="background:<?php echo esc_attr( $this->overlay_css( $s['overlay'] ) ); ?>;"></div>
+			<?php endif; ?>
 			<div class="container-wide vbs-band__inner vbs-band__inner--<?php echo esc_attr( $s['pad'] ?: 'hero' ); ?>">
 				<div class="vbs-band__copy<?php echo 'right' === $s['align'] ? ' vbs-band__copy--right' : ''; ?>">
 					<?php if ( $s['eyebrow'] ) : ?>
 						<span class="eyebrow" style="<?php echo esc_attr( $eyebrow_style ); ?>"><?php echo esc_html( $s['eyebrow'] ); ?></span>
 					<?php endif; ?>
-					<h2 class="<?php echo esc_attr( $s['heading_size'] ?: 'display-2' ); ?> vbs-band__heading" style="color:var(--ink-foreground);">
+					<h2 class="<?php echo esc_attr( $s['heading_size'] ?: 'display-2' ); ?> vbs-band__heading" style="color:<?php echo esc_attr( $fg ); ?>;">
 						<?php
 						echo nl2br( esc_html( $s['heading_pre'] ) );
 						if ( $s['heading_accent'] ) {
@@ -118,7 +135,7 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 						?>
 					</h2>
 					<?php if ( $s['body'] ) : ?>
-						<p class="vbs-band__body" style="color:var(--ink-foreground);"><?php echo esc_html( $s['body'] ); ?></p>
+						<p class="vbs-band__body" style="color:<?php echo esc_attr( $fg ); ?>;"><?php echo esc_html( $s['body'] ); ?></p>
 					<?php endif; ?>
 					<?php if ( $s['cta1_text'] || $s['cta2_text'] ) : ?>
 						<div class="vbs-band__ctas">
@@ -140,7 +157,24 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 					</div>
 				<?php endif; ?>
 
-				<?php if ( $s['columns'] ) : ?>
+				<?php if ( $s['columns'] && ! empty( $s['case_client'] ) ) : // case-study layout (client/sector meta + 3-col grid, no stagger) ?>
+					<div class="vbs-band__case">
+						<div class="vbs-band__casemeta" style="border-color:color-mix(in oklab, <?php echo esc_attr( $fg ); ?> 20%, transparent);">
+							<div class="vbs-band__caselabel">Client</div>
+							<div class="vbs-band__caseclient"><?php echo esc_html( $s['case_client'] ); ?></div>
+							<div class="vbs-band__caselabel vbs-band__caselabel--sp">Sector</div>
+							<div class="vbs-band__casesector"><?php echo esc_html( $s['case_sector'] ); ?></div>
+						</div>
+						<div class="vbs-band__casecols">
+							<?php foreach ( $s['columns'] as $col ) : ?>
+								<div>
+									<div class="vbs-band__collabel" style="color:var(--brand);"><?php echo esc_html( $col['label'] ); ?></div>
+									<p class="vbs-band__colbody"><?php echo esc_html( $col['body'] ); ?></p>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				<?php elseif ( $s['columns'] ) : ?>
 					<div class="vbs-band__cols">
 						<?php foreach ( $s['columns'] as $i => $col ) :
 							$shift = 1 === $i ? 'transform:translateY(1.5rem);' : ( 2 === $i ? 'transform:translateY(3rem);' : '' );
@@ -153,7 +187,17 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 					</div>
 				<?php endif; ?>
 
-				<?php if ( $s['quotes'] ) : ?>
+				<?php if ( $s['quotes'] && $light ) : // light testimonials — brand rule left, alternating drop ?>
+					<div class="vbs-band__quotes vbs-band__quotes--light">
+						<?php foreach ( $s['quotes'] as $i => $q ) : ?>
+							<figure class="vbs-quote-l<?php echo 1 === $i % 2 ? ' vbs-quote-l--drop' : ''; ?>" style="border-left:2px solid var(--brand);">
+								<div class="vbs-quote-l__mark" style="color:var(--brand);background:var(--background);">&quot;</div>
+								<blockquote><?php echo esc_html( $q['quote'] ); ?></blockquote>
+								<figcaption>— <?php echo esc_html( $q['attribution'] ); ?></figcaption>
+							</figure>
+						<?php endforeach; ?>
+					</div>
+				<?php elseif ( $s['quotes'] ) : ?>
 					<div class="vbs-band__quotes">
 						<?php foreach ( $s['quotes'] as $i => $q ) : ?>
 							<figure class="vbs-band__quote<?php echo 1 === $i % 2 ? ' vbs-band__quote--drop' : ''; ?>">

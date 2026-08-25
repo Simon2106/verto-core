@@ -6,8 +6,10 @@ defined( 'ABSPATH' ) || exit;
  * right (1/3), brand colour-coding + sector tooltips, client-side filtering
  * (verto-effects.js).
  *
- * ⚠️ PLACEHOLDER roles baked in until the Vincere→WordPress integration is
- * installed — then set its shortcode in this widget (replaces the list).
+ * Job source, in priority order:
+ *   1. the optional `vincere_shortcode` control (external plugin override)
+ *   2. live jobs synced from Vincere (includes/vincere.php → verto_job CPT)
+ *   3. the PLACEHOLDER roles baked in below (fallback until a sync has run)
  */
 class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 
@@ -45,9 +47,46 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Live jobs synced from Vincere (includes/vincere.php). Empty array when
+	 * no sync has run yet — the placeholder JOBS const is the fallback, so
+	 * the board never renders empty.
+	 */
+	private function live_jobs() {
+		if ( ! function_exists( 'verto_vincere_get_jobs' ) ) {
+			return [];
+		}
+		$jobs = verto_vincere_get_jobs();
+		if ( ! is_array( $jobs ) || ! $jobs ) {
+			return [];
+		}
+		// Normalize defensively so unknown brands/missing keys can't break markup.
+		$clean = [];
+		foreach ( $jobs as $job ) {
+			if ( empty( $job['title'] ) ) {
+				continue;
+			}
+			$brand = isset( $job['brand'] ) && isset( self::BRANDS[ $job['brand'] ] ) ? $job['brand'] : 'verto';
+			$clean[] = [
+				'title'    => (string) $job['title'],
+				'brand'    => $brand,
+				'location' => (string) ( $job['location'] ?? 'Flexible' ),
+				'level'    => (string) ( $job['level'] ?? 'Senior' ),
+				'package'  => (string) ( $job['package'] ?? 'Competitive package' ),
+				'url'      => (string) ( $job['url'] ?? '' ),
+			];
+		}
+		return $clean;
+	}
+
 	protected function render() {
 		$s     = $this->get_settings_for_display();
 		$apply = $s['apply_url']['url'] ?? '/contact';
+
+		$live      = $this->live_jobs();
+		$jobs      = $live ? $live : self::JOBS;
+		$locations = $live ? array_values( array_unique( array_column( $live, 'location' ) ) ) : self::LOCATIONS;
+		$levels    = $live ? array_values( array_unique( array_column( $live, 'level' ) ) ) : self::LEVELS;
 		?>
 		<div class="verto-jobs" data-verto-jobs>
 			<div class="verto-intro">
@@ -63,10 +102,10 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 					<?php if ( ! empty( $s['vincere_shortcode'] ) ) : ?>
 						<?php echo do_shortcode( wp_kses_post( $s['vincere_shortcode'] ) ); ?>
 					<?php else : ?>
-						<?php foreach ( self::JOBS as $job ) :
+						<?php foreach ( $jobs as $job ) :
 							$b = self::BRANDS[ $job['brand'] ]; ?>
 							<a class="verto-jobs__row verto-jobs__row--<?php echo esc_attr( $job['brand'] ); ?>"
-							   href="<?php echo esc_url( $apply ); ?>"
+							   href="<?php echo esc_url( ! empty( $job['url'] ) ? $job['url'] : $apply ); ?>"
 							   data-brand="<?php echo esc_attr( $job['brand'] ); ?>"
 							   data-location="<?php echo esc_attr( $job['location'] ); ?>"
 							   data-level="<?php echo esc_attr( $job['level'] ); ?>">
@@ -108,7 +147,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							<div class="verto-jobs__grouplabel">Location</div>
 							<div class="verto-jobs__chips" data-filter-group="location">
 								<button type="button" class="verto-chip is-active" data-value="all">All</button>
-								<?php foreach ( self::LOCATIONS as $loc ) : ?>
+								<?php foreach ( $locations as $loc ) : ?>
 									<button type="button" class="verto-chip" data-value="<?php echo esc_attr( $loc ); ?>"><?php echo esc_html( $loc ); ?></button>
 								<?php endforeach; ?>
 							</div>
@@ -117,13 +156,13 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							<div class="verto-jobs__grouplabel">Level</div>
 							<div class="verto-jobs__chips" data-filter-group="level">
 								<button type="button" class="verto-chip is-active" data-value="all">All</button>
-								<?php foreach ( self::LEVELS as $lvl ) : ?>
+								<?php foreach ( $levels as $lvl ) : ?>
 									<button type="button" class="verto-chip" data-value="<?php echo esc_attr( $lvl ); ?>"><?php echo esc_html( $lvl ); ?></button>
 								<?php endforeach; ?>
 							</div>
 						</div>
 					</div>
-					<p class="verto-jobs__count"><span data-jobs-count><?php echo count( self::JOBS ); ?></span> roles shown · Can't see your desk? <a href="<?php echo esc_url( $apply ); ?>">Write to us anyway →</a></p>
+					<p class="verto-jobs__count"><span data-jobs-count><?php echo count( $jobs ); ?></span> roles shown · Can't see your desk? <a href="<?php echo esc_url( $apply ); ?>">Write to us anyway →</a></p>
 				</aside>
 			</div>
 		</div>

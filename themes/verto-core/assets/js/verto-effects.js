@@ -198,6 +198,87 @@
   });
 })();
 
+/* ── 8. Timeline auto-carousel (.verto-timeline) — mirror of the
+      prototype's TimelineCarousel (about.tsx): auto-advance every 3.5s,
+      pause on hover/touch/focus, resume after 6s idle, sync to manual
+      swipes (native overflow scroll stays the mechanism) and fill a gold
+      progress line between visited milestones. Reduced motion → plain
+      manual scroll (no autoplay, no progress line). ── */
+(function () {
+  "use strict";
+  var ADVANCE_MS = 3500;
+  var RESUME_MS = 6000;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    document.querySelectorAll(".verto-timeline").forEach(function (scroller) {
+      var track = scroller.querySelector(".verto-timeline__track");
+      if (!track) return;
+      var items = Array.prototype.slice.call(track.querySelectorAll(".verto-timeline__item"));
+      if (items.length < 2) return;
+
+      // Gold progress line, injected so the widget markup stays untouched
+      var progress = document.createElement("div");
+      progress.className = "verto-timeline__progress";
+      progress.setAttribute("aria-hidden", "true");
+      track.insertBefore(progress, track.firstChild);
+
+      var idx = 0;
+      var paused = false;
+      var programmatic = false;
+      var progTimer = 0;
+      var idleTimer = 0;
+
+      function mark(i) {
+        items.forEach(function (el, j) {
+          el.classList.toggle("is-active", j === i);
+          el.classList.toggle("is-visited", j <= i);
+        });
+        progress.style.width = items[i].offsetLeft + 8 + "px"; // 8px ≈ dot centre
+      }
+      function go(i) {
+        idx = i;
+        programmatic = true;
+        clearTimeout(progTimer);
+        progTimer = setTimeout(function () { programmatic = false; }, 900);
+        scroller.scrollTo({ left: Math.max(0, items[i].offsetLeft - 24), behavior: "smooth" });
+        mark(i);
+      }
+
+      mark(0);
+      setInterval(function () {
+        if (!paused) go((idx + 1) % items.length);
+      }, ADVANCE_MS);
+
+      function pause() { paused = true; clearTimeout(idleTimer); }
+      function scheduleResume() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(function () { paused = false; }, RESUME_MS);
+      }
+      scroller.addEventListener("pointerenter", pause);
+      scroller.addEventListener("pointerleave", scheduleResume);
+      scroller.addEventListener("touchstart", pause, { passive: true });
+      scroller.addEventListener("touchend", scheduleResume);
+      scroller.addEventListener("focusin", pause);
+      scroller.addEventListener("focusout", scheduleResume);
+      scroller.addEventListener("scroll", function () {
+        if (programmatic) return;
+        pause();
+        scheduleResume();
+        // Sync active milestone + progress to the swipe position
+        var x = scroller.scrollLeft + 24;
+        var nearest = 0;
+        for (var i = 0; i < items.length; i++) {
+          if (Math.abs(items[i].offsetLeft - x) < Math.abs(items[nearest].offsetLeft - x)) nearest = i;
+        }
+        idx = nearest;
+        mark(nearest);
+      }, { passive: true });
+    });
+  });
+})();
+
 /* ── 6. Autoplay rescue: if the browser blocked muted autoplay (low power
       mode, data saver), retry on the first user interaction ── */
 (function () {

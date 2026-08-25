@@ -206,8 +206,14 @@ h1, h2, h3 {
 /* ── Hero (dark ink, V-mask media right, copy left) ── */
 .verto-hero { position: relative; overflow: hidden; background: var(--ink); color: var(--ink-foreground); }
 .verto-hero__inner { position: relative; padding-block: 8rem 5rem; }
-.verto-hero__media { pointer-events: none; position: absolute; inset-block: 0; right: 0; width: 58%; display: none; }
+/* Client feedback round 3, item 1: the V-mask panel is letterboxed to the
+   summit video's native 16:9 (vertically centred, matching the prototype)
+   instead of stretching to the full hero height — a near-square panel forced
+   the 16:9 footage to scale up (zoomed-in faces). Width matches the
+   prototype's 58.9%. */
+.verto-hero__media { pointer-events: none; position: absolute; top: 50%; transform: translateY(-50%); right: 0; width: 58.9%; aspect-ratio: 16 / 9; max-height: 100%; display: none; }
 @media (min-width: 768px) { .verto-hero__media { display: block; } }
+.verto-hero__media video, .verto-hero__media img { object-position: center 30%; }
 .verto-hero__copy { position: relative; max-width: 42rem; }
 .verto-hero__eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; opacity: 0.7; }
 .verto-hero__body { margin-top: 2rem; max-width: 36rem; font-size: 1.05rem; opacity: 0.8; line-height: 1.6; }
@@ -224,8 +230,8 @@ h1, h2, h3 {
 /* ── Brand tiles (logo-led flip cards) ── */
 .verto-tiles { display: grid; gap: 1.5rem; }
 @media (min-width: 1024px) { .verto-tiles { grid-template-columns: repeat(3, 1fr); } }
-.verto-tile { position: relative; display: block; min-height: 460px; perspective: 1400px; text-decoration: none; }
-.verto-tile__flip { position: relative; width: 100%; height: 100%; min-height: 460px; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.verto-tile { position: relative; display: block; min-height: 520px; perspective: 1400px; text-decoration: none; }
+.verto-tile__flip { position: relative; width: 100%; height: 100%; min-height: 520px; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
 .verto-tile:hover .verto-tile__flip, .verto-tile:focus-visible .verto-tile__flip { transform: rotateY(180deg); }
 .verto-tile__face { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--ink); color: var(--ink-foreground); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .verto-tile__face--front { align-items: center; justify-content: center; padding: 2.5rem; }
@@ -236,8 +242,13 @@ h1, h2, h3 {
 .verto-tile__focus { position: relative; margin-top: 2rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; opacity: 0.7; }
 .verto-tile__kicker { margin-top: 0.5rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; }
 .verto-tile__name { margin-top: 1rem; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -0.02em; }
-.verto-tile__body { margin-top: 1.25rem; font-size: 1rem; line-height: 1.6; opacity: 0.85; }
-.verto-tile__cta { margin-top: auto; padding-top: 1.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; }
+.verto-tile__body { margin-top: 1rem; font-size: 0.875rem; line-height: 1.6; opacity: 0.85; }
+/* Sector coverage on the hover (back) face — client feedback round 2, item 9 */
+.verto-tile__seclabel { margin-top: 1.25rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.24em; opacity: 0.6; }
+.verto-tile__sectors { list-style: none; margin: 0.625rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.verto-tile__sectors li { display: flex; align-items: center; gap: 0.625rem; font-size: 13px; font-weight: 500; opacity: 0.9; }
+.verto-tile__tick { display: inline-block; height: 0.75rem; width: 3px; border-radius: 2px; flex-shrink: 0; }
+.verto-tile__cta { margin-top: auto; padding-top: 1.25rem; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; }
 
 /* ── Values cards ── */
 .verto-values { display: grid; gap: 1px; background: color-mix(in oklab, var(--ink-foreground) 12%, transparent); }
@@ -371,6 +382,10 @@ body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: f
 /* Muted (light) section shell + tile logo invert helper */
 .verto-muted { background: var(--muted); }
 .verto-tile__logo--invert { filter: brightness(0) invert(1); }
+/* Light tile face — white ground for coloured logos (Edison Lux gradient mark,
+   client feedback round 3, item 2). Dark text, no top stripe. */
+.verto-tile__face--light { color: #0B1A2B; }
+.verto-tile__face--light .verto-tile__focus { opacity: 0.75; }
 
 /* Ensure installer sections get generous rhythm */
 .verto-container-pad { padding: 6rem 1.5rem; }
@@ -437,7 +452,13 @@ figure.verto-quote { margin: 0; }
   background: color-mix(in oklab, var(--ink-foreground) 4%, transparent);
 }
 @media (min-width: 768px) { .verto-awards { flex-direction: row; align-items: center; padding: 2.5rem; } }
-.verto-awards__badge { height: 6rem; width: auto; flex-shrink: 0; }
+.verto-awards__badges { display: flex; align-items: center; gap: 1.5rem; flex-shrink: 0; }
+/* Client feedback round 3, item 4: Elementor's `.elementor img { height: auto;
+   max-width: 100%; }` out-specifies `.verto-awards__badge` and let the badges
+   render at intrinsic size (full-bleed Sunday Times badge, text crushed to a
+   sliver). Hard-constrain both badges so they can never full-bleed. */
+.verto-awards__badge { height: 6rem !important; width: auto !important; max-width: 10rem !important; object-fit: contain; flex-shrink: 0; }
+.verto-awards > div:last-child { flex: 1 1 auto; min-width: 0; }
 .verto-awards__eyebrow { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.28em; color: var(--accent); }
 .verto-awards__heading { margin: 0.75rem 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.5vw, 1.875rem); line-height: 1.2; letter-spacing: -0.02em; }
 .verto-awards__body { margin-top: 0.75rem; max-width: 42rem; font-size: 0.875rem; line-height: 1.6; opacity: 0.75; }
@@ -1010,3 +1031,287 @@ body.verto-brand-modulr .verto-header__cta--brand { background: var(--brand-grad
 /* The landing hero headline stays uppercase on every brand (prototype:
    "display-2 uppercase tracking-tight") — outranks the display-2 override */
 body .vbs-hero .vbs-hero__title { text-transform: uppercase; }
+
+/* Edison Lux — gradient stat values on the dark overlay card (matches CTA button).
+   On-dark only: guidelines keep Energy Green decorative-only on white. */
+body.verto-brand-edison-lux .vbs-statcard__value {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ═════════ v0.7 — sector coverage block (client feedback round 2) ═════════
+   Port of the prototype SectorCoverage component: intro 4/12 left, brand
+   groups 8/12 right, colour-coded rules/dots/ticks per brand. */
+.verto-sectors { display: grid; gap: 3rem; }
+@media (min-width: 1024px) { .verto-sectors { grid-template-columns: 1fr 2fr; } }
+.verto-sectors__intro { max-width: 32rem; }
+.verto-sectors__body { margin-top: 1.5rem; color: var(--muted-foreground); line-height: 1.65; }
+.verto-sectors__body + .verto-sectors__body { margin-top: 1rem; }
+.verto-sectors__groups { display: flex; flex-direction: column; gap: 2.5rem; }
+.verto-sectors__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; }
+.verto-sectors__id { display: flex; align-items: baseline; gap: 0.75rem; }
+.verto-sectors__dot { width: 8px; height: 8px; border-radius: 50%; align-self: center; flex-shrink: 0; }
+.verto-sectors__wordmark { font-family: var(--font-display); font-weight: 700; font-size: 1.125rem; letter-spacing: -0.02em; }
+.verto-sectors__descriptor { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--muted-foreground); }
+.verto-sectors__enter { font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; font-weight: 500; text-decoration: none; opacity: 0.85; transition: opacity 0.2s; white-space: nowrap; }
+.verto-sectors__enter:hover { opacity: 1; }
+.verto-sectors__grid { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 768px) { .verto-sectors__grid { grid-template-columns: repeat(2, 1fr); } }
+.verto-sectors__item {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: 1rem 0.5rem 1rem 0; text-decoration: none; color: var(--foreground);
+  border-top: 1px solid var(--border); transition: color 0.2s;
+}
+@media (min-width: 768px) { .verto-sectors__item { padding-right: 1rem; } .verto-sectors__item--first { border-top: 0; } }
+@media (max-width: 767px) { .verto-sectors__grid .verto-sectors__item:first-child { border-top: 0; } }
+.verto-sectors__label { display: flex; align-items: center; gap: 0.75rem; font-size: 1rem; font-weight: 500; }
+.verto-sectors__tick { display: inline-block; height: 0.75rem; width: 3px; border-radius: 2px; flex-shrink: 0; transition: height 0.2s; }
+.verto-sectors__item:hover .verto-sectors__tick { height: 1.25rem; }
+.verto-sectors__arrow { font-size: 0.875rem; opacity: 0.4; transition: opacity 0.2s; }
+.verto-sectors__item:hover .verto-sectors__arrow { opacity: 1; }
+
+/* ═════════════════════════════════════════════════════════════════════
+ * v0.9 — What's Going On magazine hub, About collage + Community & DE&I,
+ * timeline auto-carousel (client-approved designs, mirrors the prototype)
+ * ═════════════════════════════════════════════════════════════════════ */
+
+/* ── Timeline auto-carousel (JS in verto-effects.js §8) ── */
+.verto-timeline { outline: none; }
+.verto-timeline:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.verto-timeline__track { position: relative; }
+.verto-timeline__progress {
+  position: absolute; left: 0.25rem; top: 7px; height: 2px; width: 0;
+  background: var(--accent); z-index: 0;
+  transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .verto-timeline__item { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); transform-origin: left bottom; }
+  .verto-timeline__item.is-highlight { transform: scale(1.02); }
+  .verto-timeline__item.is-active { transform: scale(1.05); }
+}
+.verto-timeline__dot { transition: background 0.5s, border-color 0.5s; }
+.verto-timeline__item.is-visited .verto-timeline__dot { background: var(--accent); border-color: var(--accent); }
+
+/* ── Featured story (newest post, image left ~60%) ── */
+.verto-featured {
+  display: grid; overflow: hidden; border-radius: 1.5rem;
+  background: var(--ink); color: var(--ink-foreground);
+  margin-bottom: 3rem;
+}
+@media (min-width: 1024px) { .verto-featured { grid-template-columns: 3fr 2fr; } }
+.verto-featured__media { position: relative; display: block; min-height: 260px; background: #0a0a0a; }
+@media (min-width: 1024px) { .verto-featured__media { min-height: 460px; } }
+.verto-featured__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+.verto-featured__body { display: flex; flex-direction: column; padding: 2rem; }
+@media (min-width: 1024px) { .verto-featured__body { padding: 3rem; } }
+.verto-featured__top { display: flex; align-items: center; gap: 1rem; }
+.verto-featured__label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; }
+.verto-featured__title { margin: 1.5rem 0 0; }
+.verto-featured__title a { color: inherit; text-decoration: none; }
+.verto-featured__excerpt { margin-top: 1.5rem; max-width: 28rem; font-size: 1rem; line-height: 1.6; opacity: 0.8; }
+.verto-featured__meta {
+  margin-top: auto; padding-top: 2.5rem; display: flex; align-items: center; gap: 1rem;
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.75;
+}
+.verto-featured__meta .brand { color: var(--accent); }
+/* Category chip (Trips / Wins / Community / News) */
+.verto-cat-chip {
+  display: inline-flex; align-items: center; border-radius: 9999px;
+  padding: 0.375rem 0.875rem; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.2em;
+  background: color-mix(in oklab, var(--accent) 14%, transparent); color: var(--accent);
+}
+.verto-cat-chip--dark { background: color-mix(in oklab, var(--accent) 22%, transparent); }
+.verto-post-card__media .verto-cat-chip { position: absolute; bottom: 0.75rem; left: 0.75rem; }
+
+/* ── Stories — video slot placeholders (client videos to come) ── */
+.verto-stories {
+  border-radius: 1.5rem; padding: 2.5rem; margin: 3rem 0 0;
+  background: var(--ink); color: var(--ink-foreground);
+}
+@media (min-width: 1024px) { .verto-stories { padding: 3.5rem; } }
+.verto-stories__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
+.verto-stories__intro { max-width: 36rem; }
+.verto-stories__body { margin-top: 1.5rem; line-height: 1.65; color: color-mix(in oklab, var(--ink-foreground) 80%, transparent); }
+.verto-stories__note { font-size: 10px; text-transform: uppercase; letter-spacing: 0.24em; opacity: 0.5; }
+.verto-stories__grid { margin-top: 2.5rem; display: grid; gap: 1.25rem; }
+@media (min-width: 768px) { .verto-stories__grid { grid-template-columns: repeat(3, 1fr); } }
+.verto-stories__slot {
+  position: relative; aspect-ratio: 16 / 9; border-radius: 1rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1rem; text-align: center; padding: 1.5rem;
+  border: 1px dashed color-mix(in oklab, var(--ink-foreground) 30%, transparent);
+  background: color-mix(in oklab, var(--ink-foreground) 4%, transparent);
+}
+.verto-stories__play {
+  display: flex; align-items: center; justify-content: center;
+  width: 3.5rem; height: 3.5rem; border-radius: 50%;
+  background: color-mix(in oklab, var(--accent) 22%, transparent); color: var(--accent);
+}
+.verto-stories__play svg { width: 1.5rem; height: 1.5rem; transform: translateX(2px); }
+.verto-stories__slottitle { font-family: var(--font-display); font-size: 1.125rem; line-height: 1.35; letter-spacing: -0.01em; }
+.verto-stories__slotnote { margin-top: 0.5rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; }
+.verto-stories__num { position: absolute; top: 1rem; right: 1rem; font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.4; }
+.verto-hub-socials { padding: 5rem 0 6rem; margin-top: 4rem; border-top: 1px solid var(--border); }
+
+/* ── About photo collage (verto-collage widget) ── */
+.verto-collage {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;
+  grid-auto-rows: 140px;
+}
+@media (min-width: 768px)  { .verto-collage { gap: 1rem; grid-auto-rows: 180px; } }
+@media (min-width: 1024px) { .verto-collage { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 210px; } }
+.verto-collage__tile { position: relative; overflow: hidden; border-radius: 1rem; background: var(--muted); }
+.verto-collage__tile--big  { grid-column: span 2; grid-row: span 2; }
+.verto-collage__tile--wide { grid-column: span 2; }
+.verto-collage__tile img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.verto-collage__tile:hover img { transform: scale(1.04); }
+.verto-collage__scrim {
+  pointer-events: none; position: absolute; inset: auto 0 0 0; height: 33%;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.55) 100%);
+}
+.verto-collage__caption {
+  position: absolute; bottom: 0.75rem; right: 1rem;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.24em; color: rgba(255, 255, 255, 0.85);
+}
+/* Subtle stagger reveal — tiles rise as the section reveals */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-init .verto-collage__tile { opacity: 0; transform: translateY(20px); }
+  .reveal-in .verto-collage__tile {
+    opacity: 1; transform: none;
+    transition: opacity 0.7s ease var(--tile-delay, 0ms), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--tile-delay, 0ms);
+  }
+}
+
+/* ── Community & DE&I placeholder cards ── */
+.verto-community { display: grid; gap: 1.5rem; margin-top: 3.5rem; }
+@media (min-width: 768px) { .verto-community { grid-template-columns: repeat(3, 1fr); } }
+.verto-community__card {
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 1rem;
+  background: var(--surface, var(--background)); border: 1px solid var(--border);
+}
+.verto-community__ph {
+  aspect-ratio: 16 / 10; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 0.75rem; text-align: center;
+  background: var(--muted);
+  border-bottom: 1px dashed color-mix(in oklab, var(--foreground) 20%, transparent);
+}
+.verto-community__ph svg { width: 1.5rem; height: 1.5rem; color: var(--muted-foreground); }
+.verto-community__phnote { font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--muted-foreground); }
+.verto-community__body { padding: 1.75rem; }
+.verto-community__title { margin: 0; font-family: var(--font-display); font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
+.verto-community__text { margin: 0.75rem 0 0; font-size: 1rem; line-height: 1.65; color: var(--muted-foreground); }
+
+/* ═════════════════════════════════════════════════════════════════════
+ * v0.9 — VERTEK brand site (Vertek-only prototype sections + brand scope)
+ * ═════════════════════════════════════════════════════════════════════ */
+
+/* ── Journey rail (process-rail line_style=journey — brand-colour year) ── */
+.vbs-rail__year { margin-top: 1.5rem; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 1.5rem; line-height: 2rem; }
+
+/* ── Values accordion (verto-values-accordion) ── */
+.vbs-valacc { padding-block: 6rem; }
+:where(.vbs-valacc) :where(h2, h3, p) { margin: 0; padding: 0; }
+.vbs-valacc__grid { display: grid; gap: 3rem; align-items: start; }
+@media (min-width: 1024px) { .vbs-valacc__grid { grid-template-columns: 1fr 1.6fr; } }
+@media (min-width: 1024px) { .vbs-valacc__intro { position: sticky; top: 6rem; } }
+.vbs-valacc__body { margin-top: 1.5rem; max-width: 28rem; font-size: 1rem; line-height: 1.625; opacity: 0.75; }
+.vbs-valacc__list { border-top: 1px solid; }
+.vbs-valacc__item { border-bottom: 1px solid; }
+.vbs-valacc__summary {
+  display: flex; align-items: center; gap: 1.5rem; cursor: pointer;
+  list-style: none; padding: 1.5rem 0;
+}
+@media (min-width: 768px) { .vbs-valacc__summary { padding-block: 1.75rem; } }
+.vbs-valacc__summary::-webkit-details-marker { display: none; }
+.vbs-valacc__num { width: 2.5rem; flex-shrink: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.22em; }
+.vbs-valacc__title { flex: 1; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 1.25rem; line-height: 1.375; }
+@media (min-width: 768px) { .vbs-valacc__title { font-size: 1.5rem; } }
+.vbs-valacc__plus { position: relative; height: 1rem; width: 1rem; flex-shrink: 0; transition: transform 0.3s; }
+.vbs-valacc__plus span:first-child { position: absolute; left: 0; top: 50%; height: 1px; width: 100%; transform: translateY(-50%); }
+.vbs-valacc__plus span:last-child { position: absolute; top: 0; left: 50%; height: 100%; width: 1px; transform: translateX(-50%); }
+.vbs-valacc__item[open] .vbs-valacc__plus { transform: rotate(45deg); }
+.vbs-valacc__panel { padding: 0 2.5rem 1.75rem 4rem; }
+.vbs-valacc__panel p { max-width: 42rem; font-size: 1rem; line-height: 1.625; opacity: 0.8; }
+
+/* ── Case study layout inside the quote band (case_client set) ── */
+.vbs-band__case { margin-top: 3.5rem; display: grid; gap: 3rem; }
+@media (min-width: 1024px) { .vbs-band__case { grid-template-columns: 1fr 2fr; } }
+@media (min-width: 1024px) { .vbs-band__casemeta { border-right: 1px solid; padding-right: 2.5rem; } }
+.vbs-band__caselabel { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.65; }
+.vbs-band__caselabel--sp { margin-top: 2rem; }
+.vbs-band__caseclient { margin-top: 0.5rem; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 1.5rem; line-height: 2rem; }
+.vbs-band__casesector { margin-top: 0.5rem; font-size: 0.875rem; opacity: 0.85; }
+.vbs-band__casecols { display: grid; gap: 2.5rem; }
+@media (min-width: 768px) { .vbs-band__casecols { grid-template-columns: repeat(3, 1fr); } }
+.vbs-band__casecols .vbs-band__colbody { margin-top: 1rem; }
+
+/* ── Light testimonials (quote-band quotes_style=light) ── */
+.vbs-band--light .vbs-band__inner--band { padding-block: 6rem; }
+.vbs-band__quotes--light { margin-top: 3.5rem; }
+.vbs-quote-l { position: relative; padding-left: 2rem; margin: 0; }
+@media (min-width: 768px) { .vbs-quote-l--drop { margin-top: 4rem; } }
+.vbs-quote-l__mark {
+  position: absolute; top: -0.5rem; left: -0.75rem; padding-inline: 0.25rem;
+  font-family: var(--font-display); font-weight: 700; font-size: 3rem; line-height: 1;
+}
+.vbs-quote-l blockquote {
+  margin: 0; padding: 0; border: none; background: none; quotes: none;
+  font-style: normal; font-size: 1rem; line-height: 1.625; opacity: 0.9;
+}
+.vbs-quote-l blockquote::before, .vbs-quote-l blockquote::after { content: none; }
+.vbs-quote-l figcaption { margin-top: 1.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.7; font-style: normal; }
+
+/* ── Vertek brand overrides (port of [data-brand="vertek"] in styles.css):
+      Saira SemiBold uppercase display, JetBrains Mono labels, squared CTAs ── */
+body.verto-brand-vertek .display-1,
+body.verto-brand-vertek .display-2,
+body.verto-brand-vertek .display-3,
+body.verto-brand-vertek .display-4,
+body.verto-brand-vertek h1,
+body.verto-brand-vertek h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+/* Saira "font-display" pieces run SemiBold with squared tracking */
+body.verto-brand-vertek .vbs-feature__title,
+body.verto-brand-vertek .vbs-asplit__headline,
+body.verto-brand-vertek .vbs-story__headline,
+body.verto-brand-vertek .vbs-spec__title,
+body.verto-brand-vertek .vbs-aud__headline,
+body.verto-brand-vertek .vbs-rail__num,
+body.verto-brand-vertek .vbs-rail__num3,
+body.verto-brand-vertek .vbs-rail__title3,
+body.verto-brand-vertek .vbs-rail__title4,
+body.verto-brand-vertek .vbs-rail__stoptitle,
+body.verto-brand-vertek .vbs-rail__year,
+body.verto-brand-vertek .vbs-valacc__title,
+body.verto-brand-vertek .vbs-band__statvalue,
+body.verto-brand-vertek .vbs-band__mark,
+body.verto-brand-vertek .vbs-band__caseclient,
+body.verto-brand-vertek .vbs-quote-l__mark,
+body.verto-brand-vertek .vbs-proof__num,
+body.verto-brand-vertek .vbs-team__name,
+body.verto-brand-vertek .vbs-statstrip__value { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.01em; }
+/* Labels, specs & metadata in JetBrains Mono per the guidelines */
+body.verto-brand-vertek .eyebrow,
+body.verto-brand-vertek .verto-eyebrow { font-family: var(--font-mono); font-weight: 500; letter-spacing: 0.18em; }
+/* Squared, engineered CTAs */
+body.verto-brand-vertek .btn-base {
+  border-radius: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+}
+/* font-extrabold caps at SemiBold for Saira (stat overlay card) */
+body.verto-brand-vertek .vbs-statcard__value { font-family: var(--font-display); font-weight: 600; }
