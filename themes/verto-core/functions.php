@@ -73,3 +73,19 @@ add_action( 'admin_init', function () {
 add_action( 'after_setup_theme', function () {
 	register_nav_menus( [ 'verto-primary' => 'Verto Primary' ] );
 } );
+
+/**
+ * Cross-site brand URLs. Staging defaults below; when the production domains
+ * go live, set the 'verto_brand_urls' option (or use the filter) — one place.
+ */
+function verto_brand_url( string $brand ): string {
+	$defaults = [
+		'verto'      => 'https://verto-wp.on-forge.com',
+		'edison-lux' => 'https://edisonlux-wp.on-forge.com',
+		'modulr'     => 'https://modulr-wp.on-forge.com',
+		'vertek'     => 'https://vertek-wp.on-forge.com',
+	];
+	$urls = wp_parse_args( (array) get_option( 'verto_brand_urls', [] ), $defaults );
+	$urls = apply_filters( 'verto/brand_urls', $urls );
+	return $urls[ $brand ] ?? '#';
+}

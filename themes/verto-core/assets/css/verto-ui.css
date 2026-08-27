@@ -1159,6 +1159,29 @@ body.verto-brand-edison-lux .vbs-statcard__value {
 .verto-stories__slottitle { font-family: var(--font-display); font-size: 1.125rem; line-height: 1.35; letter-spacing: -0.01em; }
 .verto-stories__slotnote { margin-top: 0.5rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; }
 .verto-stories__num { position: absolute; top: 1rem; right: 1rem; font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.4; }
+/* Real story films (Aug-2026 media drop) — portrait 9:16 cards */
+.verto-stories__video { position: relative; margin: 0; display: flex; flex-direction: column; gap: 0.875rem; }
+.verto-stories__video video {
+  width: 100%; aspect-ratio: 9 / 16; max-height: 480px; object-fit: cover;
+  border-radius: 1rem; background: #000; display: block;
+}
+.verto-stories__video figcaption { display: flex; flex-direction: column; }
+.verto-stories__video .verto-stories__num { top: auto; bottom: 0.75rem; }
+/* Portrait video embed (careers share-scheme film) */
+.verto-video-story { margin: 0; }
+.verto-video-story video {
+  width: 100%; max-width: 380px; aspect-ratio: 9 / 16; object-fit: cover;
+  border-radius: 1.25rem; background: #000; display: block; margin: 0 auto;
+}
+.verto-video-story figcaption {
+  margin-top: 0.875rem; text-align: center; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6;
+}
+.verto-video-story--empty {
+  display: flex; align-items: center; justify-content: center; aspect-ratio: 9 / 16;
+  max-width: 380px; margin: 0 auto; border-radius: 1.25rem;
+  border: 1px dashed color-mix(in oklab, var(--ink-foreground, #fff) 30%, transparent);
+}
 .verto-hub-socials { padding: 5rem 0 6rem; margin-top: 4rem; border-top: 1px solid var(--border); }
 
 /* ── About photo collage (verto-collage widget) ── */
@@ -1208,6 +1231,8 @@ body.verto-brand-edison-lux .vbs-statcard__value {
 }
 .verto-community__ph svg { width: 1.5rem; height: 1.5rem; color: var(--muted-foreground); }
 .verto-community__phnote { font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--muted-foreground); }
+.verto-community__media { aspect-ratio: 16 / 10; overflow: hidden; }
+.verto-community__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .verto-community__body { padding: 1.75rem; }
 .verto-community__title { margin: 0; font-family: var(--font-display); font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
 .verto-community__text { margin: 0.75rem 0 0; font-size: 1rem; line-height: 1.65; color: var(--muted-foreground); }

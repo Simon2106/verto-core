@@ -147,3 +147,42 @@ in brands.$brand.index.tsx). Port verbatim into installer defaults.
       Kendall are seeded with the placeholder role "Manager" (client gave
       the management list without titles); Martyn Jamieson seeded
       "Consultant" (Life Sciences desk, group site).
+- [x] v0.11.0 — client media drop integrated (Aug 2026, both codebases).
+      Sorted 3.2GB of event photography/film by matching each forwarded
+      email's attachment filenames against the loose files: Barcelona
+      incentive (10), charity gala (5), Ibiza (12), summer summit at
+      Southsea Castle (9), plus a general pool (Prague / office life, 28).
+      Curated + web-optimised (≤1600px q78 progressive; 800px card thumbs
+      in the prototype) into assets/import/: barcelona-01..06, gala-01..04,
+      ibiza-11..15 (continues ibiza8/9), summit-02..06, verto-01..05 — all
+      registered in import_media(). Videos transcoded 720×1280 h264 CRF28
+      + aac96k faststart, poster frame each:
+        · milly-promotion.mp4 (13s, 3.3MB) — Milly Compton's promotion,
+          confetti walk-in (identified against her bundled headshot);
+        · sade-promotion.mp4 (16s, 4.4MB) — Sade Kendall's promotion
+          announcement (matches her ModulR headshot);
+        · sade-celebration.mp4 (15s, 3.0MB) — second clip of the same
+          moment (the hug);
+        · promotion-celebration.mp4 (12s, 3.1MB) — an (unnamed male
+          colleague's) promotion landing, office applauding — client to
+          confirm the name before captioning;
+        · share-scheme.mp4 (58s, 6.6MB) — the "one word for the share
+          scheme" / "what does it mean" interview film, picked from the
+          Share scheme folder (the 108MB source; the 170MB/91s longer
+          interview and the 10s duplicates were passed over).
+      Wired: WGO seed_posts() now batch-versioned (verto_installer_posts_
+      media option) so EXISTING installs gain the four new posts on
+      Rebuild — Barcelona (Trips), Inside the summer summit (Community),
+      Milly Compton promoted + Sade Kendall promoted (Wins, films embedded
+      via [video] shortcode + poster); Prague/Ibiza posts' featured images
+      upgraded to real Prague (Pilsner Urquell group) / Ibiza-sea shots.
+      home.php Stories band now plays the three films (poster + controls,
+      preload=none; dashed placeholder only if media missing). About:
+      gala photos into the Community & DE&I gala cards (DE&I card stays
+      placeholder), collage refreshed (ibiza-11 lead, summit letters,
+      Barcelona W group). Careers: incentives section is now "Incentives
+      & ownership" — Barcelona photo + click-to-play share-scheme film
+      (verto-video-story CSS). Prototype mirrors all of it (insights.ts
+      entries, whats-going-on Stories band, about collage/cards, careers
+      ShareSchemeFilm + real Milly/Sade promotion cards).
+      Rebuild required on the group install (media import + new posts).

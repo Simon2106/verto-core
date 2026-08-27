@@ -121,6 +121,46 @@ class Verto_Installer {
 			'insight_fluidpower'    => 'insight-fluidpower.jpg',
 			'insight_manufacturing' => 'insight-manufacturing.jpg',
 			'insight_hvac'          => 'insight-hvac.jpg',
+			/* ── Client media drop, Aug 2026 — real event photography ──
+			   Sorted from the client's forwarded emails: Barcelona incentive,
+			   charity gala, Ibiza incentive (continues ibiza8/9), summer summit
+			   (Southsea Castle) and a general Verto pool (Prague + office life). */
+			'barcelona_01' => 'barcelona-01.jpg', // group outside the W Barcelona
+			'barcelona_02' => 'barcelona-02.jpg', // rooftop selfie at the W
+			'barcelona_03' => 'barcelona-03.jpg', // team on the street, Eixample
+			'barcelona_04' => 'barcelona-04.jpg', // team dinner
+			'barcelona_05' => 'barcelona-05.jpg', // dinner trio
+			'barcelona_06' => 'barcelona-06.jpg', // boarding the easyJet flight
+			'gala_01'      => 'gala-01.jpg',      // gala — group at the podium
+			'gala_02'      => 'gala-02.jpg',      // gala — black-tie group
+			'gala_03'      => 'gala-03.jpg',      // gala — dance floor
+			'gala_04'      => 'gala-04.jpg',      // gala — the room
+			'ibiza_11'     => 'ibiza-11.jpg',     // the team in the sea
+			'ibiza_12'     => 'ibiza-12.jpg',     // boat group
+			'ibiza_13'     => 'ibiza-13.jpg',     // on the boat, champagne
+			'ibiza_14'     => 'ibiza-14.jpg',     // pool group
+			'ibiza_15'     => 'ibiza-15.jpg',     // Formentera water
+			'summit_02'    => 'summit-02.jpg',    // VERTO letters at the summit party
+			'summit_03'    => 'summit-03.jpg',    // rooftop group at the castle
+			'summit_04'    => 'summit-04.jpg',    // four under the Verto flag
+			'summit_05'    => 'summit-05.jpg',    // team on the ramparts
+			'summit_06'    => 'summit-06.jpg',    // the summit stage
+			'verto_01'     => 'verto-01.jpg',     // Prague — Pilsner Urquell brewery
+			'verto_02'     => 'verto-02.jpg',     // Prague — snowy old town
+			'verto_03'     => 'verto-03.jpg',     // Verto's 6th birthday cake
+			'verto_04'     => 'verto-04.jpg',     // office party
+			'verto_05'     => 'verto-05.jpg',     // sales-day football shirts
+			// Videos (portrait 720×1280 h264/aac, faststart) + poster frames
+			'milly_video'        => 'milly-promotion.mp4',            // Milly Compton's promotion — confetti walk-in
+			'milly_poster'       => 'milly-promotion-poster.jpg',
+			'sade_video'         => 'sade-promotion.mp4',             // Sade Kendall's promotion announcement
+			'sade_poster'        => 'sade-promotion-poster.jpg',
+			'celebration_video'  => 'promotion-celebration.mp4',      // a promotion landing — the office turns out
+			'celebration_poster' => 'promotion-celebration-poster.jpg',
+			'sade_celebration_video'  => 'sade-celebration.mp4',      // Sade's celebration, second clip
+			'sade_celebration_poster' => 'sade-celebration-poster.jpg',
+			'share_video'        => 'share-scheme.mp4',               // "What does Verto's share scheme mean" interview (58s)
+			'share_poster'       => 'share-scheme-poster.jpg',
 		];
 
 		foreach ( $files as $key => $file ) {
@@ -355,10 +395,16 @@ class Verto_Installer {
 		update_option( 'verto_installer_team', self::TEAM_STRUCTURE );
 	}
 
-	/** Seed the three "What's going on" placeholder posts (once).
+	/** Seed the "What's going on" posts (idempotent, batch-versioned).
 	 *  Magazine categories (Trips / Wins / Community / News) power the
 	 *  category chips on the WGO hub — all four terms are created so the
-	 *  client can file new stories straight away. */
+	 *  client can file new stories straight away.
+	 *
+	 *  Batches (each tracked in its own option so EXISTING installs pick up
+	 *  the later batches on Rebuild, mirroring the team-seeder migration):
+	 *   1. verto_installer_posts       — the original three placeholder posts.
+	 *   2. verto_installer_posts_media — the Aug-2026 client media drop:
+	 *      Barcelona, summer summit, and the Milly / Sade promotion videos. */
 	private static function seed_posts( array $media ): void {
 		$cat_ids = [];
 		foreach ( [ 'Trips', 'Wins', 'Community', 'News' ] as $cat_name ) {
@@ -367,9 +413,13 @@ class Verto_Installer {
 		}
 		// Migration: earlier builds filed the seeded posts under "Life at Verto" —
 		// on rebuild, move any seeded post still in that category to its new one.
+		// The media drop also upgrades two stock featured images to the client's
+		// real photography: Prague post → the Pilsner Urquell group shot, and the
+		// Ibiza post → the team in the sea (its old image was an Ibiza re-use).
 		$existing = get_option( 'verto_installer_posts' );
 		if ( $existing ) {
-			$map = [ 'Sunday Times' => 'Wins', 'Prague' => 'Trips', 'Ibiza' => 'Trips' ];
+			$map    = [ 'Sunday Times' => 'Wins', 'Prague' => 'Trips', 'Ibiza' => 'Trips' ];
+			$refresh = [ 'Prague' => 'verto_01', 'Ibiza' => 'ibiza_11' ];
 			foreach ( (array) $existing as $pid ) {
 				$post = get_post( $pid );
 				if ( ! $post ) continue;
@@ -379,21 +429,75 @@ class Verto_Installer {
 						break;
 					}
 				}
+				foreach ( $refresh as $needle => $mkey ) {
+					if ( str_contains( $post->post_title, $needle ) && ! empty( $media[ $mkey ]['id'] ) ) {
+						set_post_thumbnail( $pid, $media[ $mkey ]['id'] );
+						break;
+					}
+				}
 			}
 			$old = get_term_by( 'name', 'Life at Verto', 'category' );
 			if ( $old && 0 === (int) $old->count ) wp_delete_term( $old->term_id, 'category' );
-			return; // posts already seeded — categories now corrected
+		} else {
+			$posts = [
+				[ 'title' => 'Verto named in The Sunday Times Best Places to Work 2026',
+				  'excerpt' => "Officially one of the UK's best small organisations to work for. Six years from a lockdown start-up to a Sunday Times listing — built on the same five values we started with.",
+				  'image' => 'award_bptw', 'category' => 'Wins' ],
+				[ 'title' => 'Prague 2026 — the whole company, one incentive trip',
+				  'excerpt' => 'Our second international incentive trip. Everyone who hit target, flights and all — this is what the 2× annual holiday incentive actually looks like.',
+				  'image' => ! empty( $media['verto_01']['id'] ) ? 'verto_01' : 'ibiza8', 'category' => 'Trips' ],
+				[ 'title' => 'Next stop: Ibiza — the 2026 summer incentive revealed',
+				  'excerpt' => 'Barcelona 2025. Prague, January 2026. And this summer, the team that delivers gets Ibiza. The countdown is on.',
+				  'image' => ! empty( $media['ibiza_11']['id'] ) ? 'ibiza_11' : 'ibiza9', 'category' => 'Trips' ],
+			];
+			$ids = [];
+			foreach ( $posts as $post ) {
+				$cat_id = $cat_ids[ $post['category'] ] ?? 0;
+				$id = wp_insert_post( [
+					'post_title'   => $post['title'],
+					'post_excerpt' => $post['excerpt'],
+					'post_content' => $post['excerpt'],
+					'post_status'  => 'publish',
+					'post_type'    => 'post',
+					'post_category'=> $cat_id ? [ $cat_id ] : [],
+				] );
+				if ( $id && ! is_wp_error( $id ) && ! empty( $media[ $post['image'] ]['id'] ) ) {
+					set_post_thumbnail( $id, $media[ $post['image'] ]['id'] );
+				}
+				$ids[] = $id;
+			}
+			update_option( 'verto_installer_posts', $ids );
 		}
+		self::seed_media_drop_posts( $media, $cat_ids );
+	}
+
+	/** Batch 2 — real stories from the Aug-2026 client media drop (runs once,
+	 *  on fresh AND existing installs). Promotion posts embed the transcoded
+	 *  clips via the [video] shortcode with their poster frames. */
+	private static function seed_media_drop_posts( array $media, array $cat_ids ): void {
+		if ( get_option( 'verto_installer_posts_media' ) ) return;
+		$vid = static function ( $video_key, $poster_key ) use ( $media ) {
+			if ( empty( $media[ $video_key ]['url'] ) ) return '';
+			$poster = empty( $media[ $poster_key ]['url'] ) ? '' : ' poster="' . esc_url( $media[ $poster_key ]['url'] ) . '"';
+			return "\n\n" . '[video mp4="' . esc_url( $media[ $video_key ]['url'] ) . '"' . $poster . ' preload="none"]';
+		};
 		$posts = [
-			[ 'title' => 'Verto named in The Sunday Times Best Places to Work 2026',
-			  'excerpt' => "Officially one of the UK's best small organisations to work for. Six years from a lockdown start-up to a Sunday Times listing — built on the same five values we started with.",
-			  'image' => 'award_bptw', 'category' => 'Wins' ],
-			[ 'title' => 'Prague 2026 — the whole company, one incentive trip',
-			  'excerpt' => 'Our second international incentive trip. Everyone who hit target, flights and all — this is what the 2× annual holiday incentive actually looks like.',
-			  'image' => 'ibiza8', 'category' => 'Trips' ],
-			[ 'title' => 'Next stop: Ibiza — the 2026 summer incentive revealed',
-			  'excerpt' => 'Barcelona 2025. Prague, January 2026. And this summer, the team that delivers gets Ibiza. The countdown is on.',
-			  'image' => 'ibiza9', 'category' => 'Trips' ],
+			[ 'title'   => 'Barcelona — where the incentive trips started',
+			  'excerpt' => 'September 2025, the first international incentive: the whole qualifying team at the W Barcelona. Two trips a year has been the rhythm ever since.',
+			  'content' => "September 2025, the first international incentive trip — everyone who hit target, straight off the plane and into the W Barcelona. Dinners on the marina, a rooftop or two, and the bar set for everything that followed: Prague in January, Ibiza this summer.\n\nTwo international trips a year is the standard now. This is where it started.",
+			  'image'   => 'barcelona_01', 'category' => 'Trips', 'date' => '2025-09-15 10:00:00' ],
+			[ 'title'   => 'Inside the summer summit',
+			  'excerpt' => 'The whole group at Southsea Castle for the Verto Summer Summit — the numbers, the plans, then the Verto flag over the ramparts and letters lit up for the evening.',
+			  'content' => "One day, the whole group, one castle. The Verto Summer Summit took over Southsea Castle: the half-year numbers and the US build-out plans in the morning, the Verto flag over the ramparts by the afternoon, and the light-up letters doing overtime at the party.\n\nEvery office, every brand, in one place — it happens twice a year, and it's the closest thing we have to a team photo that moves.",
+			  'image'   => 'summit_03', 'category' => 'Community', 'date' => '2026-07-28 10:00:00' ],
+			[ 'title'   => 'Milly Compton promoted',
+			  'excerpt' => 'Confetti cannons in the Edison Lux corner — Milly Compton walked into an office that knew something she didn\'t. Promotion, announced the Verto way.',
+			  'content' => "Confetti cannons, the whole office on its feet, and Milly Compton walking into a corridor that knew something she didn't. Promotion announcements get the full treatment here — press play for the moment it landed." . $vid( 'milly_video', 'milly_poster' ),
+			  'image'   => 'milly_poster', 'category' => 'Wins', 'date' => '2026-07-30 12:00:00' ],
+			[ 'title'   => 'Sade Kendall promoted',
+			  'excerpt' => 'The ModulR desk had the confetti ready — Sade Kendall\'s promotion, announced in front of the whole office. Watch the moment it landed.',
+			  'content' => "The letter, the confetti, the whole office in on it — Sade Kendall's promotion on the ModulR desk, announced the only way we know how. Press play for the walk-in." . $vid( 'sade_video', 'sade_poster' ),
+			  'image'   => 'sade_poster', 'category' => 'Wins', 'date' => '2026-08-04 12:00:00' ],
 		];
 		$ids = [];
 		foreach ( $posts as $post ) {
@@ -401,9 +505,10 @@ class Verto_Installer {
 			$id = wp_insert_post( [
 				'post_title'   => $post['title'],
 				'post_excerpt' => $post['excerpt'],
-				'post_content' => $post['excerpt'] . "\n\n⚠️ Placeholder story — replace with the client's real \"what's going on\" content.",
+				'post_content' => $post['content'],
 				'post_status'  => 'publish',
 				'post_type'    => 'post',
+				'post_date'    => $post['date'],
 				'post_category'=> $cat_id ? [ $cat_id ] : [],
 			] );
 			if ( $id && ! is_wp_error( $id ) && ! empty( $media[ $post['image'] ]['id'] ) ) {
@@ -411,7 +516,7 @@ class Verto_Installer {
 			}
 			$ids[] = $id;
 		}
-		update_option( 'verto_installer_posts', $ids );
+		update_option( 'verto_installer_posts_media', $ids );
 	}
 
 	private static function create_pages( array $media ): void {
@@ -542,14 +647,17 @@ class Verto_Installer {
 					[ '_id' => self::eid(), 'kicker' => 'Year 4+', 'title' => 'Principal / Team Manager', 'body' => 'Lead a team or go deeper as a biller — both paths carry equity and a seat in how the group grows.' ],
 				] ] ),
 			], 'verto-muted verto-container-pad' ),
+			// Incentives + share scheme — the client's share-scheme interview film
+			// (click-to-play: poster + controls, nothing loads until pressed).
 			self::section2( [
 				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'Incentives',
+					'eyebrow' => 'Incentives & ownership',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Hit target. Board the plane.' ] ],
-					'body'    => "Two international incentive trips a year, winners' lunches, sales days and personal training sessions. Barcelona 2025, Prague in January — Ibiza is next. (⚠️ Placeholder imagery — client's incentive clips and photos to come.)",
+					'body'    => "Two international incentive trips a year, winners' lunches, sales days and personal training sessions. Barcelona 2025, Prague in January, Ibiza this summer — and a share scheme that includes every person in the business. Press play to hear what owning a piece of Verto actually means to the team.",
 				] ),
+				self::widget( 'image', [ 'image' => self::media_setting( $media, 'barcelona_01' ), 'image_size' => 'full', '_css_classes' => 'verto-rounded-photo' ] ),
 			], [
-				self::widget( 'image', [ 'image' => self::media_setting( $media, 'ibiza8' ), 'image_size' => 'full', '_css_classes' => 'verto-rounded-photo' ] ),
+				self::widget( 'html', [ 'html' => self::share_scheme_video_html( $media ) ] ),
 			], 'verto-ink verto-container-pad', 50 ),
 			self::section( [ self::widget( 'verto-socials' ) ], 'verto-container-pad' ),
 			self::section( [
@@ -580,10 +688,13 @@ class Verto_Installer {
 					'body' => 'We opened our doors in February 2020 — and you know what happened next. Powered by determination and a lack of other options, Verto took its first steps as many others shut down. Today that lockdown business is all grown up: three specialist brands, a life sciences desk, and teams across the UK and US.',
 				] ),
 				// Photo collage replaces the single Ibiza hero image (approved design).
+				// Aug-2026 media drop: real Ibiza sea shot leads (the old big tile
+				// re-used the summit rooftop photo), plus the summit letters and a
+				// Barcelona group shot from the client's event photography.
 				self::widget( 'verto-collage', [ 'items' => [
-					[ '_id' => self::eid(), 'size' => 'big',  'image' => self::media_setting( $media, 'ibiza9' ),        'alt' => 'The Verto team in Ibiza',            'caption' => 'Ibiza — the 2026 summer incentive' ],
-					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_poster' ), 'alt' => 'The Verto summer summit',            'caption' => 'The summer summit' ],
-					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'ibiza8' ),        'alt' => 'The team on an incentive trip',      'caption' => '' ],
+					[ '_id' => self::eid(), 'size' => 'big',  'image' => self::media_setting( $media, 'ibiza_11' ),      'alt' => 'The Verto team in the sea in Ibiza', 'caption' => 'Ibiza — the 2026 summer incentive' ],
+					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_02' ),     'alt' => 'The Verto summer summit',            'caption' => 'The summer summit' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'barcelona_01' ),  'alt' => 'The team outside the W Barcelona',   'caption' => '' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'about_image' ),   'alt' => 'The team at work',                   'caption' => '' ],
 					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'skyline_uk' ),    'alt' => 'Solent, UK — where it started',      'caption' => 'Solent, UK' ],
 					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'skyline_us' ),    'alt' => 'Austin, TX — the US build-out',      'caption' => 'Austin, TX' ],
@@ -668,15 +779,16 @@ class Verto_Installer {
 				] ),
 				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier' => 'team' ] ),
 			], 'verto-container-pad' ),
-			// Community & DE&I — placeholder cards awaiting client photography
-			// (approved design; sits directly before the socials section).
+			// Community & DE&I — gala cards now carry the client's real charity-
+			// gala photography; the DE&I card stays a placeholder until the
+			// client's numbers arrive (sits directly before the socials section).
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Community & DE&I',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'More than the numbers.' ] ],
 					'body'    => 'Gala nights, fundraising and a genuine commitment to building a diverse group — the parts of Verto that never make a sales deck.',
 				] ),
-				self::widget( 'text-editor', [ 'editor' => self::community_cards_html() ] ),
+				self::widget( 'text-editor', [ 'editor' => self::community_cards_html( $media ) ] ),
 			], 'verto-container-pad' ),
 			self::section( [ self::widget( 'verto-socials', [ 'eyebrow' => 'Behind the scenes', 'heading' => 'Us, off the phones.' ] ) ], 'verto-container-pad' ),
 		];
@@ -716,27 +828,46 @@ class Verto_Installer {
 		update_option( 'page_on_front', $home_id );
 	}
 
-	/** Community & DE&I placeholder cards (⚠ photos coming from client). */
-	private static function community_cards_html(): string {
+	/** Community & DE&I cards. The two gala cards use the client's real
+	 *  charity-gala photography (Aug-2026 drop); the DE&I card keeps its
+	 *  placeholder until the client's commitments/numbers arrive. */
+	private static function community_cards_html( array $media = [] ): string {
 		$cards = [
-			[ 'Gala nights', 'Black-tie charity galas — including the night that raised £15,504 for the Amelia-Mae Foundation.' ],
-			[ 'Charity & fundraising', 'Every office backs a cause the team chooses — fundraisers, sponsored events and hands-on volunteering through the year.' ],
-			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments — and the numbers behind them — publish here soon.' ],
+			[ 'Gala nights', 'Black-tie charity galas — including the night that raised £15,504 for the Amelia-Mae Foundation.', 'gala_01', 'The team on stage at the charity gala' ],
+			[ 'Charity & fundraising', 'Every office backs a cause the team chooses — fundraisers, sponsored events and hands-on volunteering through the year.', 'gala_02', 'Black-tie group at the charity gala' ],
+			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments — and the numbers behind them — publish here soon.', null, '' ],
 		];
 		$html = '<div class="verto-community">';
-		foreach ( $cards as [ $title, $body ] ) {
-			$html .= '<article class="verto-community__card">'
-				. '<div class="verto-community__ph">'
-				. ( function_exists( 'verto_icon' ) ? verto_icon( 'camera' ) : '' )
-				. '<span class="verto-community__phnote">Photos coming from client</span>'
-				. '</div>'
-				. '<div class="verto-community__body">'
+		foreach ( $cards as [ $title, $body, $mkey, $alt ] ) {
+			$html .= '<article class="verto-community__card">';
+			if ( $mkey && ! empty( $media[ $mkey ]['url'] ) ) {
+				$html .= '<div class="verto-community__media"><img src="' . esc_url( $media[ $mkey ]['url'] ) . '" alt="' . esc_attr( $alt ) . '" loading="lazy" /></div>';
+			} else {
+				$html .= '<div class="verto-community__ph">'
+					. ( function_exists( 'verto_icon' ) ? verto_icon( 'camera' ) : '' )
+					. '<span class="verto-community__phnote">Photos coming from client</span>'
+					. '</div>';
+			}
+			$html .= '<div class="verto-community__body">'
 				. '<h3 class="verto-community__title">' . esc_html( $title ) . '</h3>'
 				. '<p class="verto-community__text">' . esc_html( $body ) . '</p>'
 				. '</div>'
 				. '</article>';
 		}
 		return $html . '</div>';
+	}
+
+	/** Portrait share-scheme interview film for the careers page —
+	 *  click-to-play (poster + native controls, preload="none"). */
+	private static function share_scheme_video_html( array $media ): string {
+		if ( empty( $media['share_video']['url'] ) ) {
+			return '<div class="verto-video-story verto-video-story--empty"><span class="verto-community__phnote">Share-scheme film coming soon</span></div>';
+		}
+		$poster = empty( $media['share_poster']['url'] ) ? '' : ' poster="' . esc_url( $media['share_poster']['url'] ) . '"';
+		return '<figure class="verto-video-story">'
+			. '<video controls preload="none" playsinline' . $poster . ' src="' . esc_url( $media['share_video']['url'] ) . '"></video>'
+			. '<figcaption>&ldquo;One word for the share scheme?&rdquo; &mdash; the team, on camera</figcaption>'
+			. '</figure>';
 	}
 
 	private static function brand_tiles_items( array $media ): array {
@@ -750,17 +881,17 @@ class Verto_Installer {
 			  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
 			  'logo' => self::media_setting( $media, 'logo_edison_colour' ),
 			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
-			  'link' => [ 'url' => '#' ] ],
+			  'link' => [ 'url' => verto_brand_url( 'edison-lux' ) ] ],
 			[ '_id' => self::eid(), 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
 			  'sectors' => "Hyperscale Data Centres\nUS Architecture\nMEP Engineering\nInterior Design & Fit-out",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
 			  'positioning' => "ModulR connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses and award-winning practices.",
-			  'link' => [ 'url' => '#' ] ],
+			  'link' => [ 'url' => verto_brand_url( 'modulr' ) ] ],
 			[ '_id' => self::eid(), 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60', 'bg' => '#0E1013',
 			  'sectors' => "Fluid Power & Hydraulics\nHVAC & Refrigeration\nAdvanced Manufacturing\nInstrumentation & Controls",
 			  'logo' => self::media_setting( $media, 'logo_vertek' ),
 			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US.',
-			  'link' => [ 'url' => '#' ] ],
+			  'link' => [ 'url' => verto_brand_url( 'vertek' ) ] ],
 		];
 	}
 
@@ -1619,8 +1750,21 @@ class Verto_Installer {
 			'careers'        => [ 'Careers', '' ],
 			'contact'        => [ 'Contact', '' ],
 		];
+		$brand_sites = [ 'edison-lux', 'modulr', 'vertek' ];
 		$i = 1;
 		foreach ( $order as $slug => [ $title, $class ] ) {
+			if ( in_array( $slug, $brand_sites, true ) && function_exists( 'verto_brand_url' ) ) {
+				// Brand entries link across to the brand's own site.
+				wp_update_nav_menu_item( $menu_id, 0, [
+					'menu-item-title'    => $title,
+					'menu-item-type'     => 'custom',
+					'menu-item-url'      => verto_brand_url( $slug ),
+					'menu-item-status'   => 'publish',
+					'menu-item-position' => $i++,
+					'menu-item-classes'  => $class,
+				] );
+				continue;
+			}
 			if ( empty( $pages[ $slug ] ) ) continue;
 			wp_update_nav_menu_item( $menu_id, 0, [
 				'menu-item-title'     => $title,

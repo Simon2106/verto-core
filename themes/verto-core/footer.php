@@ -52,9 +52,9 @@ $verto_is_brand_site = 'verto' !== $verto_brand;
 				<ul class="verto-footer__menu">
 					<?php foreach ( $verto_names as $verto_slug => $verto_other ) :
 						if ( $verto_slug === $verto_brand ) continue; ?>
-						<li><a href="#"><?php echo esc_html( $verto_other ); ?></a></li>
+						<li><a href="<?php echo esc_url( verto_brand_url( $verto_slug ) ); ?>"><?php echo esc_html( $verto_other ); ?></a></li>
 					<?php endforeach; ?>
-					<li><a href="#">Verto Group</a></li>
+					<li><a href="<?php echo esc_url( verto_brand_url( 'verto' ) ); ?>">Verto Group</a></li>
 				</ul>
 			</div>
 			<div class="verto-footer__col">
@@ -91,9 +91,9 @@ $verto_is_brand_site = 'verto' !== $verto_brand;
 			<div class="verto-footer__col">
 				<h4>Brands</h4>
 				<ul class="verto-footer__menu">
-					<li><a href="#">Edison Lux</a></li>
-					<li><a href="#">Vertek</a></li>
-					<li><a href="#">ModulR</a></li>
+					<li><a href="<?php echo esc_url( verto_brand_url( 'edison-lux' ) ); ?>">Edison Lux</a></li>
+					<li><a href="<?php echo esc_url( verto_brand_url( 'vertek' ) ); ?>">Vertek</a></li>
+					<li><a href="<?php echo esc_url( verto_brand_url( 'modulr' ) ); ?>">ModulR</a></li>
 				</ul>
 			</div>
 			<div class="verto-footer__col">

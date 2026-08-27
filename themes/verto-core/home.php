@@ -85,26 +85,54 @@ get_header();
 	<?php endif; ?>
 
 	<?php if ( 'verto' === $verto_brand ) : ?>
-		<!-- STORIES — video slots for the client's people-story films (placeholder) -->
+		<!-- STORIES — the client's people-story films (Aug-2026 media drop).
+		     Each slot renders its real video (poster + controls, preload="none");
+		     a slot whose media hasn't been imported falls back to the dashed
+		     placeholder, so the band degrades gracefully pre-build. -->
+		<?php
+		$verto_media   = get_option( 'verto_installer_media', [] );
+		$verto_stories = [
+			[ 'title' => 'A promotion, announced', 'note' => 'Confetti, applause &mdash; the office turns out', 'video' => 'celebration_video', 'poster' => 'celebration_poster' ],
+			[ 'title' => 'The moment it lands',    'note' => 'Sade&rsquo;s promotion, on camera',               'video' => 'sade_celebration_video', 'poster' => 'sade_celebration_poster' ],
+			[ 'title' => 'Owning a piece of it',   'note' => 'What the share scheme means to the team',         'video' => 'share_video', 'poster' => 'share_poster' ],
+		];
+		$verto_missing = 0;
+		foreach ( $verto_stories as $verto_s ) { if ( empty( $verto_media[ $verto_s['video'] ]['url'] ) ) $verto_missing++; }
+		?>
 		<section class="verto-stories">
 			<div class="verto-stories__head">
 				<div class="verto-stories__intro">
 					<span class="verto-eyebrow">Stories</span>
 					<h2 class="verto-display-3" style="margin-top:1.25rem;">People&rsquo;s stories.</h2>
-					<p class="verto-stories__body">The team, on camera &mdash; first placements, first incentive trips, the move to the US. Video interviews are being filmed now.</p>
+					<p class="verto-stories__body">The team, on camera &mdash; promotions landing in a storm of confetti, and what owning a piece of Verto actually means. Press play.</p>
 				</div>
-				<span class="verto-stories__note">&#9888; Placeholder &mdash; client videos to come</span>
+				<?php if ( $verto_missing ) : ?>
+					<span class="verto-stories__note">&#9888; <?php echo (int) $verto_missing; ?> video slot<?php echo 1 === $verto_missing ? '' : 's'; ?> pending &mdash; run Verto Setup &rarr; Build to import the films</span>
+				<?php endif; ?>
 			</div>
 			<div class="verto-stories__grid">
-				<?php foreach ( [ 'A first placement', 'Hitting the incentive trip', 'Building a US desk' ] as $verto_i => $verto_story ) : ?>
-					<div class="verto-stories__slot">
-						<span class="verto-stories__play" aria-hidden="true"><?php echo function_exists( 'verto_icon' ) ? verto_icon( 'play' ) : '&#9654;'; ?></span>
-						<div>
-							<div class="verto-stories__slottitle"><?php echo esc_html( $verto_story ); ?></div>
-							<div class="verto-stories__slotnote">People&rsquo;s stories &mdash; video coming soon</div>
+				<?php foreach ( $verto_stories as $verto_i => $verto_s ) : ?>
+					<?php if ( ! empty( $verto_media[ $verto_s['video'] ]['url'] ) ) : ?>
+						<figure class="verto-stories__video">
+							<video controls preload="none" playsinline
+								<?php if ( ! empty( $verto_media[ $verto_s['poster'] ]['url'] ) ) : ?>poster="<?php echo esc_url( $verto_media[ $verto_s['poster'] ]['url'] ); ?>"<?php endif; ?>
+								src="<?php echo esc_url( $verto_media[ $verto_s['video'] ]['url'] ); ?>"></video>
+							<figcaption>
+								<span class="verto-stories__slottitle"><?php echo wp_kses_post( $verto_s['title'] ); ?></span>
+								<span class="verto-stories__slotnote"><?php echo wp_kses_post( $verto_s['note'] ); ?></span>
+							</figcaption>
+							<span class="verto-stories__num">0<?php echo (int) $verto_i + 1; ?></span>
+						</figure>
+					<?php else : ?>
+						<div class="verto-stories__slot">
+							<span class="verto-stories__play" aria-hidden="true"><?php echo function_exists( 'verto_icon' ) ? verto_icon( 'play' ) : '&#9654;'; ?></span>
+							<div>
+								<div class="verto-stories__slottitle"><?php echo wp_kses_post( $verto_s['title'] ); ?></div>
+								<div class="verto-stories__slotnote">People&rsquo;s stories &mdash; video coming soon</div>
+							</div>
+							<span class="verto-stories__num">0<?php echo (int) $verto_i + 1; ?></span>
 						</div>
-						<span class="verto-stories__num">0<?php echo (int) $verto_i + 1; ?></span>
-					</div>
+					<?php endif; ?>
 				<?php endforeach; ?>
 			</div>
 		</section>

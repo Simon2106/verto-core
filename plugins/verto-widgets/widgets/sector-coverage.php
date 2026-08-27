@@ -81,6 +81,13 @@ class Verto_Widget_Sector_Coverage extends \Elementor\Widget_Base {
 					$color = $g['color'] ?: 'var(--accent)';
 					$link_color = $g['link_color'] ?: $color;
 					$url   = $g['link']['url'] ?? '#';
+					// Unset links resolve to the brand's own site automatically.
+					if ( ( '' === $url || '#' === $url ) && function_exists( 'verto_brand_url' ) ) {
+						$wm = strtolower( $g['wordmark'] ?? '' );
+						foreach ( [ 'edison' => 'edison-lux', 'modulr' => 'modulr', 'vertek' => 'vertek' ] as $needle => $slug ) {
+							if ( str_contains( $wm, $needle ) ) { $url = verto_brand_url( $slug ); break; }
+						}
+					}
 					$items = array_filter( array_map( 'trim', explode( "\n", $g['items'] ?? '' ) ) );
 					?>
 					<div class="verto-sectors__group">
