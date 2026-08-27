@@ -206,7 +206,7 @@ class Verto_Installer {
 
 	/** Team-structure schema version — bump when the master map changes so
 	 *  existing installs re-run the migration on their next Rebuild. */
-	const TEAM_STRUCTURE = 'structure-0.10.0';
+	const TEAM_STRUCTURE = 'structure-0.10.1';
 
 	/**
 	 * The client's definitive team structure (Alex Hatfield, Aug 2026).
@@ -342,9 +342,13 @@ class Verto_Installer {
 			$att = media_handle_sideload( [ 'name' => $m['photo'], 'tmp_name' => $tmp ], $id );
 			if ( ! is_wp_error( $att ) ) set_post_thumbnail( $id, $att );
 		}
-		foreach ( $retired as $name ) {
-			if ( ! empty( $existing[ $name ] ) ) {
-				wp_update_post( [ 'ID' => $existing[ $name ], 'post_status' => 'draft' ] );
+		// Draft ANY published team entry not in the official structure —
+		// covers named leavers AND stray historical seeds (e.g. asset files
+		// like "Hero" that early builds mistook for headshots). Never deletes.
+		$official = array_map( 'strtolower', array_keys( self::team_map() ) );
+		foreach ( get_posts( [ 'post_type' => 'verto_team', 'post_status' => 'publish', 'posts_per_page' => -1 ] ) as $p ) {
+			if ( ! in_array( strtolower( $p->post_title ), $official, true ) ) {
+				wp_update_post( [ 'ID' => $p->ID, 'post_status' => 'draft' ] );
 			}
 		}
 		update_option( 'verto_team_missing_photos', $missing );
