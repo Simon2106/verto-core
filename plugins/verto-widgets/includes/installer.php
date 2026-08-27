@@ -40,6 +40,9 @@ class Verto_Installer {
 			<?php if ( $built ) : ?>
 				<div class="notice notice-info"><p>Site was built previously. Building again updates the existing pages (your manual edits to those pages will be overwritten).</p></div>
 			<?php endif; ?>
+			<?php $missing = get_option( 'verto_team_missing_photos', [] ); if ( $missing ) : ?>
+				<div class="notice notice-warning"><p><strong>No bundled headshot for:</strong> <?php echo esc_html( implode( ', ', (array) $missing ) ); ?>.<br>They render with an initials placeholder until the client supplies photos — set each one via Team → Featured Image.</p></div>
+			<?php endif; ?>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="verto_build_site" />
 				<?php wp_nonce_field( 'verto_build_site' ); ?>
@@ -201,52 +204,151 @@ class Verto_Installer {
 
 
 
-	/** Seed the Team CPT from bundled headshots (once). */
+	/** Team-structure schema version — bump when the master map changes so
+	 *  existing installs re-run the migration on their next Rebuild. */
+	const TEAM_STRUCTURE = 'structure-0.10.0';
+
+	/**
+	 * The client's definitive team structure (Alex Hatfield, Aug 2026).
+	 * name => brands (→ _verto_brand, comma-separated — a person can sit on
+	 * several sites; 'verto' = the group site only), tier (→ _verto_tier:
+	 * leadership | management | ops | team), role (→ _verto_role), photo
+	 * (bundled headshot in assets/import/, or null — the widgets render an
+	 * initials placeholder until the client supplies one), leader
+	 * (→ _verto_leader, the group leadership trio). Array order = display
+	 * order within each tier (stamped as menu_order).
+	 */
+	private static function team_map(): array {
+		return [
+			/* ── Leadership (group-wide; Alex + Robbie also on the Vertek site, Martin on ModulR) ── */
+			'Alex Hatfield'   => [ 'brands' => [ 'verto', 'vertek' ], 'tier' => 'leadership', 'role' => 'President', 'photo' => 'alex-hatfield.webp', 'leader' => true ],
+			'Martin Doig'     => [ 'brands' => [ 'verto', 'modulr' ], 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig.jpg', 'leader' => true ],
+			'Robbie Sturgess' => [ 'brands' => [ 'verto', 'vertek' ], 'tier' => 'leadership', 'role' => 'President', 'photo' => 'robbie-sturgess.webp', 'leader' => true ],
+			/* ── Management (⚠ "Manager" = placeholder title — exact titles for
+			      George East / Ben Cranston / Sade Kendall awaited from client) ── */
+			'Dan Bisset'   => [ 'brands' => [ 'edison-lux' ], 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'vertek-dan-bisset.jpg' ],
+			'George East'  => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'vertek-george-east.jpg' ],
+			'Ben Tiffin'   => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin.jpg' ],
+			'Gary Hunt'    => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Head of Sales Recruitment', 'photo' => 'vertek-gary-hunt.jpg' ],
+			'Ben Cranston' => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => null ],
+			'Sade Kendall' => [ 'brands' => [ 'modulr' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'modulr-sade-kendall.webp' ],
+			/* ── Ops (Verto group pages only — fold into "The team" section) ── */
+			'Karabo Mothopeng' => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => null ],
+			'Angel Ndlovu'     => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => null ],
+			'Alice Fryer'      => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Operations & Executive Assistant', 'photo' => null ],
+			'Megan Grant'      => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Senior Marketing Executive', 'photo' => null ],
+			'Alfie Gray'       => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => null ],
+			/* ── Consultants — Vertek ── */
+			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-olivia-pinhorne.jpg' ],
+			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-rex-reavley.jpg' ],
+			'Jake Massingham'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-jake-massingham.jpg' ],
+			'Sam Parnell'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-sam-parnell.jpg' ],
+			'Saman Akbari'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
+			'Harvey Earl'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-harvey-earl.jpg' ],
+			'Lewis Sullivan'   => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lewis-sullivan.jpg' ],
+			'Frank Warner'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-frank-warner.jpg' ],
+			'Alex Wright'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-alex-wright.jpg' ],
+			'Lethu Zwane'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lethu-zwane.jpg' ],
+			'Lewis Mason'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lewis-mason.webp' ],
+			"Harley O'Connell" => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-harley-oconnell.jpg' ],
+			'Alice Schofield'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-alice-schofield.jpg' ],
+			/* ── Consultants — Verto Life Sciences (sits with the group) ── */
+			'Martyn Jamieson'  => [ 'brands' => [ 'verto' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
+			/* ── Consultants — ModulR ── */
+			'Lewis Wright'      => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-lewis-wright.jpg' ],
+			'Monira Akter'      => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-monira-aktar.jpg' ],
+			'Charlotte Northam' => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-charlotte-northam.jpg' ],
+			'Forough Rezaei'    => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
+			'Natasha Sykes'     => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-natasha-sykes.jpg' ],
+			/* ── Consultants — Edison Lux ── */
+			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-joe-williams.jpg' ],
+			'Matthew Pearce'     => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-matthew-pearce.jpg' ],
+			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-lewis-dominy.jpg' ],
+			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-noah-ward.jpg' ],
+			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-oliver-hesmondhalgh.jpg' ],
+			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-milly-compton.jpg' ],
+		];
+	}
+
+	/**
+	 * Seed / migrate the Team CPT from the master map. Runs once per
+	 * TEAM_STRUCTURE version: fresh installs get the full roster; installs
+	 * seeded by the pre-0.10 filename-guessed seeder are migrated in place —
+	 * matched by post_title (with rename aliases), meta re-asserted
+	 * (brands / tier / role / leader), missing people created, and people no
+	 * longer in the official structure unpublished (drafted, never deleted).
+	 */
 	private static function seed_team(): void {
-		if ( get_option( 'verto_installer_team' ) ) return;
+		if ( self::TEAM_STRUCTURE === get_option( 'verto_installer_team' ) ) return;
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/media.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
-		$dir     = dirname( __DIR__ ) . '/assets/import/';
-		$special = [
-			'martin-doig'     => [ 'role' => 'Founder', 'leader' => true ],
-			'robbie-sturgess' => [ 'role' => 'President', 'leader' => true ],
-			'alex-hatfield'   => [ 'role' => 'Recruitment Leader', 'leader' => true ],
-			'vertek-dan-bisset' => [ 'role' => 'VP of Engineering' ],
-			'vertek-gary-hunt'  => [ 'role' => 'Head of Sales Recruitment' ],
-			'vertek-ben-tiffin' => [ 'role' => 'Team Leader' ],
+		$dir = dirname( __DIR__ ) . '/assets/import/';
+		// Titles the old filename-derived seeder produced → official names.
+		$aliases = [
+			'Monira Aktar'        => 'Monira Akter',
+			'Oliver Hesmondhalgh' => 'Ollie Hesmondhalgh',
+			'Harley Oconnell'     => "Harley O'Connell",
 		];
-		$order = 0;
-		foreach ( glob( $dir . '*.{jpg,webp}', GLOB_BRACE ) as $file ) {
-			$base = pathinfo( $file, PATHINFO_FILENAME );
-			// only person photos: brand-prefixed or the three leaders
-			$is_person = isset( $special[ $base ] ) || preg_match( '/^(edison|vertek|modulr)-/', $base );
-			if ( ! $is_person || in_array( $base, [ 'skyline-uk', 'skyline-us', 'skyline-eu', 'ibiza8', 'ibiza9', 'summit-poster', 'vertek-hero', 'modulr-hero', 'modulr-datacentre', 'vertek-logo-light', 'edison-hero', 'edison-pylon', 'edison-lux-logo' ], true ) ) continue;
-			$name_part = preg_replace( '/^(edison|vertek|modulr)-/', '', $base );
-			$name      = ucwords( str_replace( '-', ' ', $name_part ) );
-			$meta      = $special[ $base ] ?? [ 'role' => 'Consultant' ];
-			$brand_of  = '';
-			if ( preg_match( '/^(edison|vertek|modulr)-/', $base, $bm ) ) {
-				$brand_of = 'edison' === $bm[1] ? 'edison-lux' : $bm[1];
-			}
-			$post_id   = wp_insert_post( [
-				'post_title'  => $name,
-				'post_type'   => 'verto_team',
-				'post_status' => 'publish',
-				'menu_order'  => ! empty( $meta['leader'] ) ? $order : $order + 100,
-			] );
-			$order++;
-			if ( ! $post_id || is_wp_error( $post_id ) ) continue;
-			update_post_meta( $post_id, '_verto_role', $meta['role'] );
-			if ( $brand_of ) update_post_meta( $post_id, '_verto_brand', $brand_of );
-			if ( ! empty( $meta['leader'] ) ) update_post_meta( $post_id, '_verto_leader', '1' );
-			$tmp = wp_tempnam( basename( $file ) );
-			copy( $file, $tmp );
-			$att = media_handle_sideload( [ 'name' => basename( $file ), 'tmp_name' => $tmp ], $post_id );
-			if ( ! is_wp_error( $att ) ) set_post_thumbnail( $post_id, $att );
+		// Previously seeded people who are NOT in the client's official
+		// structure — unpublished on migration (kept as drafts, not deleted).
+		$retired = [ 'Abi Ward', 'Cj Edwards', 'CJ Edwards', 'Chris J Simmons', 'Chris J. Simmons' ];
+
+		$existing = [];
+		foreach ( get_posts( [ 'post_type' => 'verto_team', 'numberposts' => -1, 'post_status' => 'any' ] ) as $p ) {
+			$existing[ $p->post_title ] = $p->ID;
 		}
-		update_option( 'verto_installer_team', 1 );
+
+		$order   = 0;
+		$missing = [];
+		foreach ( self::team_map() as $name => $m ) {
+			$id = $existing[ $name ] ?? 0;
+			if ( ! $id ) { // renamed since the old seeder? migrate the post in place
+				foreach ( $aliases as $old => $new ) {
+					if ( $new === $name && ! empty( $existing[ $old ] ) ) {
+						$id = $existing[ $old ];
+						break;
+					}
+				}
+			}
+			if ( $id ) {
+				wp_update_post( [ 'ID' => $id, 'post_title' => $name, 'menu_order' => $order, 'post_status' => 'publish' ] );
+			} else {
+				$id = wp_insert_post( [
+					'post_title'  => $name,
+					'post_type'   => 'verto_team',
+					'post_status' => 'publish',
+					'menu_order'  => $order,
+				] );
+			}
+			$order++;
+			if ( ! $id || is_wp_error( $id ) ) continue;
+			update_post_meta( $id, '_verto_role', $m['role'] );
+			update_post_meta( $id, '_verto_brand', implode( ',', $m['brands'] ) );
+			update_post_meta( $id, '_verto_tier', $m['tier'] );
+			if ( ! empty( $m['leader'] ) ) {
+				update_post_meta( $id, '_verto_leader', '1' );
+			} else {
+				delete_post_meta( $id, '_verto_leader' );
+			}
+			if ( empty( $m['photo'] ) || ! file_exists( $dir . $m['photo'] ) ) {
+				if ( ! has_post_thumbnail( $id ) ) $missing[] = $name; // initials placeholder renders instead
+				continue;
+			}
+			if ( has_post_thumbnail( $id ) ) continue; // photo already attached
+			$tmp = wp_tempnam( $m['photo'] );
+			copy( $dir . $m['photo'], $tmp );
+			$att = media_handle_sideload( [ 'name' => $m['photo'], 'tmp_name' => $tmp ], $id );
+			if ( ! is_wp_error( $att ) ) set_post_thumbnail( $id, $att );
+		}
+		foreach ( $retired as $name ) {
+			if ( ! empty( $existing[ $name ] ) ) {
+				wp_update_post( [ 'ID' => $existing[ $name ], 'post_status' => 'draft' ] );
+			}
+		}
+		update_option( 'verto_team_missing_photos', $missing );
+		update_option( 'verto_installer_team', self::TEAM_STRUCTURE );
 	}
 
 	/** Seed the three "What's going on" placeholder posts (once).
@@ -547,12 +649,20 @@ class Verto_Installer {
 					'body'    => "Verto Group is founder-owned and independently financed. Every leader across the group has come up through the desk — either as a recruiter inside their sector, or as an operator hired by one of ours.",
 				] ),
 				self::widget( 'verto-team-grid', [ 'mode' => 'leaders' ] ),
+				// Client's official structure: Leadership → Management → The team
+				// (ops fold into the team section on the group pages).
 				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'The whole team',
+					'eyebrow' => 'Management',
+					'size'    => 'verto-display-3',
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'The people running the desks.' ] ],
+				] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier' => 'management' ] ),
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'The team',
 					'size'    => 'verto-display-3',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Everyone. Not just the leadership page.' ] ],
 				] ),
-				self::widget( 'verto-team-grid', [ 'mode' => 'all' ] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier' => 'team' ] ),
 			], 'verto-container-pad' ),
 			// Community & DE&I — placeholder cards awaiting client photography
 			// (approved design; sits directly before the socials section).

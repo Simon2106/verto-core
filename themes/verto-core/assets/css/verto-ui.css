@@ -567,6 +567,10 @@ figure.verto-quote { margin: 0; }
 .verto-team--leaders .verto-team__photo { border-radius: 50%; width: 85%; margin-inline: auto; }
 .verto-team__photo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%); transition: filter 0.3s; }
 .verto-team__card:hover .verto-team__photo img { filter: none; }
+/* No headshot yet — initials placeholder block (installer seeds people
+   without a bundled photo; client photos slot in via Featured Image). */
+.verto-team__initials { display: flex; height: 100%; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 0.02em; color: var(--muted-foreground); background: linear-gradient(160deg, color-mix(in oklab, var(--accent) 14%, var(--muted)) 0%, var(--muted) 100%); }
+.verto-team--leaders .verto-team__initials { font-size: 2.75rem; border-radius: 50%; }
 .verto-team__name { margin-top: 0.75rem; font-family: var(--font-display); font-size: 0.875rem; letter-spacing: -0.01em; }
 .verto-team--leaders .verto-team__name { font-size: 1.25rem; }
 .verto-team__role { margin-top: 0.15rem; font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted-foreground); }

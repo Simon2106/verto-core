@@ -124,3 +124,26 @@ in brands.$brand.index.tsx). Port verbatim into installer defaults.
       .tsx; About photo collage (verto-collage widget) + Community & DE&I
       placeholder cards; timeline auto-carousel (verto-effects.js §8 /
       TimelineCarousel in about.tsx). Rebuild required on existing installs.
+- [x] v0.10.0 — the client's definitive team structure (Alex Hatfield,
+      Aug 2026), both codebases. installer.php team_map() is the master map
+      (name → brands[] / tier / role / photo); seed_team() now migrates in
+      place per TEAM_STRUCTURE version: matches existing verto_team posts by
+      post_title (renames: Monira Aktar→Akter, Oliver→Ollie Hesmondhalgh,
+      Harley Oconnell→O'Connell), re-asserts _verto_brand (comma list,
+      widget matches any via LIKE) + new _verto_tier + _verto_role +
+      _verto_leader (trio), creates missing people, drafts (never deletes)
+      people not in the official structure (Abi Ward, CJ Edwards, Chris J
+      Simmons). team-grid gained a tier filter + leadership → management →
+      team(+ops) ordering; group About renders Leadership / Management /
+      The team sections; initials placeholder for people without photos
+      (verto-team__initials CSS). Prototype: team.ts master map (brands[] /
+      tier), /team + About three-tier order, TeamStrip per-brand splits.
+      Rebuild required on ALL installs (group + brand sites).
+      ⚠ NO HEADSHOT YET — client chase list (initials placeholder until
+      supplied): Ben Cranston, Karabo Mothopeng, Angel Ndlovu, Alice Fryer,
+      Megan Grant, Alfie Gray, Saman Akbari, Martyn Jamieson, Forough
+      Rezaei.
+      ⚠ Titles to confirm with client: George East / Ben Cranston / Sade
+      Kendall are seeded with the placeholder role "Manager" (client gave
+      the management list without titles); Martyn Jamieson seeded
+      "Consultant" (Life Sciences desk, group site).
