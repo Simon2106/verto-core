@@ -576,7 +576,9 @@ class Verto_Vincere {
 		// Solr-backed and rejects unparseable queries with HTTP 400
 		// "Data is invalid" — if this q fails, the ladder simply drops it
 		// and open jobs are filtered locally on closed_date instead.
-		$query = apply_filters( 'verto/vincere/search_query', 'closed_date:[NOW TO *]' );
+		// Vincere's Solr front-end requires a terminating '#' on the query
+		// (their own examples end in %23; omitting it = 'unexpected end of input').
+		$query = apply_filters( 'verto/vincere/search_query', 'closed_date:[NOW TO *]#' );
 
 		$tiers = array_values( array_filter( array_map( 'trim', array_map( 'strval', (array) $field_tiers ) ) ) );
 		if ( ! $tiers ) {
