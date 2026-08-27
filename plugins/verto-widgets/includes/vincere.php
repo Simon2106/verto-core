@@ -47,9 +47,18 @@ class Verto_Vincere {
 	const OPT_AUTH_FAIL  = 'verto_vincere_auth_failed';
 	const OPT_CONNECTED  = 'verto_vincere_connected_at';
 	const OPT_REWRITE_V  = 'verto_vincere_rewrite_ver';
+	const OPT_CURSOR     = 'verto_vincere_sync_cursor';
+	const RUN_HOOK       = 'verto_vincere_sync_run';
 	const TR_ID_TOKEN    = 'verto_vincere_id_token';
 	const TR_OAUTH_STATE = 'verto_vincere_oauth_state';
 	const REWRITE_VER    = '1';
+
+	// Chunked-sync tuning: one runner invocation stops after this many
+	// pages or seconds, whichever comes first, then re-schedules itself.
+	const CHUNK_MAX_PAGES   = 3;
+	const CHUNK_MAX_SECONDS = 20;
+	// A sync cursor untouched for this long is treated as a crashed run.
+	const STALE_AFTER       = 600;
 
 	/* ── Bootstrap ─────────────────────────────────────────────────────── */
 
@@ -63,9 +72,11 @@ class Verto_Vincere {
 		add_action( 'admin_notices', [ self::class, 'admin_notices' ] );
 		add_action( 'admin_post_verto_vincere_connect', [ self::class, 'handle_connect' ] );
 		add_action( 'admin_post_verto_vincere_sync', [ self::class, 'handle_manual_sync' ] );
+		add_action( 'admin_post_verto_vincere_cancel', [ self::class, 'handle_cancel_sync' ] );
 		add_action( 'admin_post_verto_vincere_save', [ self::class, 'handle_save_settings' ] );
 
 		add_action( self::CRON_HOOK, [ self::class, 'cron_sync' ] );
+		add_action( self::RUN_HOOK, [ self::class, 'run_chunk' ] );
 		add_action( 'init', [ self::class, 'maybe_schedule_cron' ] );
 
 		$main = dirname( __DIR__ ) . '/verto-widgets.php';
@@ -81,6 +92,8 @@ class Verto_Vincere {
 
 	public static function deactivate() {
 		wp_clear_scheduled_hook( self::CRON_HOOK );
+		wp_clear_scheduled_hook( self::RUN_HOOK );
+		delete_option( self::OPT_CURSOR );
 		flush_rewrite_rules();
 	}
 
@@ -367,30 +380,191 @@ class Verto_Vincere {
 	}
 
 	public static function cron_sync() {
-		self::sync_jobs();
+		// Hourly safety net. Skip when a chunked run is already in flight —
+		// the runner keeps re-scheduling itself until it finishes.
+		if ( self::run_active() ) {
+			return;
+		}
+		self::start_sync();
 	}
 
 	/* ── Sync ──────────────────────────────────────────────────────────── */
 
-	/**
-	 * Pull OPEN positions and upsert them into the verto_job CPT.
-	 * Jobs that vanish from the feed are drafted + flagged inactive.
+	/*
+	 * The sync is asynchronous and chunked so it can never time out a
+	 * user-facing request (walking thousands of positions inside one
+	 * admin-post request is what used to 504 at the gateway):
 	 *
-	 * Self-diagnosing: tries an ordered ladder of request shapes, from the
-	 * richest (full field list + server-side open-jobs query) down to a
-	 * guaranteed-minimal probe (fl=id,job_title, small limit, no q). Every
-	 * attempt — URL, HTTP status, first 400 chars of the response — is
-	 * persisted to OPT_ATTEMPTS and shown on the admin page, so a tenant
-	 * rejection ("Data is invalid" / QUERY_PARSE_FAIL) is visible verbatim
-	 * in wp-admin. The first shape that works wins, is remembered in
-	 * OPT_GOOD_SHAPE (tried first on the next sync), and the sync proceeds
-	 * with whatever fields that shape returned.
+	 *   start_sync() — writes a cursor option and schedules RUN_HOOK.
+	 *                  Instant; never talks to Vincere itself.
+	 *   run_chunk()  — cron callback. Processes at most CHUNK_MAX_PAGES
+	 *                  pages (~100 jobs each) or CHUNK_MAX_SECONDS seconds,
+	 *                  persists progress back into the cursor, then either
+	 *                  re-schedules itself (+1s) or finishes up.
+	 *
+	 * On the FIRST chunk only, pick_shape() walks the ordered ladder of
+	 * request shapes, from the richest (full field list + server-side
+	 * open-jobs query) down to a guaranteed-minimal probe. Every attempt —
+	 * URL, HTTP status, first 400 chars of the response — is persisted to
+	 * OPT_ATTEMPTS and shown on the admin page, so a tenant rejection
+	 * ("Data is invalid" / QUERY_PARSE_FAIL) is visible verbatim in
+	 * wp-admin. The winning shape is remembered in OPT_GOOD_SHAPE (tried
+	 * first next time) and stored in the cursor, so every later chunk
+	 * reuses it directly instead of re-walking the ladder. The final chunk
+	 * deactivates jobs that vanished from the feed, writes the last-sync
+	 * summary and clears the cursor.
 	 */
-	public static function sync_jobs() {
+
+	/**
+	 * Is a chunked sync currently in flight? A cursor untouched for
+	 * STALE_AFTER seconds is treated as a crashed run and ignored, so a
+	 * wedged run can never block syncing for more than ten minutes.
+	 */
+	public static function run_active() {
+		$cursor = get_option( self::OPT_CURSOR );
+		if ( ! is_array( $cursor ) || empty( $cursor['updated_at'] ) ) {
+			return false;
+		}
+		return ( time() - (int) $cursor['updated_at'] ) < self::STALE_AFTER;
+	}
+
+	/**
+	 * Queue a fresh chunked sync. Only writes the cursor and schedules the
+	 * runner, so callers return instantly. False when a run is already
+	 * active (the stale-run guard in run_active() unblocks crashed runs).
+	 */
+	public static function start_sync() {
+		if ( self::run_active() ) {
+			return false;
+		}
+		$now = time();
+		update_option( self::OPT_CURSOR, [
+			'shape'      => null,   // request shape — picked by the ladder on chunk #1
+			'start'      => 0,      // next `start=` offset to request
+			'pages'      => 0,      // pages fetched so far (across all chunks)
+			'seen'       => [],     // Vincere ids upserted so far (compact ints)
+			'count'      => 0,      // successful upserts so far
+			'total'      => null,   // result.total as reported by Vincere
+			'capped'     => 0,      // 1 when the max-pages safety cap was hit
+			'started_at' => $now,
+			'updated_at' => $now,
+		], false );
+		wp_clear_scheduled_hook( self::RUN_HOOK );
+		wp_schedule_single_event( time(), self::RUN_HOOK );
+		spawn_cron();
+		return true;
+	}
+
+	/** Drop the run state (cancel link, fatal errors, normal completion). */
+	private static function clear_cursor() {
+		delete_option( self::OPT_CURSOR );
+		wp_clear_scheduled_hook( self::RUN_HOOK );
+	}
+
+	/**
+	 * Cron callback: process one bounded batch of the sync, then either
+	 * re-schedule itself or finish up. Never runs inside a user request.
+	 */
+	public static function run_chunk() {
+		$cursor = get_option( self::OPT_CURSOR );
+		if ( ! is_array( $cursor ) ) {
+			return; // cancelled, or a stray event from an already-cleared run
+		}
 		if ( ! self::configured() ) {
-			return self::record_sync( 'error', 'wp-config constants missing.', 0 );
+			self::clear_cursor();
+			self::record_sync( 'error', 'wp-config constants missing.', 0 );
+			return;
 		}
 
+		$chunk_started = microtime( true );
+		// Safety cap on the whole walk (not per chunk): 60 pages ≈ 6,000 jobs.
+		$max_pages  = max( 1, (int) apply_filters( 'verto/vincere/max_pages', 60 ) );
+		$pages_done = 0; // pages fetched by THIS invocation
+
+		// Chunk #1: no shape chosen yet — run the attempt ladder once.
+		if ( empty( $cursor['shape'] ) ) {
+			$picked = self::pick_shape();
+			if ( is_wp_error( $picked ) ) {
+				self::clear_cursor();
+				self::record_sync( 'error', $picked->get_error_message(), 0 );
+				return;
+			}
+			$cursor['shape'] = $picked['shape'];
+			$cursor          = self::ingest_batch( $cursor, $picked['items'] );
+			$cursor['pages'] = 1;
+			$cursor['start'] = count( $picked['items'] );
+			$cursor['total'] = $picked['total'];
+			$pages_done      = 1;
+			if ( ! empty( $picked['shape']['single'] ) || self::walk_finished( $picked['items'], $cursor ) ) {
+				self::finish_run( $cursor, $max_pages );
+				return;
+			}
+			$cursor['updated_at'] = time();
+			update_option( self::OPT_CURSOR, $cursor, false );
+		}
+
+		$shape = (array) $cursor['shape'];
+
+		while ( $pages_done < self::CHUNK_MAX_PAGES
+			&& ( microtime( true ) - $chunk_started ) < self::CHUNK_MAX_SECONDS ) {
+
+			if ( (int) $cursor['pages'] >= $max_pages ) {
+				$cursor['capped'] = 1;
+				self::finish_run( $cursor, $max_pages );
+				return;
+			}
+
+			$page = self::fetch_page( (string) $shape['fl'], (string) $shape['q'], (int) $shape['limit'], (int) $cursor['start'] );
+			if ( is_wp_error( $page ) ) {
+				self::clear_cursor();
+				self::record_sync(
+					'error',
+					sprintf( 'Fetch failed at offset %d: %s', (int) $cursor['start'], $page->get_error_message() ),
+					(int) $cursor['count']
+				);
+				return;
+			}
+			$pages_done++;
+			$cursor['pages'] = (int) $cursor['pages'] + 1;
+			$cursor          = self::ingest_batch( $cursor, $page['items'] );
+			$cursor['start'] = (int) $cursor['start'] + count( $page['items'] );
+			if ( null !== $page['total'] ) {
+				$cursor['total'] = (int) $page['total'];
+			}
+			if ( self::walk_finished( $page['items'], $cursor ) ) {
+				self::finish_run( $cursor, $max_pages );
+				return;
+			}
+			$cursor['updated_at'] = time();
+			update_option( self::OPT_CURSOR, $cursor, false );
+		}
+
+		// Budget spent with work remaining — hand over to the next chunk.
+		wp_schedule_single_event( time() + 1, self::RUN_HOOK );
+		spawn_cron();
+	}
+
+	/** Has the pagination walk reached the end of the result set? */
+	private static function walk_finished( array $batch, array $cursor ) {
+		if ( ! $batch ) {
+			return true;
+		}
+		if ( isset( $cursor['total'] ) && null !== $cursor['total'] ) {
+			return (int) $cursor['start'] >= (int) $cursor['total'];
+		}
+		// No total reported — a short page means the walk is done.
+		return count( $batch ) < (int) ( $cursor['shape']['limit'] ?? 100 );
+	}
+
+	/**
+	 * First chunk only: walk the attempt ladder until Vincere accepts a
+	 * request shape, logging every attempt to OPT_ATTEMPTS (the admin
+	 * "Last sync attempts" table). Each rung fetches only page one — the
+	 * chunked runner does the rest of the pagination. Returns
+	 * [ 'shape' => …, 'items' => first page, 'total' => int|null ]
+	 * or WP_Error when every rung failed.
+	 */
+	private static function pick_shape() {
 		// Field lists in decreasing richness — an unknown field name makes the
 		// search endpoint 400 (QUERY_PARSE_FAIL), so thinner tiers follow.
 		$field_tiers = apply_filters( 'verto/vincere/field_tiers', [
@@ -441,11 +615,11 @@ class Verto_Vincere {
 			}
 		}
 
-		$items  = null;
 		$winner = null;
+		$first  = null;
 		$log    = [];
 		foreach ( $attempts as $attempt ) {
-			$fetched = self::fetch_positions( $attempt['fl'], $attempt['q'], (int) $attempt['limit'], ! empty( $attempt['single'] ) );
+			$page    = self::fetch_page( $attempt['fl'], $attempt['q'], (int) $attempt['limit'], 0 );
 			$request = self::last_request();
 			$entry   = [
 				'time'   => time(),
@@ -454,34 +628,46 @@ class Verto_Vincere {
 				'status' => (int) ( $request['status'] ?? 0 ),
 				'body'   => (string) ( '' !== ( $request['error'] ?? '' ) ? 'WP error: ' . $request['error'] : ( $request['body'] ?? '' ) ),
 			];
-			if ( ! is_wp_error( $fetched ) ) {
-				$entry['result'] = 'OK — ' . count( $fetched ) . ' item(s)';
+			if ( ! is_wp_error( $page ) ) {
+				$entry['result'] = 'OK — ' . count( $page['items'] ) . ' item(s)';
 				$log[]  = $entry;
-				$items  = $fetched;
 				$winner = $attempt;
+				$first  = $page;
 				break;
 			}
-			$entry['result'] = 'FAILED — ' . $fetched->get_error_message();
+			$entry['result'] = 'FAILED — ' . $page->get_error_message();
 			$log[] = $entry;
 			// Auth / config problems can't be fixed by a thinner request —
 			// bail out of the ladder. Everything else (400 bad query/field,
 			// 5xx, transport hiccups) keeps degrading.
-			if ( in_array( $fetched->get_error_code(), [ 'vincere_config', 'vincere_not_connected', 'vincere_token' ], true ) ) {
+			if ( in_array( $page->get_error_code(), [ 'vincere_config', 'vincere_not_connected', 'vincere_token' ], true ) ) {
 				break;
 			}
 		}
 		update_option( self::OPT_ATTEMPTS, [ 'time' => time(), 'attempts' => array_slice( $log, 0, 10 ) ], false );
 
-		if ( null === $items ) {
+		if ( null === $winner ) {
 			$last = end( $log );
-			return self::record_sync( 'error', $last ? $last['result'] : 'Unknown error.', 0 );
+			return new WP_Error( 'vincere_sync', $last ? $last['result'] : 'Unknown error.' );
 		}
 		update_option( self::OPT_GOOD_SHAPE, [ 'fl' => $winner['fl'], 'q' => $winner['q'], 'ver' => VERTO_WIDGETS_VERSION ], false );
 
-		$settings = self::settings();
-		$seen     = [];
-		$count    = 0;
+		return [
+			'shape' => [
+				'label'  => (string) $winner['label'],
+				'fl'     => (string) $winner['fl'],
+				'q'      => (string) $winner['q'],
+				'limit'  => (int) $winner['limit'],
+				'single' => ! empty( $winner['single'] ),
+			],
+			'items' => $first['items'],
+			'total' => $first['total'],
+		];
+	}
 
+	/** Filter, map and upsert one page of raw items into the cursor. */
+	private static function ingest_batch( array $cursor, array $items ) {
+		$settings = self::settings();
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) || empty( $item['id'] ) ) {
 				continue;
@@ -495,24 +681,47 @@ class Verto_Vincere {
 			if ( ! $job ) {
 				continue;
 			}
-			$seen[] = $job['vincere_id'];
+			// Compact ints keep thousands of ids cheap inside one option row.
+			$cursor['seen'][] = is_numeric( $job['vincere_id'] ) ? (int) $job['vincere_id'] : (string) $job['vincere_id'];
 			if ( self::upsert_job( $job ) ) {
-				$count++;
+				$cursor['count'] = (int) $cursor['count'] + 1;
 			}
 		}
-
-		$deactivated = self::deactivate_missing( $seen );
-
-		$message = sprintf( '%d open job(s) synced, %d deactivated.', $count, $deactivated );
-		if ( '' === $winner['q'] ) {
-			$message .= ' (degraded shape: ' . $winner['label'] . ' — see "Last sync attempts" below)';
-		}
-
-		return self::record_sync( 'ok', $message, $count );
+		return $cursor;
 	}
 
 	/**
-	 * Paginated position search. Returns raw item arrays or WP_Error.
+	 * Final chunk: deactivate vanished jobs, write the last-sync summary,
+	 * clear the cursor.
+	 */
+	private static function finish_run( array $cursor, $max_pages ) {
+		$capped      = ! empty( $cursor['capped'] );
+		$deactivated = 0;
+		if ( ! $capped ) {
+			// Only a complete walk may deactivate — a capped one hasn't seen
+			// every open job, so drafting the unseen ones would be wrong.
+			$deactivated = self::deactivate_missing( array_map( 'strval', (array) $cursor['seen'] ) );
+		}
+		$shape = (array) $cursor['shape'];
+
+		$message = sprintf( '%d open job(s) synced, %d deactivated.', (int) $cursor['count'], $deactivated );
+		if ( $capped ) {
+			$message .= sprintf(
+				' NOTE: stopped at the %d-page safety cap (deactivation pass skipped — the walk was incomplete); raise it with the verto/vincere/max_pages filter.',
+				(int) $max_pages
+			);
+		}
+		if ( '' === (string) ( $shape['q'] ?? '' ) ) {
+			$message .= ' (degraded shape: ' . (string) ( $shape['label'] ?? '' ) . ' — see "Last sync attempts" below)';
+		}
+
+		self::record_sync( 'ok', $message, (int) $cursor['count'] );
+		self::clear_cursor();
+	}
+
+	/**
+	 * Fetch ONE page of the position search. Returns
+	 * [ 'items' => raw item arrays, 'total' => int|null ] or WP_Error.
 	 *
 	 * URL shape verified against Vincere's own examples
 	 * (github.com/vincere-io issue threads), e.g.:
@@ -522,43 +731,27 @@ class Verto_Vincere {
 	 * { result: { start, total, items: [...] } }. A `;sort=field asc` matrix
 	 * segment is also supported but deliberately not sent (one less thing a
 	 * strict tenant can reject; the space would need %20-encoding anyway).
-	 * The server may cap the page size below `limit`, so pagination advances
+	 * The server may cap the page size below `limit`, so the walk advances
 	 * by the actual batch size and trusts result.total when present.
 	 */
-	private static function fetch_positions( $fl, $query, $limit = 100, $single_page = false ) {
+	private static function fetch_page( $fl, $query, $limit = 100, $start = 0 ) {
 		$limit = max( 1, min( 100, (int) $limit ) );
-		$start = 0;
-		$items = [];
-		for ( $page = 0; $page < 40; $page++ ) { // hard cap: 40 requests
-			$path = 'position/search/fl=' . $fl . '?limit=' . $limit . '&start=' . $start;
-			if ( '' !== $query ) {
-				$path .= '&q=' . rawurlencode( $query );
-			}
-			$json = self::api_get( $path );
-			if ( is_wp_error( $json ) ) {
-				return $json;
-			}
-			$batch = [];
-			if ( isset( $json['result']['items'] ) && is_array( $json['result']['items'] ) ) {
-				$batch = $json['result']['items'];
-			} elseif ( isset( $json['items'] ) && is_array( $json['items'] ) ) {
-				$batch = $json['items'];
-			}
-			$items = array_merge( $items, $batch );
-			if ( $single_page || ! $batch ) {
-				break;
-			}
-			$start += count( $batch ); // server may return fewer than $limit per page
-			$total = isset( $json['result']['total'] ) ? (int) $json['result']['total'] : null;
-			if ( null !== $total ) {
-				if ( $start >= $total ) {
-					break;
-				}
-			} elseif ( count( $batch ) < $limit ) {
-				break;
-			}
+		$path  = 'position/search/fl=' . $fl . '?limit=' . $limit . '&start=' . max( 0, (int) $start );
+		if ( '' !== (string) $query ) {
+			$path .= '&q=' . rawurlencode( (string) $query );
 		}
-		return $items;
+		$json = self::api_get( $path );
+		if ( is_wp_error( $json ) ) {
+			return $json;
+		}
+		$items = [];
+		if ( isset( $json['result']['items'] ) && is_array( $json['result']['items'] ) ) {
+			$items = $json['result']['items'];
+		} elseif ( isset( $json['items'] ) && is_array( $json['items'] ) ) {
+			$items = $json['items'];
+		}
+		$total = isset( $json['result']['total'] ) ? (int) $json['result']['total'] : null;
+		return [ 'items' => $items, 'total' => $total ];
 	}
 
 	/** Reduce a raw Vincere field value (string|array|object-ish) to text. */
@@ -758,10 +951,11 @@ class Verto_Vincere {
 
 	/** Draft + flag jobs no longer present in the feed. Returns count. */
 	private static function deactivate_missing( array $seen_ids ) {
-		$posts = get_posts( [
+		$lookup = array_fill_keys( array_map( 'strval', $seen_ids ), true );
+		$posts  = get_posts( [
 			'post_type'      => self::CPT,
 			'post_status'    => 'publish',
-			'posts_per_page' => 500,
+			'posts_per_page' => -1,
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
 		] );
@@ -771,7 +965,7 @@ class Verto_Vincere {
 			if ( '' === $vid ) {
 				continue; // manually created job — leave alone
 			}
-			if ( ! in_array( $vid, $seen_ids, true ) ) {
+			if ( ! isset( $lookup[ $vid ] ) ) {
 				update_post_meta( $post_id, '_active', '0' );
 				wp_update_post( [ 'ID' => $post_id, 'post_status' => 'draft' ] );
 				$deactivated++;
@@ -871,9 +1065,26 @@ class Verto_Vincere {
 			wp_die( 'Nope.' );
 		}
 		check_admin_referer( 'verto_vincere_sync' );
-		$result = self::sync_jobs();
-		$msg    = is_wp_error( $result ) ? 'sync_error' : 'synced';
-		wp_safe_redirect( self::settings_url( $msg, is_wp_error( $result ) ? $result->get_error_message() : '' ) );
+		if ( self::run_active() ) {
+			wp_safe_redirect( self::settings_url( 'sync_running' ) );
+			exit;
+		}
+		// Queue + kick the background runner. The walk itself NEVER runs in
+		// this request — paging thousands of positions here is what used to
+		// 504 at the gateway.
+		self::start_sync();
+		wp_safe_redirect( self::settings_url( 'sync_started' ) );
+		exit;
+	}
+
+	/** Cancel link shown while a run is active — clears the cursor. */
+	public static function handle_cancel_sync() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Nope.' );
+		}
+		check_admin_referer( 'verto_vincere_cancel' );
+		self::clear_cursor();
+		wp_safe_redirect( self::settings_url( 'sync_cancelled' ) );
 		exit;
 	}
 
@@ -911,6 +1122,9 @@ class Verto_Vincere {
 		$map = [
 			'connected'      => [ 'success', 'Connected to Vincere. First sync has been queued — refresh this page in a minute.' ],
 			'synced'         => [ 'success', 'Sync complete.' ],
+			'sync_started'   => [ 'success', 'Sync started in the background — progress appears below and this page refreshes itself.' ],
+			'sync_running'   => [ 'warning', 'A sync is already running — progress below.' ],
+			'sync_cancelled' => [ 'success', 'Sync run cancelled.' ],
 			'saved'          => [ 'success', 'Settings saved.' ],
 			'sync_error'     => [ 'error', 'Sync failed.' ],
 			'oauth_error'    => [ 'error', 'Vincere returned an OAuth error.' ],
@@ -934,6 +1148,8 @@ class Verto_Vincere {
 		$attempt_log = get_option( self::OPT_ATTEMPTS );
 		$attempts  = is_array( $attempt_log ) && isset( $attempt_log['attempts'] ) && is_array( $attempt_log['attempts'] ) ? $attempt_log['attempts'] : [];
 		$next_cron = wp_next_scheduled( self::CRON_HOOK );
+		$cursor    = get_option( self::OPT_CURSOR );
+		$running   = self::run_active() && is_array( $cursor );
 		$jobs_total = 0;
 		$counts = wp_count_posts( self::CPT );
 		if ( $counts && isset( $counts->publish ) ) {
@@ -946,6 +1162,10 @@ class Verto_Vincere {
 		?>
 		<div class="wrap">
 			<h1>Vincere integration</h1>
+
+			<?php if ( $running ) : ?>
+				<script>setTimeout( function () { window.location.reload(); }, 5000 );</script>
+			<?php endif; ?>
 
 			<?php if ( $notice ) : ?>
 				<div class="notice notice-<?php echo esc_attr( $notice[0] ); ?> is-dismissible">
@@ -993,6 +1213,12 @@ class Verto_Vincere {
 					</tr>
 					<?php if ( $connected_at ) : ?>
 						<tr><td>Authorised</td><td><?php echo esc_html( human_time_diff( $connected_at ) ); ?> ago</td></tr>
+					<?php endif; ?>
+					<?php if ( $running ) : ?>
+						<tr>
+							<td>Sync in progress</td>
+							<td><span style="color:#996800;">Running</span> — started <?php echo esc_html( human_time_diff( (int) $cursor['started_at'] ) ); ?> ago; <?php echo (int) $cursor['count']; ?> job(s) upserted over <?php echo (int) $cursor['pages']; ?> page(s)<?php echo isset( $cursor['total'] ) && null !== $cursor['total'] ? ' — ' . (int) $cursor['start'] . ' of ' . (int) $cursor['total'] . ' positions walked' : ''; ?>. This page refreshes every 5 seconds.</td>
+						</tr>
 					<?php endif; ?>
 					<tr>
 						<td>Last sync</td>
@@ -1066,11 +1292,16 @@ class Verto_Vincere {
 					<?php wp_nonce_field( 'verto_vincere_connect' ); ?>
 					<?php submit_button( $refresh ? 'Re-connect to Vincere' : 'Connect to Vincere', 'primary', 'submit', false, $configured ? [] : [ 'disabled' => 'disabled' ] ); ?>
 				</form>
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline-block;">
-					<input type="hidden" name="action" value="verto_vincere_sync" />
-					<?php wp_nonce_field( 'verto_vincere_sync' ); ?>
-					<?php submit_button( 'Sync now', 'secondary', 'submit', false, $refresh ? [] : [ 'disabled' => 'disabled' ] ); ?>
-				</form>
+				<?php if ( $running ) : ?>
+					<button type="button" class="button" disabled>Sync running… (started <?php echo esc_html( human_time_diff( (int) $cursor['started_at'] ) ); ?> ago, <?php echo (int) $cursor['count']; ?> jobs so far)</button>
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=verto_vincere_cancel' ), 'verto_vincere_cancel' ) ); ?>">Cancel</a>
+				<?php else : ?>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline-block;">
+						<input type="hidden" name="action" value="verto_vincere_sync" />
+						<?php wp_nonce_field( 'verto_vincere_sync' ); ?>
+						<?php submit_button( 'Sync now', 'secondary', 'submit', false, $refresh ? [] : [ 'disabled' => 'disabled' ] ); ?>
+					</form>
+				<?php endif; ?>
 			</div>
 
 			<h2>Mapping</h2>
