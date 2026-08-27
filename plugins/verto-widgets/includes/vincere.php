@@ -42,6 +42,8 @@ class Verto_Vincere {
 	const OPT_REFRESH    = 'verto_vincere_refresh_token';
 	const OPT_SETTINGS   = 'verto_vincere_settings';
 	const OPT_LAST_SYNC  = 'verto_vincere_last_sync';
+	const OPT_ATTEMPTS   = 'verto_vincere_sync_attempts';
+	const OPT_GOOD_SHAPE = 'verto_vincere_good_shape';
 	const OPT_AUTH_FAIL  = 'verto_vincere_auth_failed';
 	const OPT_CONNECTED  = 'verto_vincere_connected_at';
 	const OPT_REWRITE_V  = 'verto_vincere_rewrite_ver';
@@ -297,15 +299,30 @@ class Verto_Vincere {
 	/* ── API client ────────────────────────────────────────────────────── */
 
 	/**
+	 * Debug record of the most recent HTTP round-trip made by api_get():
+	 * [ 'url' => …, 'status' => int, 'body' => first 400 chars, 'error' => transport error ].
+	 * Consumed by the sync attempt log so wp-admin can show exactly what
+	 * Vincere rejected. Never contains tokens/keys (headers are not stored).
+	 */
+	private static $last_request = [];
+
+	public static function last_request() {
+		return self::$last_request;
+	}
+
+	/**
 	 * GET https://{tenant}/api/v2/{path} with id-token + x-api-key headers.
 	 * Retries once with a forced token refresh on 401/403.
 	 */
 	public static function api_get( $path, $retry = true ) {
+		$url = 'https://' . self::tenant() . '/api/v2/' . ltrim( $path, '/' );
+		self::$last_request = [ 'url' => $url, 'status' => 0, 'body' => '', 'error' => '' ];
+
 		$token = self::get_id_token();
 		if ( is_wp_error( $token ) ) {
+			self::$last_request['error'] = $token->get_error_message();
 			return $token;
 		}
-		$url      = 'https://' . self::tenant() . '/api/v2/' . ltrim( $path, '/' );
 		$response = wp_remote_get( $url, [
 			'timeout' => 25,
 			'headers' => [
@@ -315,17 +332,22 @@ class Verto_Vincere {
 			],
 		] );
 		if ( is_wp_error( $response ) ) {
+			self::$last_request['error'] = $response->get_error_message();
 			return $response;
 		}
 		$status = (int) wp_remote_retrieve_response_code( $response );
+		$body   = (string) wp_remote_retrieve_body( $response );
+		self::$last_request['status'] = $status;
+		self::$last_request['body']   = mb_substr( $body, 0, 400 );
 		if ( in_array( $status, [ 401, 403 ], true ) && $retry ) {
 			$token = self::get_id_token( true );
 			if ( is_wp_error( $token ) ) {
+				self::$last_request['error'] = $token->get_error_message();
 				return $token;
 			}
 			return self::api_get( $path, false );
 		}
-		$json = json_decode( wp_remote_retrieve_body( $response ), true );
+		$json = json_decode( $body, true );
 		if ( $status < 200 || $status >= 300 ) {
 			$msg = is_array( $json ) && ! empty( $json['message'] ) ? (string) $json['message'] : 'HTTP ' . $status;
 			return new WP_Error( 'vincere_api', $msg, [ 'status' => $status ] );
@@ -353,6 +375,16 @@ class Verto_Vincere {
 	/**
 	 * Pull OPEN positions and upsert them into the verto_job CPT.
 	 * Jobs that vanish from the feed are drafted + flagged inactive.
+	 *
+	 * Self-diagnosing: tries an ordered ladder of request shapes, from the
+	 * richest (full field list + server-side open-jobs query) down to a
+	 * guaranteed-minimal probe (fl=id,job_title, small limit, no q). Every
+	 * attempt — URL, HTTP status, first 400 chars of the response — is
+	 * persisted to OPT_ATTEMPTS and shown on the admin page, so a tenant
+	 * rejection ("Data is invalid" / QUERY_PARSE_FAIL) is visible verbatim
+	 * in wp-admin. The first shape that works wins, is remembered in
+	 * OPT_GOOD_SHAPE (tried first on the next sync), and the sync proceeds
+	 * with whatever fields that shape returned.
 	 */
 	public static function sync_jobs() {
 		if ( ! self::configured() ) {
@@ -360,34 +392,86 @@ class Verto_Vincere {
 		}
 
 		// Field lists in decreasing richness — an unknown field name makes the
-		// search endpoint 400, so fall back tier by tier.
+		// search endpoint 400 (QUERY_PARSE_FAIL), so thinner tiers follow.
 		$field_tiers = apply_filters( 'verto/vincere/field_tiers', [
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners',
-			'id,job_title,public_description,open_date,closed_date,job_type,company',
+			'id,job_title,public_description,job_type,open_date,closed_date,company,location',
 			'id,job_title,public_description,closed_date',
 		] );
-		// Open jobs = no closed date. Overridable if the tenant needs
-		// different criteria (e.g. status-based).
+		// Optional server-side open-jobs query. NOTE: Vincere search is
+		// Solr-backed and rejects unparseable queries with HTTP 400
+		// "Data is invalid" — if this q fails, the ladder simply drops it
+		// and open jobs are filtered locally on closed_date instead.
 		$query = apply_filters( 'verto/vincere/search_query', 'closed_date:isnull' );
 
-		$items = null;
-		$last_error = '';
-		foreach ( (array) $field_tiers as $fl ) {
-			$fetched = self::fetch_positions( (string) $fl, (string) $query );
+		$tiers = array_values( array_filter( array_map( 'trim', array_map( 'strval', (array) $field_tiers ) ) ) );
+		if ( ! $tiers ) {
+			$tiers = [ 'id,job_title' ];
+		}
+
+		// The ladder: richest shape first, bare probe last.
+		$attempts = [];
+		if ( '' !== (string) $query ) {
+			$attempts[] = [ 'label' => 'full fields + open-jobs query', 'fl' => $tiers[0], 'q' => (string) $query, 'limit' => 100, 'single' => false ];
+		}
+		foreach ( $tiers as $i => $fl ) {
+			$attempts[] = [ 'label' => 'field tier ' . ( $i + 1 ) . ', no query (open jobs filtered locally)', 'fl' => $fl, 'q' => '', 'limit' => 100, 'single' => false ];
+		}
+		$attempts[] = [ 'label' => 'bare probe (fl=id,job_title, limit 25, no query)', 'fl' => 'id,job_title', 'q' => '', 'limit' => 25, 'single' => true ];
+
+		// If a previous sync found a working shape, try that one first so the
+		// steady state costs a single request instead of re-walking failures.
+		$good = get_option( self::OPT_GOOD_SHAPE );
+		if ( is_array( $good ) && isset( $good['fl'], $good['q'] ) ) {
+			foreach ( $attempts as $i => $attempt ) {
+				if ( $attempt['fl'] === $good['fl'] && $attempt['q'] === $good['q'] ) {
+					if ( $i > 0 ) {
+						$preferred = $attempts[ $i ];
+						unset( $attempts[ $i ] );
+						array_unshift( $attempts, $preferred );
+						$attempts = array_values( $attempts );
+					}
+					break;
+				}
+			}
+		}
+
+		$items  = null;
+		$winner = null;
+		$log    = [];
+		foreach ( $attempts as $attempt ) {
+			$fetched = self::fetch_positions( $attempt['fl'], $attempt['q'], (int) $attempt['limit'], ! empty( $attempt['single'] ) );
+			$request = self::last_request();
+			$entry   = [
+				'time'   => time(),
+				'label'  => $attempt['label'],
+				'url'    => (string) ( $request['url'] ?? '' ),
+				'status' => (int) ( $request['status'] ?? 0 ),
+				'body'   => (string) ( '' !== ( $request['error'] ?? '' ) ? 'WP error: ' . $request['error'] : ( $request['body'] ?? '' ) ),
+			];
 			if ( ! is_wp_error( $fetched ) ) {
-				$items = $fetched;
+				$entry['result'] = 'OK — ' . count( $fetched ) . ' item(s)';
+				$log[]  = $entry;
+				$items  = $fetched;
+				$winner = $attempt;
 				break;
 			}
-			$last_error = $fetched->get_error_message();
-			$data = $fetched->get_error_data();
-			// Only a 400 (bad field/query) warrants trying a thinner tier.
-			if ( ! is_array( $data ) || 400 !== (int) ( $data['status'] ?? 0 ) ) {
+			$entry['result'] = 'FAILED — ' . $fetched->get_error_message();
+			$log[] = $entry;
+			// Auth / config problems can't be fixed by a thinner request —
+			// bail out of the ladder. Everything else (400 bad query/field,
+			// 5xx, transport hiccups) keeps degrading.
+			if ( in_array( $fetched->get_error_code(), [ 'vincere_config', 'vincere_not_connected', 'vincere_token' ], true ) ) {
 				break;
 			}
 		}
+		update_option( self::OPT_ATTEMPTS, [ 'time' => time(), 'attempts' => array_slice( $log, 0, 10 ) ], false );
+
 		if ( null === $items ) {
-			return self::record_sync( 'error', $last_error ?: 'Unknown error.', 0 );
+			$last = end( $log );
+			return self::record_sync( 'error', $last ? $last['result'] : 'Unknown error.', 0 );
 		}
+		update_option( self::OPT_GOOD_SHAPE, [ 'fl' => $winner['fl'], 'q' => $winner['q'] ], false );
 
 		$settings = self::settings();
 		$seen     = [];
@@ -414,19 +498,33 @@ class Verto_Vincere {
 
 		$deactivated = self::deactivate_missing( $seen );
 
-		return self::record_sync(
-			'ok',
-			sprintf( '%d open job(s) synced, %d deactivated.', $count, $deactivated ),
-			$count
-		);
+		$message = sprintf( '%d open job(s) synced, %d deactivated.', $count, $deactivated );
+		if ( '' === $winner['q'] ) {
+			$message .= ' (degraded shape: ' . $winner['label'] . ' — see "Last sync attempts" below)';
+		}
+
+		return self::record_sync( 'ok', $message, $count );
 	}
 
-	/** Paginated position search. Returns raw item arrays or WP_Error. */
-	private static function fetch_positions( $fl, $query ) {
-		$limit = 100;
+	/**
+	 * Paginated position search. Returns raw item arrays or WP_Error.
+	 *
+	 * URL shape verified against Vincere's own examples
+	 * (github.com/vincere-io issue threads), e.g.:
+	 *   /api/v2/position/search/fl=id,job_title,…?q=…&start=0&limit=100
+	 * — `fl` is a matrix segment on the path, `q`/`start`/`limit` are query
+	 * params, pagination is offset-based via `start`, and the response is
+	 * { result: { start, total, items: [...] } }. A `;sort=field asc` matrix
+	 * segment is also supported but deliberately not sent (one less thing a
+	 * strict tenant can reject; the space would need %20-encoding anyway).
+	 * The server may cap the page size below `limit`, so pagination advances
+	 * by the actual batch size and trusts result.total when present.
+	 */
+	private static function fetch_positions( $fl, $query, $limit = 100, $single_page = false ) {
+		$limit = max( 1, min( 100, (int) $limit ) );
 		$start = 0;
 		$items = [];
-		for ( $page = 0; $page < 20; $page++ ) { // hard cap: 2000 jobs
+		for ( $page = 0; $page < 40; $page++ ) { // hard cap: 40 requests
 			$path = 'position/search/fl=' . $fl . '?limit=' . $limit . '&start=' . $start;
 			if ( '' !== $query ) {
 				$path .= '&q=' . rawurlencode( $query );
@@ -442,10 +540,18 @@ class Verto_Vincere {
 				$batch = $json['items'];
 			}
 			$items = array_merge( $items, $batch );
-			if ( count( $batch ) < $limit ) {
+			if ( $single_page || ! $batch ) {
 				break;
 			}
-			$start += $limit;
+			$start += count( $batch ); // server may return fewer than $limit per page
+			$total = isset( $json['result']['total'] ) ? (int) $json['result']['total'] : null;
+			if ( null !== $total ) {
+				if ( $start >= $total ) {
+					break;
+				}
+			} elseif ( count( $batch ) < $limit ) {
+				break;
+			}
 		}
 		return $items;
 	}
@@ -820,6 +926,8 @@ class Verto_Vincere {
 		$token     = get_transient( self::TR_ID_TOKEN );
 		$connected_at = (int) get_option( self::OPT_CONNECTED );
 		$last_sync = get_option( self::OPT_LAST_SYNC );
+		$attempt_log = get_option( self::OPT_ATTEMPTS );
+		$attempts  = is_array( $attempt_log ) && isset( $attempt_log['attempts'] ) && is_array( $attempt_log['attempts'] ) ? $attempt_log['attempts'] : [];
 		$next_cron = wp_next_scheduled( self::CRON_HOOK );
 		$jobs_total = 0;
 		$counts = wp_count_posts( self::CPT );
@@ -900,6 +1008,52 @@ class Verto_Vincere {
 					<tr><td>Next scheduled sync</td><td><?php echo $next_cron ? esc_html( human_time_diff( $next_cron ) ) . ' from now (hourly)' : 'Not scheduled (connect first)'; ?></td></tr>
 				</tbody>
 			</table>
+
+			<h2>Last sync attempts</h2>
+			<p class="description" style="max-width:720px;">
+				Each sync tries progressively simpler request shapes until Vincere accepts one
+				(full fields + open-jobs query → same fields without the query → thinner field
+				lists → a bare <code>fl=id,job_title</code> probe). The exact request URL, HTTP
+				status and start of the response body are recorded below — if the tenant rejects
+				a query or field (e.g. <code>"Data is invalid" / QUERY_PARSE_FAIL</code>), the
+				rejection is visible here verbatim. The winning shape is remembered and tried
+				first next time.
+			</p>
+			<?php if ( $attempts ) : ?>
+				<table class="widefat striped" style="max-width:1100px;">
+					<thead>
+						<tr>
+							<th style="width:2em;">#</th>
+							<th>Attempt</th>
+							<th>Request URL</th>
+							<th style="width:4em;">HTTP</th>
+							<th>Result</th>
+							<th>Response (first 400 chars)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ( $attempts as $i => $entry ) : ?>
+							<tr>
+								<td><?php echo (int) $i + 1; ?></td>
+								<td><?php echo esc_html( (string) ( $entry['label'] ?? '' ) ); ?></td>
+								<td style="word-break:break-all;"><code><?php echo esc_html( (string) ( $entry['url'] ?? '' ) ); ?></code></td>
+								<td><?php echo $entry['status'] ? (int) $entry['status'] : '—'; ?></td>
+								<td><?php
+									$result = (string) ( $entry['result'] ?? '' );
+									$colour = 0 === strpos( $result, 'OK' ) ? 'green' : '#c00';
+									printf( '<span style="color:%s;">%s</span>', esc_attr( $colour ), esc_html( $result ) );
+								?></td>
+								<td style="word-break:break-all;"><code><?php echo esc_html( (string) ( $entry['body'] ?? '' ) ); ?></code></td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+				<?php if ( is_array( $attempt_log ) && ! empty( $attempt_log['time'] ) ) : ?>
+					<p class="description">Recorded <?php echo esc_html( human_time_diff( (int) $attempt_log['time'] ) ); ?> ago.</p>
+				<?php endif; ?>
+			<?php else : ?>
+				<p><em>No sync attempted yet — click "Sync now" below and refresh.</em></p>
+			<?php endif; ?>
 
 			<div style="display:flex;gap:.5rem;align-items:center;">
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline-block;margin-right:.5rem;">
