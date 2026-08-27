@@ -402,7 +402,7 @@ class Verto_Vincere {
 		// Solr-backed and rejects unparseable queries with HTTP 400
 		// "Data is invalid" — if this q fails, the ladder simply drops it
 		// and open jobs are filtered locally on closed_date instead.
-		$query = apply_filters( 'verto/vincere/search_query', 'closed_date:isnull' );
+		$query = apply_filters( 'verto/vincere/search_query', 'closed_date:[NOW TO *]' );
 
 		$tiers = array_values( array_filter( array_map( 'trim', array_map( 'strval', (array) $field_tiers ) ) ) );
 		if ( ! $tiers ) {
@@ -422,6 +422,11 @@ class Verto_Vincere {
 		// If a previous sync found a working shape, try that one first so the
 		// steady state costs a single request instead of re-walking failures.
 		$good = get_option( self::OPT_GOOD_SHAPE );
+		// Ignore shapes remembered by an older plugin version — a new version
+		// may carry a better default query that must get first crack.
+		if ( is_array( $good ) && ( $good['ver'] ?? '' ) !== VERTO_WIDGETS_VERSION ) {
+			$good = false;
+		}
 		if ( is_array( $good ) && isset( $good['fl'], $good['q'] ) ) {
 			foreach ( $attempts as $i => $attempt ) {
 				if ( $attempt['fl'] === $good['fl'] && $attempt['q'] === $good['q'] ) {
@@ -471,7 +476,7 @@ class Verto_Vincere {
 			$last = end( $log );
 			return self::record_sync( 'error', $last ? $last['result'] : 'Unknown error.', 0 );
 		}
-		update_option( self::OPT_GOOD_SHAPE, [ 'fl' => $winner['fl'], 'q' => $winner['q'] ], false );
+		update_option( self::OPT_GOOD_SHAPE, [ 'fl' => $winner['fl'], 'q' => $winner['q'], 'ver' => VERTO_WIDGETS_VERSION ], false );
 
 		$settings = self::settings();
 		$seen     = [];
@@ -481,9 +486,9 @@ class Verto_Vincere {
 			if ( ! is_array( $item ) || empty( $item['id'] ) ) {
 				continue;
 			}
-			// Belt & braces: drop anything with a closed date even if the
-			// server-side query let it through.
-			if ( ! empty( $item['closed_date'] ) ) {
+			// Open = no closed_date, or closed_date still in the future
+			// (this tenant sets closed_date as an expiry date on open jobs).
+			if ( ! empty( $item['closed_date'] ) && strtotime( $item['closed_date'] ) <= time() ) {
 				continue;
 			}
 			$job = self::map_position( $item, $settings );
