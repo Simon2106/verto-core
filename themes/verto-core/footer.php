@@ -76,8 +76,9 @@ $verto_is_brand_site = 'verto' !== $verto_brand;
 	<div class="verto-footer__inner">
 		<div class="verto-footer__grid">
 			<div class="verto-footer__brand">
+				<?php /* Round 4, item 10: strapline removed (read too Edison), logo
+				         enlarged, locations line restyled as gold small-caps. */ ?>
 				<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/verto-logo.svg' ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="verto-footer__logo" />
-				<p class="verto-footer__strap">Verto Group · Edison Lux · Vertek · ModulR — precision talent for the industries that build, power and run the world.</p>
 				<p class="verto-footer__locations">Solent · Austin · Miami (soon)</p>
 			</div>
 			<div class="verto-footer__col">

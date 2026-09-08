@@ -20,7 +20,7 @@ class Verto_Widget_Brand_Hero extends \Elementor\Widget_Base {
 		$this->add_control( 'line1', [ 'label' => 'Headline line 1', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Connecting talent.' ] );
 		$this->add_control( 'line2', [ 'label' => 'Headline line 2 (brand full stop is appended)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Powering progress' ] );
 		$this->add_control( 'sub', [ 'label' => 'Sub paragraph', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => "Modulr connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses, award-winning practices and the projects you won't find advertised." ] );
+			'default' => "Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU." ] );
 		$this->add_control( 'image', [ 'label' => 'Hero image', 'type' => \Elementor\Controls_Manager::MEDIA ] );
 		$this->add_control( 'image_alt', [ 'label' => 'Image alt', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Glowing globe at night with arcs of light connecting cities' ] );
 		$this->add_control( 'object_position', [ 'label' => 'Image object-position', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'center 35%' ] );

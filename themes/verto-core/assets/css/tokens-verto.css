@@ -1,4 +1,7 @@
-/* Verto Group — parent brand tokens (ivory / blue-grey #283347 / gold #d19f2f) */
+/* Verto Group — parent brand tokens (ivory / deep navy #1F2A44 / gold #d19f2f).
+   Client feedback round 4, item 1: the old blue-grey #283347 read dull — the
+   ink is now a richer, cleaner deep navy. TUNEABLE: adjust --ink (and the two
+   matching *-foreground values below) if the client wants it warmer/deeper. */
 :root {
   --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -10,10 +13,10 @@
   --muted: oklch(0.95 0.008 85);
   --muted-foreground: oklch(0.45 0.015 260);
   --accent: #d19f2f;
-  --accent-foreground: #283347; /* dark text on gold — white fails contrast */
+  --accent-foreground: #1F2A44; /* dark text on gold — white fails contrast */
   --brand: #d19f2f;
-  --brand-foreground: #283347;
-  --ink: #283347;
+  --brand-foreground: #1F2A44;
+  --ink: #1F2A44; /* round 4, item 1 — richer deep navy (was #283347) */
   --ink-foreground: oklch(0.97 0.01 85);
   --border: oklch(0.9 0.012 85);
 }

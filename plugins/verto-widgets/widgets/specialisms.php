@@ -25,9 +25,9 @@ class Verto_Widget_Specialisms extends \Elementor\Widget_Base {
 			'label' => 'Items', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ title }}}',
 			'default' => [
-				[ 'icon' => 'server',          'title' => 'Hyperscale Data Centres', 'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
+				[ 'icon' => 'server',          'title' => 'Data Centres', 'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
 				[ 'icon' => 'network',         'title' => 'Colocation & Edge',       'description' => 'Delivery and operations talent for colo and edge programmes at every stage.' ],
-				[ 'icon' => 'building-2',      'title' => 'US Architecture',         'description' => 'Registered architects, project architects, directors, principals and partners.' ],
+				[ 'icon' => 'building-2',      'title' => 'Architecture',            'description' => 'Registered architects, project architects, directors, principals and partners.' ],
 				[ 'icon' => 'zap',             'title' => 'MEP Engineering',         'description' => 'Mechanical, electrical and plumbing leadership across the US project landscape.' ],
 				[ 'icon' => 'layers',          'title' => 'Project Lifecycle',       'description' => 'CD → SD → DD → CD → CA. Concept design through construction administration.' ],
 				[ 'icon' => 'heart-handshake', 'title' => 'Inclusion & EDI',         'description' => 'Championing women in architecture and EDI across technical built-environment roles.' ],

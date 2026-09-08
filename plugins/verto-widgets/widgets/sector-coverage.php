@@ -46,14 +46,17 @@ class Verto_Widget_Sector_Coverage extends \Elementor\Widget_Base {
 				  'color' => '#3CC739', 'link_color' => '#23761A',
 				  'link_text' => 'Enter Edison Lux', 'link' => [ 'url' => '#' ],
 				  'items' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)" ],
+				// Round 4, item 12: Vertek's six client-named sectors.
 				[ 'wordmark' => 'VERTEK', 'descriptor' => 'Engineering, Sales & Manufacturing',
 				  'color' => '#F82B60',
 				  'link_text' => 'Enter Vertek', 'link' => [ 'url' => '#' ],
-				  'items' => "Fluid Power & Hydraulics\nHVAC & Refrigeration\nAdvanced Manufacturing\nInstrumentation & Controls" ],
+				  'items' => "Fluid Power (pumps, seals, valves & hydraulics)\nHVAC\nDefense & Advanced Manufacturing\nIndustrial Automation\nCNC & Metalworking\nCompressors" ],
+				// Round 4, item 13: ModulR trimmed to three sectors (Interior
+				// Design & Fit-out dropped pending client decision).
 				[ 'wordmark' => 'MODULR', 'descriptor' => 'Built Environment',
 				  'color' => '#0464FA',
 				  'link_text' => 'Enter Modulr', 'link' => [ 'url' => '#' ],
-				  'items' => "Hyperscale Data Centres\nUS Architecture\nMEP Engineering\nInterior Design & Fit-out" ],
+				  'items' => "Architecture\nData Centres\nMEP Engineering" ],
 				[ 'wordmark' => 'VERTO GROUP', 'descriptor' => 'Life Sciences — held at group level',
 				  'color' => '#d19f2f',
 				  'link_text' => 'Talk to the group', 'link' => [ 'url' => '/contact' ],

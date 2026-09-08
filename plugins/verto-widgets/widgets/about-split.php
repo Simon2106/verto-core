@@ -45,7 +45,7 @@ class Verto_Widget_About_Split extends \Elementor\Widget_Base {
 			'label' => 'Stats', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ value }}}',
 			'default' => [
-				[ 'value' => '3 regions',      'label' => 'UK, EU and US coverage' ],
+				[ 'value' => 'US & EU',        'label' => 'Two regions, one network' ],
 				[ 'value' => 'Full lifecycle', 'label' => 'Concept design to commissioning' ],
 				[ 'value' => 'NDA-grade',      'label' => 'Discretion on every search' ],
 			],

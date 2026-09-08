@@ -368,6 +368,58 @@ class Verto_Vincere {
 		return is_array( $json ) ? $json : [];
 	}
 
+	/**
+	 * POST https://{tenant}/api/v2/{path} with a JSON body and the same
+	 * id-token + x-api-key headers as api_get(). Retries once with a forced
+	 * token refresh on 401/403. $body may be an array or object (an object /
+	 * stdClass encodes to `{}` when empty — some Vincere endpoints reject a
+	 * bare `[]`). Returns the decoded JSON array (possibly empty) or WP_Error.
+	 * Used by includes/applications.php to create candidates, upload CVs and
+	 * link applications to positions.
+	 */
+	public static function api_post( $path, $body = null, $retry = true ) {
+		$url = 'https://' . self::tenant() . '/api/v2/' . ltrim( $path, '/' );
+		self::$last_request = [ 'url' => $url, 'status' => 0, 'body' => '', 'error' => '' ];
+
+		$token = self::get_id_token();
+		if ( is_wp_error( $token ) ) {
+			self::$last_request['error'] = $token->get_error_message();
+			return $token;
+		}
+		$response = wp_remote_post( $url, [
+			'timeout' => 30,
+			'headers' => [
+				'id-token'     => $token,
+				'x-api-key'    => (string) VINCERE_API_KEY,
+				'accept'       => 'application/json',
+				'content-type' => 'application/json',
+			],
+			'body'    => wp_json_encode( null === $body ? new stdClass() : $body ),
+		] );
+		if ( is_wp_error( $response ) ) {
+			self::$last_request['error'] = $response->get_error_message();
+			return $response;
+		}
+		$status = (int) wp_remote_retrieve_response_code( $response );
+		$raw    = (string) wp_remote_retrieve_body( $response );
+		self::$last_request['status'] = $status;
+		self::$last_request['body']   = mb_substr( $raw, 0, 400 );
+		if ( in_array( $status, [ 401, 403 ], true ) && $retry ) {
+			$token = self::get_id_token( true );
+			if ( is_wp_error( $token ) ) {
+				self::$last_request['error'] = $token->get_error_message();
+				return $token;
+			}
+			return self::api_post( $path, $body, false );
+		}
+		$json = json_decode( $raw, true );
+		if ( $status < 200 || $status >= 300 ) {
+			$msg = is_array( $json ) && ! empty( $json['message'] ) ? (string) $json['message'] : 'HTTP ' . $status;
+			return new WP_Error( 'vincere_api', $msg, [ 'status' => $status, 'body' => mb_substr( $raw, 0, 400 ) ] );
+		}
+		return is_array( $json ) ? $json : [];
+	}
+
 	/* ── Cron ──────────────────────────────────────────────────────────── */
 
 	public static function maybe_schedule_cron() {
@@ -807,7 +859,10 @@ class Verto_Vincere {
 		}
 
 		$company  = self::field_text( $item['company'] ?? '' );
-		$internal = self::is_internal( [ $brand_raw, $company, $title ], (string) $settings['internal_marker'] );
+		// Round 4, item 6 (BUG): the marker match must NEVER include the job
+		// TITLE — a client vacancy called "Internal Sales" was passing the
+		// internal filter. Brand/group field + company only.
+		$internal = self::is_internal( [ $brand_raw, $company ], (string) $settings['internal_marker'] );
 
 		// Location: whichever shape the tenant returns.
 		$location = self::field_text( $item['location'] ?? '' );
@@ -1017,12 +1072,15 @@ class Verto_Vincere {
 		foreach ( $posts as $post ) {
 			$package = (string) get_post_meta( $post->ID, '_job_type', true );
 			$cache[] = [
-				'title'    => get_the_title( $post ),
-				'brand'    => (string) get_post_meta( $post->ID, '_brand', true ),
-				'location' => (string) get_post_meta( $post->ID, '_location', true ),
-				'level'    => (string) get_post_meta( $post->ID, '_level', true ),
-				'package'  => $package ? $package : 'Competitive package',
-				'url'      => (string) get_post_meta( $post->ID, '_apply_url', true ),
+				'title'       => get_the_title( $post ),
+				'brand'       => (string) get_post_meta( $post->ID, '_brand', true ),
+				'location'    => (string) get_post_meta( $post->ID, '_location', true ),
+				'level'       => (string) get_post_meta( $post->ID, '_level', true ),
+				'package'     => $package ? $package : 'Competitive package',
+				'url'         => (string) get_post_meta( $post->ID, '_apply_url', true ),
+				// Consumed by the Apply modal (includes/applications.php):
+				'vincere_id'  => (string) get_post_meta( $post->ID, '_vincere_id', true ),
+				'owner_email' => (string) get_post_meta( $post->ID, '_owner_email', true ),
 			];
 		}
 		return $cache;

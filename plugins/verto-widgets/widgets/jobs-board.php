@@ -40,8 +40,9 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content', [ 'label' => 'Jobs' ] );
-		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => "Roles we're hiring now." ] );
-		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks — not client vacancies. We also always want to hear from experienced consultants, even if the exact desk isn't listed." ] );
+		// Round 4, item 5: catchier heading, and no word "roles" in the section.
+		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Your next desk is here.' ] );
+		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks — not client vacancies. And if your desk isn't listed yet, we still want to hear from experienced consultants." ] );
 		$this->add_control( 'apply_url', [ 'label' => 'Job click-through URL', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/contact' ] ] );
 		$this->add_control( 'vincere_shortcode', [ 'label' => 'Vincere shortcode (optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'description' => 'Once the Vincere plugin is installed, paste its shortcode — it replaces the placeholder roles.' ] );
 		$this->end_controls_section();
@@ -68,12 +69,13 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 			}
 			$brand = isset( $job['brand'] ) && isset( self::BRANDS[ $job['brand'] ] ) ? $job['brand'] : 'verto';
 			$clean[] = [
-				'title'    => (string) $job['title'],
-				'brand'    => $brand,
-				'location' => (string) ( $job['location'] ?? 'Flexible' ),
-				'level'    => (string) ( $job['level'] ?? 'Senior' ),
-				'package'  => (string) ( $job['package'] ?? 'Competitive package' ),
-				'url'      => (string) ( $job['url'] ?? '' ),
+				'title'      => (string) $job['title'],
+				'brand'      => $brand,
+				'location'   => (string) ( $job['location'] ?? 'Flexible' ),
+				'level'      => (string) ( $job['level'] ?? 'Senior' ),
+				'package'    => (string) ( $job['package'] ?? 'Competitive package' ),
+				'url'        => (string) ( $job['url'] ?? '' ),
+				'vincere_id' => (string) ( $job['vincere_id'] ?? '' ),
 			];
 		}
 		return $clean;
@@ -87,10 +89,31 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$jobs      = $live ? $live : self::JOBS;
 		$locations = $live ? array_values( array_unique( array_column( $live, 'location' ) ) ) : self::LOCATIONS;
 		$levels    = $live ? array_values( array_unique( array_column( $live, 'level' ) ) ) : self::LEVELS;
+
+		// Live (Vincere-synced) rows open the inline Apply modal instead of the
+		// click-through URL; placeholder rows keep the old behaviour. A row
+		// with an explicit external apply URL (the optional Vincere portal
+		// base) keeps that link.
+		$has_modal = (bool) $live && class_exists( 'Verto_Applications' );
+
+		// Non-JS submissions bounce back here with ?verto_apply=ok|<error>.
+		$flash = '';
+		$flash_ok = false;
+		if ( isset( $_GET['verto_apply'] ) && class_exists( 'Verto_Applications' ) ) {
+			$code     = sanitize_key( wp_unslash( $_GET['verto_apply'] ) );
+			$messages = Verto_Applications::messages();
+			if ( isset( $messages[ $code ] ) ) {
+				$flash    = $messages[ $code ];
+				$flash_ok = ( 'ok' === $code );
+			}
+		}
 		?>
 		<div class="verto-jobs" data-verto-jobs>
+			<?php if ( '' !== $flash ) : ?>
+				<div class="verto-apply-banner <?php echo $flash_ok ? 'is-ok' : 'is-error'; ?>" role="status"><?php echo esc_html( $flash ); ?></div>
+			<?php endif; ?>
 			<div class="verto-intro">
-				<div class="verto-jobs__eyebrow">Join Verto — internal roles</div>
+				<div class="verto-jobs__eyebrow">Join Verto</div>
 				<h2 class="verto-title-reveal verto-display-2" style="margin-top:1.25rem;">
 					<span class="line-mask"><span class="line-inner"><?php echo esc_html( $s['heading'] ); ?></span></span>
 				</h2>
@@ -103,9 +126,20 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 						<?php echo do_shortcode( wp_kses_post( $s['vincere_shortcode'] ) ); ?>
 					<?php else : ?>
 						<?php foreach ( $jobs as $job ) :
-							$b = self::BRANDS[ $job['brand'] ]; ?>
+							$b = self::BRANDS[ $job['brand'] ];
+							// Modal for live rows without an explicit external
+							// apply URL; #verto-apply-modal doubles as the
+							// no-JS fallback (CSS :target shows the modal).
+							$use_modal = $has_modal && empty( $job['url'] );
+							$href      = $use_modal ? '#verto-apply-modal' : ( ! empty( $job['url'] ) ? $job['url'] : $apply );
+							?>
 							<a class="verto-jobs__row verto-jobs__row--<?php echo esc_attr( $job['brand'] ); ?>"
-							   href="<?php echo esc_url( ! empty( $job['url'] ) ? $job['url'] : $apply ); ?>"
+							   href="<?php echo esc_url( $href ); ?>"
+							   <?php if ( $use_modal ) : ?>
+							   data-apply-open
+							   data-job-id="<?php echo esc_attr( $job['vincere_id'] ?? '' ); ?>"
+							   data-job-title="<?php echo esc_attr( $job['title'] ); ?>"
+							   <?php endif; ?>
 							   data-brand="<?php echo esc_attr( $job['brand'] ); ?>"
 							   data-location="<?php echo esc_attr( $job['location'] ); ?>"
 							   data-level="<?php echo esc_attr( $job['level'] ); ?>">
@@ -124,14 +158,14 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 								</div>
 							</a>
 						<?php endforeach; ?>
-						<p class="verto-jobs__empty" hidden>No open roles match those filters right now — but send us a note anyway; half our hires start that way.</p>
+						<p class="verto-jobs__empty" hidden>Nothing matches those filters right now — but send us a note anyway; half our hires start that way.</p>
 					<?php endif; ?>
 				</div>
 
 				<aside class="verto-jobs__filters">
 					<div class="verto-jobs__panel">
 						<div class="verto-jobs__paneltop">
-							<span class="verto-jobs__panellabel">Filter roles</span>
+							<span class="verto-jobs__panellabel">Filter</span>
 							<button type="button" class="verto-jobs__clear" data-jobs-clear hidden>Clear</button>
 						</div>
 						<div class="verto-jobs__group">
@@ -162,10 +196,13 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							</div>
 						</div>
 					</div>
-					<p class="verto-jobs__count"><span data-jobs-count><?php echo count( $jobs ); ?></span> roles shown · Can't see your desk? <a href="<?php echo esc_url( $apply ); ?>">Write to us anyway →</a></p>
+					<p class="verto-jobs__count"><span data-jobs-count><?php echo count( $jobs ); ?></span> openings shown · Can't see your desk? <?php if ( $has_modal ) : ?><a href="#verto-apply-modal" data-apply-open data-job-id="" data-job-title="">Send a general application →</a><?php else : ?><a href="<?php echo esc_url( $apply ); ?>">Write to us anyway →</a><?php endif; ?></p>
 				</aside>
 			</div>
 		</div>
 		<?php
+		if ( $has_modal ) {
+			Verto_Applications::render_modal();
+		}
 	}
 }

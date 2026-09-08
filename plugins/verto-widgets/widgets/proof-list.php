@@ -24,7 +24,7 @@ class Verto_Widget_Proof_List extends \Elementor\Widget_Base {
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ text }}}',
 			'default' => [
 				[ 'text' => 'Trusted by global operators, developers and celebrated US practices' ],
-				[ 'text' => 'Active networks across the UK, EU and US markets' ],
+				[ 'text' => 'Active networks across the US and EU markets' ],
 				[ 'text' => 'NDA-grade discretion on every sensitive and pre-announcement search' ],
 				[ 'text' => 'Inclusion work championing women in architecture and EDI in technical built-environment roles' ],
 			],

@@ -45,7 +45,7 @@ class Verto_Widget_Audience_Cards extends \Elementor\Widget_Base {
 					'kicker'   => 'For candidates',
 					'headline' => 'The best projects are rarely advertised.',
 					'body'     => 'The best talent is rarely searching. Modulr exists in that gap — making precise, considered introductions rather than firing CVs into the void, and protecting reputations on every engagement.',
-					'bullets'  => "Hyperscale, colo, US architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
+					'bullets'  => "Data centre, colocation, architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
 					'cta_text' => 'Find your next project',
 					'cta_link' => [ 'url' => '/candidates' ],
 				],

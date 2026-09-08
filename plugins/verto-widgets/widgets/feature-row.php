@@ -29,7 +29,7 @@ class Verto_Widget_Feature_Row extends \Elementor\Widget_Base {
 			'label' => 'Items', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ title }}}',
 			'default' => [
-				[ 'icon' => 'globe-2',   'title' => 'UK, EU & US',              'body' => 'Hyperscale, colocation and celebrated US architecture — three regions, one network.' ],
+				[ 'icon' => 'globe-2',   'title' => 'US & EU',                  'body' => 'Data centres, colocation and celebrated architecture practices — two regions, one network.' ],
 				[ 'icon' => 'compass',   'title' => 'Curated Introductions',    'body' => 'Considered shortlists with real context. Never CVs into the void.' ],
 				[ 'icon' => 'lock',      'title' => 'NDA-Grade Discretion',     'body' => 'Sensitive, pre-announcement and competitor-adjacent search handled as standard.' ],
 				[ 'icon' => 'handshake', 'title' => 'Long-Game Relationships',  'body' => 'We track careers and project pipelines to add value before the urgent need arises.' ],

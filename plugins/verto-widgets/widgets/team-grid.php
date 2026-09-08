@@ -126,7 +126,11 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 		while ( $q->have_posts() ) {
 			$q->the_post();
 			$role = get_post_meta( get_the_ID(), '_verto_role', true ) ?: 'Consultant';
-			echo '<div class="verto-team__card"><div class="verto-team__photo">';
+			// Round 4, item 16: brand-coloured ring/tint per member — data-brand
+			// carries the FIRST brand in the _verto_brand comma list (CSS maps it
+			// to the brand colour; unknown/empty = no treatment).
+			$member_brand = sanitize_key( trim( explode( ',', (string) get_post_meta( get_the_ID(), '_verto_brand', true ) )[0] ) );
+			printf( '<div class="verto-team__card"%s><div class="verto-team__photo">', $member_brand ? ' data-brand="' . esc_attr( $member_brand ) . '"' : '' );
 			if ( has_post_thumbnail() ) {
 				the_post_thumbnail( 'medium' );
 			} else {

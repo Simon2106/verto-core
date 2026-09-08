@@ -202,21 +202,51 @@
       prototype's TimelineCarousel (about.tsx): auto-advance every 3.5s,
       pause on hover/touch/focus, resume after 6s idle, sync to manual
       swipes (native overflow scroll stays the mechanism) and fill a gold
-      progress line between visited milestones. Reduced motion → plain
-      manual scroll (no autoplay, no progress line). ── */
+      progress line between visited milestones. Round 4, item 15: the native
+      scrollbar is hidden in CSS and prev/next chevron buttons are injected
+      here, wired to the same carousel index. Reduced motion → no autoplay or
+      progress line, but the chevrons still page the track. ── */
 (function () {
   "use strict";
   var ADVANCE_MS = 3500;
   var RESUME_MS = 6000;
+  var CHEVRON = {
+    prev: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg>',
+    next: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>',
+  };
 
   document.addEventListener("DOMContentLoaded", function () {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     document.querySelectorAll(".verto-timeline").forEach(function (scroller) {
       var track = scroller.querySelector(".verto-timeline__track");
       if (!track) return;
       var items = Array.prototype.slice.call(track.querySelectorAll(".verto-timeline__item"));
       if (items.length < 2) return;
+
+      // Chevron nav (round 4, item 15) — injected so the widget markup stays
+      // untouched. Sits above the full-bleed track, right-aligned.
+      var nav = document.createElement("div");
+      nav.className = "verto-timeline__nav";
+      var buttons = {};
+      [ "prev", "next" ].forEach(function (dir) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "verto-timeline__btn";
+        btn.setAttribute("aria-label", "prev" === dir ? "Previous milestones" : "Next milestones");
+        btn.innerHTML = CHEVRON[dir];
+        nav.appendChild(btn);
+        buttons[dir] = btn;
+      });
+      scroller.parentNode.insertBefore(nav, scroller);
+
+      if (reduced) {
+        // Manual mode: no autoplay/progress — the chevrons page the track.
+        var page = function (dir) { scroller.scrollBy({ left: dir * 264, behavior: "auto" }); };
+        buttons.prev.addEventListener("click", function () { page(-1); });
+        buttons.next.addEventListener("click", function () { page(1); });
+        return;
+      }
 
       // Gold progress line, injected so the widget markup stays untouched
       var progress = document.createElement("div");
@@ -256,6 +286,14 @@
         clearTimeout(idleTimer);
         idleTimer = setTimeout(function () { paused = false; }, RESUME_MS);
       }
+      // Chevrons step the carousel index and hold off the autoplay a while.
+      function step(dir) {
+        pause();
+        scheduleResume();
+        go((idx + dir + items.length) % items.length);
+      }
+      buttons.prev.addEventListener("click", function () { step(-1); });
+      buttons.next.addEventListener("click", function () { step(1); });
       scroller.addEventListener("pointerenter", pause);
       scroller.addEventListener("pointerleave", scheduleResume);
       scroller.addEventListener("touchstart", pause, { passive: true });
@@ -290,5 +328,138 @@
   }
   ["touchstart", "scroll", "click", "keydown"].forEach(function (evt) {
     window.addEventListener(evt, rescue, { once: true, passive: true });
+  });
+})();
+
+/* ── 9. Apply modal (jobs board → verto_apply endpoint) ──
+      Progressive enhancement over the CSS :target fallback: proper
+      open/close (Escape, overlay, close links), per-row job prefill,
+      client-side CV size check and async submit with inline success /
+      error states. Runs regardless of prefers-reduced-motion. ── */
+(function () {
+  "use strict";
+  var MAX_CV_BYTES = 5 * 1024 * 1024;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var modal = document.querySelector("[data-verto-apply-modal]");
+    if (!modal) return;
+    var form = modal.querySelector("[data-verto-apply-form]");
+    var done = modal.querySelector("[data-apply-done]");
+    var errBox = modal.querySelector("[data-apply-error]");
+    var titleEl = modal.querySelector("[data-apply-job-label]");
+    var lastFocus = null;
+
+    function showError(msg) {
+      if (errBox) {
+        errBox.textContent = msg;
+        errBox.hidden = false;
+      }
+      var btn = form && form.querySelector('[type="submit"]');
+      if (btn) {
+        btn.disabled = false;
+        if (btn.dataset.label) btn.textContent = btn.dataset.label;
+      }
+    }
+
+    function open(job) {
+      lastFocus = document.activeElement;
+      // Reset to a fresh form each time (a previous success hides it)
+      if (form) {
+        form.hidden = false;
+        if (errBox) { errBox.hidden = true; errBox.textContent = ""; }
+      }
+      if (done) done.hidden = true;
+      if (titleEl) titleEl.textContent = job && job.title ? job.title : "Join Verto";
+      if (form) {
+        var idField = form.querySelector('[name="verto_job_id"]');
+        if (idField) idField.value = job && job.id ? job.id : "";
+        var roleField = form.querySelector('[name="verto_job_title"]');
+        if (roleField) roleField.value = job && job.title ? job.title : "";
+      }
+      modal.classList.add("is-open");
+      document.body.classList.add("verto-modal-open");
+      var first = form && form.querySelector('[name="verto_name"]');
+      if (first) window.setTimeout(function () { first.focus(); }, 60);
+    }
+
+    function close() {
+      modal.classList.remove("is-open");
+      document.body.classList.remove("verto-modal-open");
+      // Clear the :target fallback hash so re-clicking the same row works
+      if (window.location.hash === "#verto-apply-modal") {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    document.addEventListener("click", function (e) {
+      var opener = e.target.closest("[data-apply-open]");
+      if (opener) {
+        e.preventDefault();
+        open({
+          id: opener.getAttribute("data-job-id") || "",
+          title: opener.getAttribute("data-job-title") || "",
+        });
+        return;
+      }
+      var closer = e.target.closest("[data-apply-close]");
+      if (closer) {
+        e.preventDefault();
+        close();
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && (modal.classList.contains("is-open") || window.location.hash === "#verto-apply-modal")) close();
+    });
+
+    if (!form || !window.fetch || !window.FormData) return;
+
+    // Flag async so the endpoint answers JSON instead of redirecting
+    var asyncFlag = document.createElement("input");
+    asyncFlag.type = "hidden";
+    asyncFlag.name = "verto_async";
+    asyncFlag.value = "1";
+    form.appendChild(asyncFlag);
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (errBox) { errBox.hidden = true; errBox.textContent = ""; }
+
+      var file = form.querySelector('input[type="file"]');
+      if (file && file.files && file.files[0] && file.files[0].size > MAX_CV_BYTES) {
+        showError("Your CV is over 5 MB — please attach a smaller file.");
+        return;
+      }
+      var btn = form.querySelector('[type="submit"]');
+      if (btn) {
+        btn.dataset.label = btn.dataset.label || btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Sending…";
+      }
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      })
+        .then(function (res) {
+          return res.json().then(function (json) { return json; });
+        })
+        .then(function (json) {
+          if (json && json.success) {
+            form.hidden = true;
+            if (done) done.hidden = false;
+            if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label; }
+          } else {
+            var msg = json && json.data && json.data.message
+              ? json.data.message
+              : "Something went wrong — please try again.";
+            showError(msg);
+          }
+        })
+        .catch(function () {
+          showError("Something went wrong sending your application — please try again, or email us your CV instead.");
+        });
+    });
   });
 })();

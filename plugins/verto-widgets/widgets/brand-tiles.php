@@ -31,6 +31,10 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 			'label' => 'Face gradient (CSS, optional)', 'type' => \Elementor\Controls_Manager::TEXT,
 			'description' => 'Full CSS gradient for the tile front face, e.g. Edison Lux linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%). Overrides the ink background.',
 		] );
+		$rep->add_control( 'name_gradient', [
+			'label' => 'Wordmark gradient (CSS, optional)', 'type' => \Elementor\Controls_Manager::TEXT,
+			'description' => 'Round 4, item 4 — renders the brand name on the hover face as gradient text, e.g. the Edison Lux primary-lockup green→blue: linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%).',
+		] );
 		$rep->add_control( 'sectors', [
 			'label' => 'Sector coverage (one per line)', 'type' => \Elementor\Controls_Manager::TEXTAREA,
 			'description' => 'Shown on the hover (back) face of the tile.',
@@ -43,14 +47,19 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 				[ 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
 				  // Coloured gradient-mark logo → white face (round 3, item 2).
 				  'light_face' => 'yes',
+				  // Round 4, item 4: wordmark text in the EL primary-lockup gradient.
+				  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 				  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
 				  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.' ],
+				// Round 4, item 13: new ModulR positioning + trimmed sector list
+				// (Interior Design & Fit-out dropped pending client decision).
 				[ 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
-				  'sectors' => "Hyperscale Data Centres\nUS Architecture\nMEP Engineering\nInterior Design & Fit-out",
-				  'positioning' => "ModulR connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses and award-winning practices." ],
+				  'sectors' => "Architecture\nData Centres\nMEP Engineering",
+				  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.' ],
+				// Round 4, item 12: Vertek now US + Europe, six client-named sectors.
 				[ 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60', 'bg' => '#0E1013',
-				  'sectors' => "Fluid Power & Hydraulics\nHVAC & Refrigeration\nAdvanced Manufacturing\nInstrumentation & Controls",
-				  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US.' ],
+				  'sectors' => "Fluid Power (pumps, seals, valves & hydraulics)\nHVAC\nDefense & Advanced Manufacturing\nIndustrial Automation\nCNC & Metalworking\nCompressors",
+				  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the US and Europe.' ],
 			],
 		] );
 		$this->end_controls_section();
@@ -95,7 +104,11 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 					<div class="verto-tile__face verto-tile__face--back" style="background:<?php echo esc_attr( $bg ); ?>;">
 						<div class="verto-tile__stripe" style="background:<?php echo esc_attr( $color ); ?>;"></div>
 						<div class="verto-tile__kicker" style="color:<?php echo esc_attr( $color ); ?>;"><?php echo esc_html( $t['focus'] ); ?></div>
-						<div class="verto-tile__name"><?php echo esc_html( $t['name'] ); ?></div>
+						<?php if ( ! empty( $t['name_gradient'] ) ) : /* round 4, item 4 */ ?>
+							<div class="verto-tile__name verto-tile__name--gradient" style="--tile-name-gradient:<?php echo esc_attr( $t['name_gradient'] ); ?>;"><?php echo esc_html( $t['name'] ); ?></div>
+						<?php else : ?>
+							<div class="verto-tile__name"><?php echo esc_html( $t['name'] ); ?></div>
+						<?php endif; ?>
 						<p class="verto-tile__body"><?php echo esc_html( $t['positioning'] ); ?></p>
 						<?php if ( $sectors ) : ?>
 							<div class="verto-tile__seclabel">Sector coverage</div>

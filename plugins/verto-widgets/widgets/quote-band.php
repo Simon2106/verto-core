@@ -57,7 +57,7 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 		$this->add_control( 'cta2_text', [ 'label' => 'CTA 2 (outline)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'cta2_link', [ 'label' => 'CTA 2 link', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->add_control( 'stat_value', [ 'label' => 'Floating stat — value', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '3 regions' ] );
-		$this->add_control( 'stat_label', [ 'label' => 'Floating stat — label', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'UK, EU and US coverage' ] );
+		$this->add_control( 'stat_label', [ 'label' => 'Floating stat — label', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'US & EU coverage' ] );
 
 		$cols = new \Elementor\Repeater();
 		$cols->add_control( 'label', [ 'label' => 'Label', 'type' => \Elementor\Controls_Manager::TEXT ] );

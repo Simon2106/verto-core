@@ -39,6 +39,18 @@ INSIGHTS: listing page = posts archive (home.php pattern per brand).
 All copy in src/lib/brands.ts BRANDS['modulr'] (+ FEATURES/HERO_SUB/SPECIALISM_ICONS
 in brands.$brand.index.tsx). Port verbatim into installer defaults.
 
+> **Round 4 (Sep 2026) copy update — supersedes the section lists above:**
+> **Vertek** is now "across the **US and Europe**" with six client-named
+> sectors: Fluid Power (pumps, seals, valves & hydraulics) / HVAC / Defense &
+> Advanced Manufacturing / Industrial Automation / CNC & Metalworking /
+> Compressors. **ModulR** positioning is now "ModulR connects the very best
+> talent in Data Centres and Architecture with the companies building the
+> future. Covering both the US and EU." — sector list trimmed to Architecture
+> / Data Centres / MEP Engineering (Hyperscale + US prefixes dropped;
+> Interior Design & Fit-out removed pending client decision). Applied in
+> brand_content(), the brand-tiles / sector-coverage widget defaults and the
+> prototype brands.ts / SectorCoverage.tsx.
+
 ## Implementation conventions (existing)
 - installer.php: section()/section2()/widget()/upsert_page(); pages option verto_installer_pages.
 - Brand switch: verto_current_brand() — Verto_Installer::handle_build() branches:

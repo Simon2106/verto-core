@@ -20,12 +20,19 @@ class Verto_Installer {
 
 	const MEDIA_OPTION = 'verto_installer_media';
 	const PAGES_OPTION = 'verto_installer_pages';
+	const CF7_OPTION   = 'verto_cf7_form_id';   // wpcf7_contact_form post created by us
+	const CF7_MISSING  = 'verto_cf7_missing';   // flag: CF7 inactive during the last build
 
 	public static function boot() {
 		add_action( 'admin_menu', function () {
 			add_menu_page( 'Verto Setup', 'Verto Setup', 'manage_options', 'verto-setup', [ self::class, 'render_page' ], 'dashicons-hammer', 59 );
 		} );
 		add_action( 'admin_post_verto_build_site', [ self::class, 'handle_build' ] );
+		add_action( 'admin_notices', function () {
+			if ( current_user_can( 'manage_options' ) && get_option( self::CF7_MISSING ) ) {
+				echo '<div class="notice notice-warning"><p><strong>Verto:</strong> Contact Form 7 was not active during the last site build, so the contact pages still show a placeholder instead of the enquiry form. Activate Contact Form 7, then run <em>Verto Setup → Rebuild</em>.</p></div>';
+			}
+		} );
 	}
 
 	public static function render_page() {
@@ -79,6 +86,117 @@ class Verto_Installer {
 
 		wp_safe_redirect( admin_url( 'admin.php?page=verto-setup&built=1' ) );
 		exit;
+	}
+
+	/* ── Contact Form 7 ─────────────────────────────────────────────────
+	 * The build creates ONE "General enquiry" form per site (tracked via
+	 * CF7_OPTION so rebuilds reuse it) and embeds its shortcode in the
+	 * contact sections. CF7 stores forms as `wpcf7_contact_form` posts whose
+	 * properties live in underscore-prefixed meta — save() does
+	 * `update_post_meta( $post_id, '_' . $prop, … )` for form / mail /
+	 * mail_2 / messages / additional_settings (CF7 source,
+	 * includes/contact-form.php). We use the official API when CF7 is
+	 * active and write exactly that meta structure when it isn't. */
+
+	/** Field template shared by both creation paths (GDPR consent included —
+	 *  an [acceptance] box is required-by-default in CF7). */
+	private static function cf7_form_template(): string {
+		return implode( "\n\n", [
+			'<div class="verto-form__row">' . "\n" . '<label> Name' . "\n" . '    [text* your-name autocomplete:name] </label>' . "\n\n" . '<label> Email' . "\n" . '    [email* your-email autocomplete:email] </label>' . "\n" . '</div>',
+			'<label> Phone (optional)' . "\n" . '    [tel your-phone autocomplete:tel] </label>',
+			'<label> Message' . "\n" . '    [textarea* your-message] </label>',
+			'[acceptance gdpr-consent] I consent to my details being stored and used to respond to this enquiry. [/acceptance]',
+			'[submit "Send message"]',
+		] );
+	}
+
+	/** Mail property: recipient = admin_email, envelope sender on our own
+	 *  domain (deliverability), reply-to the visitor. */
+	private static function cf7_mail_property(): array {
+		$host = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+		if ( 'www.' === substr( $host, 0, 4 ) ) {
+			$host = substr( $host, 4 );
+		}
+		return [
+			'active'             => true,
+			'subject'            => '[_site_title] — enquiry from [your-name]',
+			'sender'             => '[_site_title] <wordpress@' . ( $host ? $host : 'localhost' ) . '>',
+			'recipient'          => (string) get_option( 'admin_email' ),
+			'body'               => "From: [your-name] <[your-email]>\nPhone: [your-phone]\n\n[your-message]\n\n--\nSent from the contact form on [_site_title] ([_site_url]).\nThe sender ticked the GDPR consent box.",
+			'additional_headers' => 'Reply-To: [your-email]',
+			'attachments'        => '',
+			'use_html'           => false,
+			'exclude_blank'      => false,
+		];
+	}
+
+	/**
+	 * Create (once) the site's General enquiry form; returns its shortcode,
+	 * or '' when it could not be created AND embedded (CF7 inactive — the
+	 * placeholder stays put and boot()'s admin notice explains why).
+	 */
+	private static function ensure_contact_form(): string {
+		$id = (int) get_option( self::CF7_OPTION );
+		if ( $id && get_post( $id ) ) {
+			// Form exists — but only embed the shortcode when CF7 can render it.
+			if ( class_exists( 'WPCF7_ContactForm' ) ) {
+				delete_option( self::CF7_MISSING );
+				return '[contact-form-7 id="' . $id . '" title="General enquiry"]';
+			}
+			update_option( self::CF7_MISSING, 1 );
+			return '';
+		}
+
+		if ( class_exists( 'WPCF7_ContactForm' ) ) {
+			// Official path: template → set_properties → save().
+			$form = WPCF7_ContactForm::get_template( [ 'title' => 'General enquiry' ] );
+			$form->set_properties( [
+				'form' => self::cf7_form_template(),
+				'mail' => array_merge( (array) $form->prop( 'mail' ), self::cf7_mail_property() ),
+			] );
+			$form->save();
+			// save()'s return type has shifted between CF7 versions — the
+			// form object's own id() is the stable way to read the post ID.
+			$post_id = method_exists( $form, 'id' ) ? (int) $form->id() : 0;
+			if ( $post_id ) {
+				update_option( self::CF7_OPTION, (int) $post_id );
+				delete_option( self::CF7_MISSING );
+				return '[contact-form-7 id="' . (int) $post_id . '" title="General enquiry"]';
+			}
+			update_option( self::CF7_MISSING, 1 );
+			return '';
+		}
+
+		// CF7 inactive: create the raw post + the meta CF7 reads, so the form
+		// is ready the moment the plugin activates — but do NOT embed the
+		// shortcode (it would render as literal text). Placeholder stays.
+		$post_id = wp_insert_post( [
+			'post_type'   => 'wpcf7_contact_form',
+			'post_status' => 'publish',
+			'post_title'  => 'General enquiry',
+		] );
+		if ( $post_id && ! is_wp_error( $post_id ) ) {
+			update_post_meta( $post_id, '_form', self::cf7_form_template() );
+			update_post_meta( $post_id, '_mail', self::cf7_mail_property() );
+			update_post_meta( $post_id, '_mail_2', array_merge( self::cf7_mail_property(), [ 'active' => false ] ) );
+			update_post_meta( $post_id, '_messages', [] );
+			update_post_meta( $post_id, '_additional_settings', '' );
+			update_option( self::CF7_OPTION, (int) $post_id );
+		}
+		update_option( self::CF7_MISSING, 1 );
+		return '';
+	}
+
+	/** The contact-section body: real form when possible, placeholder if not. */
+	private static function cf7_form_html(): string {
+		static $cached = null;
+		if ( null === $cached ) {
+			$shortcode = self::ensure_contact_form();
+			$cached    = '' !== $shortcode
+				? '<div class="verto-form">' . $shortcode . '</div>'
+				: '<div class="verto-form"><p><em>The enquiry form appears here once Contact Form 7 is activated — then run Verto Setup → Rebuild.</em></p></div>';
+		}
+		return $cached;
 	}
 
 	/** Import bundled files into the media library once; returns [name => [id, url]]. */
@@ -586,6 +704,8 @@ class Verto_Installer {
 			], 'verto-ink verto-awards-pad' ),
 			// Values moved below the voices/awards block (round 3, item 3 swap
 			// with What's Going On, which now sits directly under the jobs board).
+			// Round 4, items 1+8: Values goes LIGHT (ivory, gold numerals) so it
+			// no longer reads as a second navy band under Awards.
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => "Verto's values",
@@ -596,7 +716,21 @@ class Verto_Installer {
 					'body' => "Every desk runs its own market and its own network. What's shared is what we stand for — the five values every person across the group works by.",
 				] ),
 				self::widget( 'verto-values' ),
-			], 'verto-ink verto-glow verto-container-pad verto-container-pad--values' ),
+			], 'verto-values-light verto-container-pad verto-container-pad--values' ),
+			// Round 4, item 11: "What we offer" — the client-logo strip is dead
+			// for good; 14 perks as a notched dark card grid instead (also on
+			// the Careers page).
+			self::section( [
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'What we offer',
+					'lines'   => [
+						[ '_id' => self::eid(), 'line' => 'The package,' ],
+						[ '_id' => self::eid(), 'line' => 'in full.' ],
+					],
+					'body' => "Fourteen reasons a desk here beats the one you're at — in money, ownership, travel and the things other agencies call perks and we call standard.",
+				] ),
+				self::widget( 'verto-perks' ),
+			], 'verto-muted verto-container-pad' ),
 			// Client feedback round 2, item 13: Instagram feed on the homepage.
 			self::section( [ self::widget( 'verto-socials' ) ], 'verto-container-pad' ),
 		];
@@ -625,12 +759,15 @@ class Verto_Installer {
 					'body' => "40% commission. A share scheme that includes everyone. Two incentive holidays a year and a genuine route to the US. If you're going to work this hard anyway, do it somewhere that pays you properly — in money, ownership and experiences.",
 				] ),
 			], 'verto-container-pad' ),
-			self::section( [ self::widget( 'verto-jobs-board', [ 'heading' => "Roles we're hiring right now." ] ) ], 'verto-ink verto-container-pad' ),
+			// Round 4, item 5: heading carries no word "roles" (widget default).
+			self::section( [ self::widget( 'verto-jobs-board' ) ], 'verto-ink verto-container-pad' ),
+			// Round 4, item 11: the four-card "Why Verto" becomes the full
+			// 14-perk "What we offer" notched card grid.
 			self::section( [
 				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'Why Verto',
+					'eyebrow' => 'What we offer',
 					'size'    => 'verto-display-3',
-					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Four reasons people join. One reason they stay.' ] ],
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'The package, in full.' ] ],
 					'body'    => 'The package gets you in the door. The team is why the average consultant is still here years later.',
 				] ),
 				self::widget( 'verto-perks' ),
@@ -804,7 +941,7 @@ class Verto_Installer {
 						[ '_id' => self::eid(), 'line' => 'conversation.' ],
 					],
 				] ),
-				self::widget( 'text-editor', [ 'editor' => '<p>Thinking about joining Verto? Tell us about yourself and we\'ll come back within one business day.</p><div class="verto-form">[CF7-SHORTCODE-HERE — create the form in Contact → Contact Forms, then paste its shortcode into this text widget]</div>' ] ),
+				self::widget( 'text-editor', [ 'editor' => '<p>Thinking about joining Verto? Tell us about yourself and we\'ll come back within one business day.</p>' . self::cf7_form_html() ] ),
 			], 'verto-container-pad' ),
 		];
 		self::upsert_page( 'contact', 'Contact', $contact );
@@ -833,7 +970,9 @@ class Verto_Installer {
 	 *  placeholder until the client's commitments/numbers arrive. */
 	private static function community_cards_html( array $media = [] ): string {
 		$cards = [
-			[ 'Gala nights', 'Black-tie charity galas — including the night that raised £15,504 for the Amelia-Mae Foundation.', 'gala_01', 'The team on stage at the charity gala' ],
+			// Round 4, item 17: two galas now — most recent for Maeve's Mission,
+			// after the 2023 Amelia-Mae Foundation gala.
+			[ 'Gala nights', "Black-tie charity galas — most recently for Maeve's Mission, following the 2023 gala that raised £15,504 for the Amelia-Mae Foundation.", 'gala_01', 'The team on stage at the charity gala' ],
 			[ 'Charity & fundraising', 'Every office backs a cause the team chooses — fundraisers, sponsored events and hands-on volunteering through the year.', 'gala_02', 'Black-tie group at the charity gala' ],
 			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments — and the numbers behind them — publish here soon.', null, '' ],
 		];
@@ -878,19 +1017,25 @@ class Verto_Installer {
 			  // the round-2 gradient face, so the face is white/very-light with
 			  // dark text and no blue top stripe.
 			  'light_face' => 'yes',
+			  // Round 4, item 4: wordmark in the EL primary-lockup green→blue.
+			  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 			  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
 			  'logo' => self::media_setting( $media, 'logo_edison_colour' ),
 			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
 			  'link' => [ 'url' => verto_brand_url( 'edison-lux' ) ] ],
+			// Round 4, item 13: new ModulR positioning; sectors trimmed to three
+			// (Interior Design & Fit-out dropped pending client decision).
 			[ '_id' => self::eid(), 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
-			  'sectors' => "Hyperscale Data Centres\nUS Architecture\nMEP Engineering\nInterior Design & Fit-out",
+			  'sectors' => "Architecture\nData Centres\nMEP Engineering",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
-			  'positioning' => "ModulR connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses and award-winning practices.",
+			  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',
 			  'link' => [ 'url' => verto_brand_url( 'modulr' ) ] ],
+			// Round 4, item 12: Vertek is US + Europe, with the client's six
+			// named sectors on the hover face.
 			[ '_id' => self::eid(), 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60', 'bg' => '#0E1013',
-			  'sectors' => "Fluid Power & Hydraulics\nHVAC & Refrigeration\nAdvanced Manufacturing\nInstrumentation & Controls",
+			  'sectors' => "Fluid Power (pumps, seals, valves & hydraulics)\nHVAC\nDefense & Advanced Manufacturing\nIndustrial Automation\nCNC & Metalworking\nCompressors",
 			  'logo' => self::media_setting( $media, 'logo_vertek' ),
-			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US.',
+			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the US and Europe.',
 			  'link' => [ 'url' => verto_brand_url( 'vertek' ) ] ],
 		];
 	}
@@ -941,14 +1086,15 @@ class Verto_Installer {
 				'hero'        => [
 					'line1'  => 'Connecting talent.',
 					'line2'  => 'Powering progress',
-					'sub'    => "Modulr connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses, award-winning practices and the projects you won't find advertised.",
+					// Round 4, item 13: client-approved positioning.
+					'sub'    => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',
 					'image'  => 'modulr_hero',
 					'alt'    => 'Glowing globe at night with arcs of light connecting cities',
 					'scale'  => 1,
 					'offset' => 30,
 				],
 				'features' => [
-					[ 'icon' => 'globe-2',   'title' => 'UK, EU & US',             'body' => 'Hyperscale, colocation and celebrated US architecture — three regions, one network.' ],
+					[ 'icon' => 'globe-2',   'title' => 'US & EU',                 'body' => 'Data centres, colocation and celebrated architecture practices — two regions, one network.' ],
 					[ 'icon' => 'compass',   'title' => 'Curated Introductions',   'body' => 'Considered shortlists with real context. Never CVs into the void.' ],
 					[ 'icon' => 'lock',      'title' => 'NDA-Grade Discretion',    'body' => 'Sensitive, pre-announcement and competitor-adjacent search handled as standard.' ],
 					[ 'icon' => 'handshake', 'title' => 'Long-Game Relationships', 'body' => 'We track careers and project pipelines to add value before the urgent need arises.' ],
@@ -962,14 +1108,15 @@ class Verto_Installer {
 				'about_image'     => 'modulr_datacentre',
 				'about_image_alt' => 'Data centre corridor lined with server racks and glowing status lights',
 				'stats' => [
-					[ 'value' => '3 regions',      'label' => 'UK, EU and US coverage' ],
+					[ 'value' => 'US & EU',        'label' => 'Two regions, one network' ],
 					[ 'value' => 'Full lifecycle', 'label' => 'Concept design to commissioning' ],
 					[ 'value' => 'NDA-grade',      'label' => 'Discretion on every search' ],
 				],
+				// Round 4, item 13: Hyperscale/US prefixes dropped from the labels.
 				'specialisms' => [
-					[ 'icon' => 'server',          'title' => 'Hyperscale Data Centres', 'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
+					[ 'icon' => 'server',          'title' => 'Data Centres',            'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
 					[ 'icon' => 'network',         'title' => 'Colocation & Edge',       'description' => 'Delivery and operations talent for colo and edge programmes at every stage.' ],
-					[ 'icon' => 'building-2',      'title' => 'US Architecture',         'description' => 'Registered architects, project architects, directors, principals and partners.' ],
+					[ 'icon' => 'building-2',      'title' => 'Architecture',            'description' => 'Registered architects, project architects, directors, principals and partners.' ],
 					[ 'icon' => 'zap',             'title' => 'MEP Engineering',         'description' => 'Mechanical, electrical and plumbing leadership across the US project landscape.' ],
 					[ 'icon' => 'layers',          'title' => 'Project Lifecycle',       'description' => 'CD → SD → DD → CD → CA. Concept design through construction administration.' ],
 					[ 'icon' => 'heart-handshake', 'title' => 'Inclusion & EDI',         'description' => 'Championing women in architecture and EDI across technical built-environment roles.' ],
@@ -984,19 +1131,20 @@ class Verto_Installer {
 					'candidate' => [
 						'headline' => 'The best projects are rarely advertised.',
 						'body'     => 'The best talent is rarely searching. Modulr exists in that gap — making precise, considered introductions rather than firing CVs into the void, and protecting reputations on every engagement.',
-						'bullets'  => "Hyperscale, colo, US architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
+						'bullets'  => "Data centre, colocation, architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
 						'cta'      => 'Find your next project',
 					],
 				],
 				'about_hero' => [ 'pre' => 'The projects that define', 'accent' => 'a generation.', 'post' => 'Built by the right people.' ],
-				'positioning' => "Modulr connects standout architecture and data centre professionals with the built environment's most ambitious work — hyperscale campuses, award-winning practices, and the projects you won't find advertised.",
+				// Round 4, item 13: client-approved positioning.
+				'positioning' => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',
 				'what_we_do' => [
 					'headline'   => 'Embedded in the projects that define a generation.',
-					'paragraphs' => "Hyperscale data centres, colocation and edge, US architecture, MEP engineering and the full concept-to-commissioning lifecycle — this is where our network runs deepest. Every consultant works one part of the built environment, not the whole map.\n\nFor project directors, developers and practice principals, we operate as a discreet extension of the leadership team — considered introductions rather than CVs into the void, with NDA-grade discretion as standard.",
+					'paragraphs' => "Data centres, colocation and edge, architecture, MEP engineering and the full concept-to-commissioning lifecycle — this is where our network runs deepest. Every consultant works one part of the built environment, not the whole map.\n\nFor project directors, developers and practice principals, we operate as a discreet extension of the leadership team — considered introductions rather than CVs into the void, with NDA-grade discretion as standard.",
 				],
 				'proof' => [
-					'Trusted by global operators, developers and celebrated US practices',
-					'Active networks across the UK, EU and US markets',
+					'Trusted by global operators, developers and celebrated practices',
+					'Active networks across the US and EU markets',
 					'NDA-grade discretion on every sensitive and pre-announcement search',
 					'Inclusion work championing women in architecture and EDI in technical built-environment roles',
 				],
@@ -1099,7 +1247,8 @@ class Verto_Installer {
 				'hero'        => [
 					'line1'  => 'Engineering',
 					'line2'  => "what's next",
-					'sub'    => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US. Every consultant owns one product area.',
+					// Round 4, item 12: US + Europe.
+					'sub'    => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the US and Europe. Every consultant owns one product area.',
 					'image'  => 'vertek_hero',
 					'alt'    => 'Cable-stayed bridge at night with crimson motion light trails',
 					'scale'  => 1.18,
@@ -1126,13 +1275,14 @@ class Verto_Installer {
 					[ 'value' => '100%',    'label' => 'Success rate on Verto Engage' ],
 					[ 'value' => '94%',     'label' => 'Of clients hire with us again' ],
 				],
+				// Round 4, item 12: the client's six named sectors.
 				'specialisms' => [
-					[ 'icon' => 'gauge',       'title' => 'Fluid Power & Flow Control',              'description' => 'Hydraulics, pneumatics, compressed air, pumps, valves, actuators, instrumentation, filtration and seals.' ],
-					[ 'icon' => 'thermometer', 'title' => 'Rotating Equipment & Turbomachinery',     'description' => 'Steam turbines, gas compression, electric motors, gearboxes and power transmission.' ],
-					[ 'icon' => 'cog',         'title' => 'HVAC',                                    'description' => 'Air handlers, ventilation, refrigeration, heat pumps, boilers, plumbing and aftermarket — UK and US.' ],
-					[ 'icon' => 'factory',     'title' => 'CNC & Precision Engineering (US)',        'description' => 'Cutting tools, workholding, toolholding, metrology, CMM and metalworking.' ],
-					[ 'icon' => 'cpu',         'title' => 'Industrial Automation (US)',              'description' => 'Sensors, PLCs, HMI, connectors, automated machinery and conveyors.' ],
-					[ 'icon' => 'line-chart',  'title' => 'Advanced Manufacturing (US)',             'description' => 'Defence, aerospace, space, semiconductor and robotics — ITAR and clearance handled.' ],
+					[ 'icon' => 'gauge',       'title' => 'Fluid Power',                      'description' => 'Pumps, seals, valves and hydraulics — plus pneumatics, actuation, filtration and flow control.' ],
+					[ 'icon' => 'cog',         'title' => 'HVAC',                             'description' => 'Air handlers, ventilation, refrigeration, heat pumps, boilers, plumbing and aftermarket.' ],
+					[ 'icon' => 'line-chart',  'title' => 'Defense & Advanced Manufacturing', 'description' => 'Defence, aerospace, space, semiconductor and robotics — ITAR and clearance handled.' ],
+					[ 'icon' => 'cpu',         'title' => 'Industrial Automation',            'description' => 'Sensors, PLCs, HMI, connectors, automated machinery and conveyors.' ],
+					[ 'icon' => 'factory',     'title' => 'CNC & Metalworking',               'description' => 'Cutting tools, workholding, toolholding, metrology, CMM and metalworking.' ],
+					[ 'icon' => 'thermometer', 'title' => 'Compressors',                      'description' => 'Air and gas compression — rotary screw, centrifugal and reciprocating — sales, service and engineering.' ],
 				],
 				'audiences' => [
 					'company' => [
@@ -1144,12 +1294,12 @@ class Verto_Installer {
 					'candidate' => [
 						'headline' => 'Options, not applications.',
 						'body'     => 'Put a role on a job board and it gets hundreds of resumes. Work with us and it works the other way round — we put you and your experience front and centre, and we sell the opportunity before you sit in an interview.',
-						'bullets'  => "UK, EU and US roles across the product landscape\nTotal comp, equity, progression and work-life on the table\nTime-served engineers and product specialists — spoken to as equals\nHonest feedback. No oversell. No fluff.",
+						'bullets'  => "US and European roles across the product landscape\nTotal comp, equity, progression and work-life on the table\nTime-served engineers and product specialists — spoken to as equals\nHonest feedback. No oversell. No fluff.",
 						'cta'      => 'See live roles',
 					],
 				],
 				'about_hero' => [ 'pre' => 'Product knowledge,', 'accent' => 'one desk at a time.', 'post' => 'Never generalist.' ],
-				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the UK and US. Every consultant owns one product area. That's why it works.",
+				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the US and Europe. Every consultant owns one product area. That's why it works.",
 				'what_we_do' => [
 					'headline'   => 'Embedded in the industries that build the world.',
 					'paragraphs' => "Fluid power, HVAC, rotating equipment, industrial automation and US advanced manufacturing — these are the industries we know inside out. Every consultant specialises in a product area and stays close enough to add genuine insight to every conversation.\n\nFor VPs of Sales, Managing Directors and Founders, we operate as an extension of the leadership team — discreet, accountable and never transactional.",
@@ -1230,13 +1380,15 @@ class Verto_Installer {
 					[ 'title' => 'Interview preparation',     'body' => "Full briefing on the company, the panel, the product line and the likely lines of questioning. We've usually placed there before." ],
 					[ 'title' => 'Offer & beyond',            'body' => "Honest comp guidance, equity context for US advanced manufacturing, counter-offer support and check-ins long after you've started." ],
 				],
+				// Round 4, item 12: mirrors the client's six sectors + the two
+				// cross-cutting desks.
 				'sectors_served' => [
-					'Fluid power & flow control',
-					'HVAC & refrigeration',
-					'Rotating equipment & turbomachinery',
-					'CNC & precision engineering (US)',
-					'Industrial automation (US)',
-					'Advanced manufacturing (US)',
+					'Fluid power — pumps, seals, valves & hydraulics',
+					'HVAC',
+					'Defense & advanced manufacturing',
+					'Industrial automation',
+					'CNC & metalworking',
+					'Compressors',
 					'MRO & aftermarket',
 					'Commercial leadership (VP / GM / Director)',
 				],
@@ -1299,7 +1451,7 @@ class Verto_Installer {
 				self::widget( 'text-editor', [ 'editor' => '<ul class="vbs-bullets">' . $lis . '</ul>' ] ),
 			], [
 				self::widget( 'text-editor', [
-					'editor'       => '<div class="card-surface vbs-form-card"><div class="verto-form">[CF7-SHORTCODE-HERE — create the form in Contact → Contact Forms, then paste its shortcode into this text widget]</div></div>',
+					'editor'       => '<div class="card-surface vbs-form-card">' . self::cf7_form_html() . '</div>',
 				] ),
 			], 'verto-bs vbs-contact', 45, [ '_element_id' => 'contact' ] );
 		};
