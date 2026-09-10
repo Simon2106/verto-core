@@ -83,11 +83,16 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 		<section class="verto-hero">
 			<div class="verto-hero__inner">
 				<div class="verto-hero__media" style="-webkit-mask-image:<?php echo $mask; ?>;mask-image:<?php echo $mask; ?>;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;">
-					<?php if ( ! empty( $s['video']['url'] ) ) : ?>
-						<video class="verto-autoplay" src="<?php echo esc_url( $s['video']['url'] ); ?>"<?php echo ! empty( $s['poster']['url'] ) ? ' poster="' . esc_url( $s['poster']['url'] ) . '"' : ''; ?> autoplay muted loop playsinline preload="auto"></video>
-					<?php elseif ( ! empty( $s['poster']['url'] ) ) : ?>
-						<img src="<?php echo esc_url( $s['poster']['url'] ); ?>" alt="" aria-hidden="true" />
-					<?php endif; ?>
+					<div class="verto-hero__vbox">
+						<?php if ( ! empty( $s['poster']['url'] ) ) : ?>
+							<img class="verto-hero__fill" src="<?php echo esc_url( $s['poster']['url'] ); ?>" alt="" aria-hidden="true" />
+						<?php endif; ?>
+						<?php if ( ! empty( $s['video']['url'] ) ) : ?>
+							<video class="verto-autoplay" src="<?php echo esc_url( $s['video']['url'] ); ?>"<?php echo ! empty( $s['poster']['url'] ) ? ' poster="' . esc_url( $s['poster']['url'] ) . '"' : ''; ?> autoplay muted loop playsinline preload="auto"></video>
+						<?php elseif ( ! empty( $s['poster']['url'] ) ) : ?>
+							<img src="<?php echo esc_url( $s['poster']['url'] ); ?>" alt="" aria-hidden="true" />
+						<?php endif; ?>
+					</div>
 					<div style="position:absolute;inset:0;background:color-mix(in oklab, var(--ink) 20%, transparent);"></div>
 				</div>
 				<div class="verto-container">
