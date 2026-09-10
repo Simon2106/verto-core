@@ -26,6 +26,10 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 	];
 	private const LOCATIONS = [ 'Solent, UK', 'Austin, TX', 'Miami, FL' ];
 	private const LEVELS    = [ 'Entry-level', 'Senior', 'Manager' ];
+	// FALLBACK-ONLY since 0.14.0: the installer seeds the standing internal
+	// vacancies as real verto_job posts (Verto_Installer::seed_internal_jobs),
+	// so a built site always has live rows with proper detail pages. These
+	// consts only render on a site that has never run the installer or sync.
 	private const JOBS = [
 		[ 'title' => 'Senior Recruitment Consultant — US Energy', 'brand' => 'edison-lux', 'location' => 'Austin, TX', 'level' => 'Senior', 'package' => '$60–80k base + 40% commission + share scheme' ],
 		[ 'title' => 'Entry-Level Recruitment Consultant — Power & Energy', 'brand' => 'edison-lux', 'location' => 'Austin, TX', 'level' => 'Entry-level', 'package' => '$50–60k base + commission + share scheme' ],
@@ -75,6 +79,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 				'level'      => (string) ( $job['level'] ?? 'Senior' ),
 				'package'    => (string) ( $job['package'] ?? 'Competitive package' ),
 				'url'        => (string) ( $job['url'] ?? '' ),
+				'permalink'  => (string) ( $job['permalink'] ?? '' ),
 				'vincere_id' => (string) ( $job['vincere_id'] ?? '' ),
 			];
 		}
@@ -127,15 +132,33 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 					<?php else : ?>
 						<?php foreach ( $jobs as $job ) :
 							$b = self::BRANDS[ $job['brand'] ];
-							// Modal for live rows without an explicit external
-							// apply URL; #verto-apply-modal doubles as the
-							// no-JS fallback (CSS :target shows the modal).
-							$use_modal = $has_modal && empty( $job['url'] );
-							$href      = $use_modal ? '#verto-apply-modal' : ( ! empty( $job['url'] ) ? $job['url'] : $apply );
+							// Row click-through, in priority order:
+							//   1. the job's own DETAIL PAGE (public verto_job
+							//      permalink — brand hero, office photos, team,
+							//      advert + inline apply) with a small
+							//      "Apply ↗" affordance that still opens the
+							//      modal directly (JS preventDefault stops the
+							//      row navigation; without JS the row link to
+							//      the detail page wins — the form is there);
+							//   2. an explicit external apply URL (Vincere
+							//      portal base, when configured);
+							//   3. modal only (live row, no permalink — never
+							//      the case once the CPT is public);
+							//   4. placeholder rows: the widget's click-through.
+							$permalink  = (string) ( $job['permalink'] ?? '' );
+							$use_modal  = $has_modal && empty( $job['url'] );
+							if ( '' !== $permalink ) {
+								$href = $permalink;
+							} elseif ( ! empty( $job['url'] ) ) {
+								$href = $job['url'];
+							} else {
+								$href = $use_modal ? '#verto-apply-modal' : $apply;
+							}
+							$row_opens_modal = $use_modal && '' === $permalink;
 							?>
 							<a class="verto-jobs__row verto-jobs__row--<?php echo esc_attr( $job['brand'] ); ?>"
 							   href="<?php echo esc_url( $href ); ?>"
-							   <?php if ( $use_modal ) : ?>
+							   <?php if ( $row_opens_modal ) : ?>
 							   data-apply-open
 							   data-job-id="<?php echo esc_attr( $job['vincere_id'] ?? '' ); ?>"
 							   data-job-title="<?php echo esc_attr( $job['title'] ); ?>"
@@ -154,7 +177,14 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 								</div>
 								<div class="verto-jobs__side">
 									<span><?php echo esc_html( $job['location'] ); ?></span>
-									<span class="arrow" aria-hidden="true">↗</span>
+									<?php if ( $use_modal && '' !== $permalink ) : ?>
+										<span class="verto-jobs__applylink" role="button" tabindex="0"
+											data-apply-open
+											data-job-id="<?php echo esc_attr( $job['vincere_id'] ?? '' ); ?>"
+											data-job-title="<?php echo esc_attr( $job['title'] ); ?>">Apply <span class="arrow" aria-hidden="true">↗</span></span>
+									<?php else : ?>
+										<span class="arrow" aria-hidden="true">↗</span>
+									<?php endif; ?>
 								</div>
 							</a>
 						<?php endforeach; ?>

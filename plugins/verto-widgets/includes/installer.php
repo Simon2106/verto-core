@@ -80,6 +80,7 @@ class Verto_Installer {
 		$media = self::import_media();
 		self::seed_posts( $media );
 		self::seed_team();
+		self::seed_internal_jobs();
 		self::create_pages( $media );
 		self::create_brand_pages();
 		self::setup_menu();
@@ -517,6 +518,299 @@ class Verto_Installer {
 		}
 		update_option( 'verto_team_missing_photos', $missing );
 		update_option( 'verto_installer_team', self::TEAM_STRUCTURE );
+	}
+
+	/* ── Job detail pages: office galleries + standing internal vacancies ── */
+
+	/**
+	 * Location → office gallery for the job detail page (single-verto_job.php).
+	 * Every media key here MUST exist in import_media(); the template resolves
+	 * them through the verto_installer_media option and silently skips any
+	 * that are missing (site not built yet). Photos favour office/team shots
+	 * over party ones — the skyline sets the scene, the strip shows the people.
+	 */
+	public static function location_gallery(): array {
+		return [
+			'solent' => [
+				'name'    => 'Solent, UK',
+				'address' => 'Arena Business Centre, Whiteley — Solent',
+				'skyline' => 'skyline_uk',
+				'photos'  => [ 'verto_05', 'verto_03', 'summit_05', 'verto_04' ],
+				'blurb'   => 'The Arena Business Centre on the Solent is where Verto started in 2020 — a lockdown launch that grew into the group\'s home. It\'s still the biggest office: every UK desk sits here, the sales days are loudest here, and the summer summit is a short walk down the coast at Southsea Castle.',
+				'note'    => '',
+			],
+			'austin' => [
+				'name'    => 'Austin, TX',
+				'address'  => '5900 Balcones Drive, Austin, TX — US headquarters',
+				'skyline' => 'skyline_us',
+				'photos'  => [ 'summit_04', 'barcelona_03', 'verto_05' ],
+				'blurb'   => '5900 Balcones Drive is Verto\'s US headquarters and the launch pad for the American build-out. It runs on the same playbook as the Solent office — same values, same incentives, same trips — with the US energy and industrial markets on the other end of the phone.',
+				'note'    => '',
+			],
+			'miami' => [
+				'name'    => 'Miami, FL',
+				'address' => 'Miami, FL — opening soon',
+				'skyline' => 'skyline_eu',
+				'photos'  => [ 'barcelona_01', 'summit_03', 'gala_02' ],
+				'blurb'   => 'Miami is next on the map: the office is opening soon as the home of ModulR\'s US data-centre and architecture desks. Founding-team seats — you\'d be helping to set the culture, not inheriting one.',
+				'note'    => 'Office opening soon — early hires onboard with the existing teams until the doors open.',
+			],
+		];
+	}
+
+	/** Free-text _location meta ("Austin, TX", "Whiteley, Hampshire"…) → gallery key. */
+	public static function location_key( string $location ): string {
+		$location = strtolower( $location );
+		if ( false !== strpos( $location, 'austin' ) || false !== strpos( $location, ', tx' ) || false !== strpos( $location, 'texas' ) ) {
+			return 'austin';
+		}
+		if ( false !== strpos( $location, 'miami' ) || false !== strpos( $location, ', fl' ) || false !== strpos( $location, 'florida' ) ) {
+			return 'miami';
+		}
+		if ( false !== strpos( $location, 'solent' ) || false !== strpos( $location, 'whiteley' ) || false !== strpos( $location, 'hampshire' ) || false !== strpos( $location, 'uk' ) ) {
+			return 'solent';
+		}
+		return '';
+	}
+
+	/** Standing-vacancies schema version — bump to re-assert the matrix on Rebuild. */
+	const JOBS_STRUCTURE = 'jobs-0.14.0';
+
+	/** Shared "what you get" list — senior desks (perks language mirrors What We Offer). */
+	private static function job_offer_senior(): string {
+		return '<ul>'
+			. '<li>Up to 40% commission — one of the strongest splits in the market, transparent from day one.</li>'
+			. '<li>The group share scheme — every person in the business owns a piece of Verto.</li>'
+			. '<li>Two international incentive trips a year — Barcelona, Prague and Ibiza so far.</li>'
+			. '<li>Winners\' lunches, monthly sales days, Wear Your Success milestones and the 3650 Club at ten years.</li>'
+			. '<li>Healthcare cash-back and a company pension from day one.</li>'
+			. '</ul>';
+	}
+
+	/** Shared "what you get" list — entry-level desks (L&D + ladder led). */
+	private static function job_offer_junior(): string {
+		return '<ul>'
+			. '<li>Structured L&amp;D that starts on day one and never really stops.</li>'
+			. '<li>A published ladder from consultant to principal — no mystery promotions.</li>'
+			. '<li>Uncapped commission and the group share scheme from day one.</li>'
+			. '<li>Two international incentive trips a year — hit target and you\'re on the plane.</li>'
+			. '<li>Winners\' lunches, monthly sales days, healthcare cash-back and pension.</li>'
+			. '</ul>';
+	}
+
+	/**
+	 * The standing internal vacancies — a senior AND an entry-level (12
+	 * months' recruitment experience) recruiter seat for every brand×office
+	 * the client trades from: Edison Lux (Austin), Vertek (Solent + Austin),
+	 * ModulR (Miami, opening soon), Verto Life Sciences (Solent). These are
+	 * REAL verto_job posts (public detail pages, apply form) so the board is
+	 * never placeholder-driven on a built site. Meta: _manual=1, NO
+	 * _vincere_id — the Vincere sync can neither overwrite nor deactivate
+	 * them (deactivate_missing skips posts without a _vincere_id).
+	 */
+	private static function jobs_map(): array {
+		$senior = self::job_offer_senior();
+		$junior = self::job_offer_junior();
+		return [
+			/* ── Edison Lux — Austin, TX ── */
+			'edison-austin-senior' => [
+				'title'    => 'Senior Recruitment Consultant — US Power & Energy',
+				'brand'    => 'edison-lux',
+				'location' => 'Austin, TX',
+				'level'    => 'Senior',
+				'package'  => '$60–80k base + 40% commission + share scheme',
+				'content'  =>
+					'<p>Edison Lux is Verto\'s US energy brand: power generation, transmission &amp; distribution, renewables and the EPCs building all of it. The market is short of good people and long on projects — and this desk comes with live clients, a warm network and a brand that\'s already known in the sector.</p>'
+					. '<p>We\'re looking for an experienced recruiter to own a market of their own: build it, bill it, and eventually hire underneath it. You\'ll run the full 360 from our Austin office at 5900 Balcones Drive — US headquarters, same playbook and incentives as the UK.</p>'
+					. '<h3>What you\'ll get</h3>' . $senior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>A track record of billing in a 360 recruitment seat — energy or industrial markets help, but drive matters more than sector history. US work authorisation required.</p>',
+			],
+			'edison-austin-junior' => [
+				'title'    => 'Recruitment Consultant — US Power & Energy',
+				'brand'    => 'edison-lux',
+				'location' => 'Austin, TX',
+				'level'    => 'Entry-level',
+				'package'  => '$50–60k base + uncapped commission + share scheme',
+				'content'  =>
+					'<p>A seat on the Edison Lux desk in Austin for a recruiter with at least 12 months\' recruitment experience who wants a bigger market and a faster ladder. US power and energy is one of the busiest staffing markets in the country — you\'ll learn it from consultants who already bill in it.</p>'
+					. '<p>You\'ll start with structured training, live roles and a clear published path from consultant to senior. The commission is uncapped from day one, and every target hit counts towards the incentive trips.</p>'
+					. '<h3>What you\'ll get</h3>' . $junior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>A minimum of 12 months\' recruitment experience (any sector), the appetite to run a desk of your own, and US work authorisation.</p>',
+			],
+			/* ── Vertek — Solent, UK ── */
+			'vertek-solent-senior' => [
+				'title'    => 'Senior Recruitment Consultant — Technical Sales & Engineering',
+				'brand'    => 'vertek',
+				'location' => 'Solent, UK',
+				'level'    => 'Senior',
+				'package'  => '£35–45k base + 40% commission + share scheme',
+				'content'  =>
+					'<p>Vertek is the group\'s engineering brand: technical sales, service and engineering across fluid power, HVAC, industrial automation, CNC &amp; metalworking and advanced manufacturing — US and Europe. It\'s Verto\'s largest team, and it\'s still short of senior hands.</p>'
+					. '<p>This is a senior 360 seat at the Arena Business Centre on the Solent — where Verto started — with the freedom to own a vertical outright: your clients, your market map, your name on it. Prove the desk and the next step is building a team under it.</p>'
+					. '<h3>What you\'ll get</h3>' . $senior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>Solid 360 billing history — engineering, industrial or technical sales recruitment ideally, but we care more about how you build relationships than which sector you built them in.</p>',
+			],
+			'vertek-solent-junior' => [
+				'title'    => 'Recruitment Consultant — Engineering',
+				'brand'    => 'vertek',
+				'location' => 'Solent, UK',
+				'level'    => 'Entry-level',
+				'package'  => '£25–28k base + uncapped commission',
+				'content'  =>
+					'<p>Join the Vertek desk at Verto\'s Solent home with at least 12 months\' recruitment experience behind you. Engineering and technical sales recruitment rewards people who learn their market properly — and our structured L&amp;D is built to get you there fast, sat beside consultants who already own their verticals.</p>'
+					. '<p>You\'ll take on live engineering roles from week one with a clear, published route to senior consultant. Nothing here is capped: not the commission, not the ladder, not the trips.</p>'
+					. '<h3>What you\'ll get</h3>' . $junior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>A minimum of 12 months\' recruitment experience in any sector, genuine curiosity about how things get built, and the work rate to match the desk next to you.</p>',
+			],
+			/* ── Vertek — Austin, TX ── */
+			'vertek-austin-senior' => [
+				'title'    => 'Senior Recruitment Consultant — HVAC & Industrial',
+				'brand'    => 'vertek',
+				'location' => 'Austin, TX',
+				'level'    => 'Senior',
+				'package'  => '$55–70k base + 40% commission + share scheme',
+				'content'  =>
+					'<p>Vertek\'s US desk runs HVAC, fluid power, compressors and industrial automation out of Austin — markets where the skills shortage is real and clients pay for people who actually know the difference between a chiller and a cooling tower.</p>'
+					. '<p>We want an experienced 360 recruiter to own one of those verticals from our US headquarters at 5900 Balcones Drive. The UK team\'s client base crosses the Atlantic with you; the market you build in the US is yours.</p>'
+					. '<h3>What you\'ll get</h3>' . $senior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>A billing track record in a full-desk recruitment seat; industrial, HVAC or technical markets a bonus. US work authorisation required.</p>',
+			],
+			'vertek-austin-junior' => [
+				'title'    => 'Recruitment Consultant — HVAC & Industrial',
+				'brand'    => 'vertek',
+				'location' => 'Austin, TX',
+				'level'    => 'Entry-level',
+				'package'  => '$50–60k base + uncapped commission + share scheme',
+				'content'  =>
+					'<p>Twelve months into recruitment and ready for a proper market? Vertek\'s Austin desk covers HVAC, fluid power and industrial automation across the US — deep, technical, and nowhere near saturated. You\'ll learn it with structured training and a manager whose desk you can copy.</p>'
+					. '<p>Clear ladder, uncapped commission, and the same incentives as every other Verto desk: hit target and you\'re on the plane with everyone else.</p>'
+					. '<h3>What you\'ll get</h3>' . $junior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>At least 12 months\' recruitment experience, resilience on the phone, and US work authorisation.</p>',
+			],
+			/* ── ModulR — Miami, FL (office opening soon) ── */
+			'modulr-miami-senior' => [
+				'title'    => 'Senior Recruitment Consultant — Data Centres & Architecture',
+				'brand'    => 'modulr',
+				'location' => 'Miami, FL',
+				'level'    => 'Senior',
+				'package'  => '$60–80k base + 40% commission + share scheme',
+				'content'  =>
+					'<p>ModulR connects the best talent in data centres and architecture with the companies building the future, across the US and EU. The US side of that is about to get its own home: our Miami office opens soon, and this is one of its founding desks.</p>'
+					. '<p>We\'re after a senior recruiter to own a US data-centre or architecture market outright — build the client base, set the standard, and shape the office culture from seat one. Until the doors open you\'ll onboard with the existing ModulR team.</p>'
+					. '<h3>What you\'ll get</h3>' . $senior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>Proven 360 billing — built environment, construction, M&amp;E or data-centre recruitment ideal. Founder mentality essential; US work authorisation required.</p>',
+			],
+			'modulr-miami-junior' => [
+				'title'    => 'Recruitment Consultant — Data Centres & Architecture',
+				'brand'    => 'modulr',
+				'location' => 'Miami, FL',
+				'level'    => 'Entry-level',
+				'package'  => '$50–60k base + uncapped commission + share scheme',
+				'content'  =>
+					'<p>Get into the data-centre boom on the ground floor — literally. ModulR\'s Miami office opens soon, and we\'re hiring a recruiter with at least 12 months\' experience to grow with it. Hyperscale build-outs, architecture practices, MEP engineering: the clients are hiring faster than the market can supply.</p>'
+					. '<p>You\'ll get structured L&amp;D, a published ladder to senior, and a manager who has already built the desk you\'re learning. Early hires onboard with the existing ModulR team until the office opens.</p>'
+					. '<h3>What you\'ll get</h3>' . $junior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>A minimum of 12 months\' recruitment experience, comfort with a market that moves quickly, and US work authorisation.</p>',
+			],
+			/* ── Verto (Life Sciences, group desk) — Solent, UK ── */
+			'verto-solent-senior' => [
+				'title'    => 'Senior Recruitment Consultant — Life Sciences',
+				'brand'    => 'verto',
+				'location' => 'Solent, UK',
+				'level'    => 'Senior',
+				'package'  => '£35–45k base + 40% commission + share scheme',
+				'content'  =>
+					'<p>Verto\'s Life Sciences desk sits with the group in the Solent office — pharma, biotech, medical devices and the quality and regulatory people who keep them compliant. It\'s a market with long relationships and fees to match, and we want a senior recruiter to own more of it.</p>'
+					. '<p>Full 360, your own vertical, and the group\'s resources behind you: the database, the marketing engine, and a leadership team that still bills. When the desk outgrows you, you hire into it.</p>'
+					. '<h3>What you\'ll get</h3>' . $senior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>A consistent billing record in a 360 seat — life sciences, scientific or regulated-market recruitment preferred, strong desk-builders from any sector considered.</p>',
+			],
+			'verto-solent-junior' => [
+				'title'    => 'Recruitment Consultant — Life Sciences',
+				'brand'    => 'verto',
+				'location' => 'Solent, UK',
+				'level'    => 'Entry-level',
+				'package'  => '£25–28k base + uncapped commission',
+				'content'  =>
+					'<p>Bring 12 months\' recruitment experience to a market worth learning properly. The Life Sciences desk works with pharma, biotech and medical-device companies across the UK and Europe — clients who value recruiters who do their homework, which is exactly what our L&amp;D programme teaches.</p>'
+					. '<p>You\'ll sit with the group team in the Solent office, work live roles from the start, and follow a published ladder with no mystery promotions. Commission is uncapped; so is how far you take it.</p>'
+					. '<h3>What you\'ll get</h3>' . $junior
+					. '<h3>What you\'ll need</h3>'
+					. '<p>At least 12 months\' recruitment experience in any sector, attention to detail, and the patience to build relationships that outlast a single fee.</p>',
+			],
+		];
+	}
+
+	/**
+	 * Seed / migrate the standing internal vacancies (idempotent, versioned
+	 * like seed_team): runs once per JOBS_STRUCTURE version. Tracked by key
+	 * in the verto_installer_jobs_ids option so re-seeds update in place;
+	 * jobs dropped from the matrix in a later version are drafted (never
+	 * deleted). Manual jobs carry _manual=1 and NO _vincere_id, which keeps
+	 * them invisible to the Vincere sync's deactivation pass.
+	 */
+	private static function seed_internal_jobs(): void {
+		if ( self::JOBS_STRUCTURE === get_option( 'verto_installer_jobs' ) ) return;
+		if ( ! post_type_exists( 'verto_job' ) ) return; // verto-widgets vincere module not loaded
+
+		$ids = get_option( 'verto_installer_jobs_ids', [] );
+		if ( ! is_array( $ids ) ) $ids = [];
+		$map = self::jobs_map();
+
+		foreach ( $map as $key => $job ) {
+			$id = isset( $ids[ $key ] ) ? (int) $ids[ $key ] : 0;
+			if ( $id && ! get_post( $id ) ) $id = 0;
+			$postarr = [
+				'post_type'    => 'verto_job',
+				'post_status'  => 'publish',
+				'post_title'   => $job['title'],
+				'post_content' => $job['content'],
+			];
+			if ( $id ) {
+				$postarr['ID'] = $id;
+				$result = wp_update_post( wp_slash( $postarr ), true );
+			} else {
+				$result = wp_insert_post( wp_slash( $postarr ), true );
+			}
+			if ( is_wp_error( $result ) || ! $result ) continue;
+			$id = (int) $result;
+			$ids[ $key ] = $id;
+			foreach ( [
+				'_brand'    => $job['brand'],
+				'_location' => $job['location'],
+				'_level'    => $job['level'],
+				'_job_type' => 'Permanent',
+				'_package'  => $job['package'],
+				'_active'   => '1',
+				'_internal' => '1',
+				'_manual'   => '1',
+			] as $meta_key => $value ) {
+				update_post_meta( $id, $meta_key, $value );
+			}
+			// Defensive: a manual job must never carry a _vincere_id (that
+			// would put it in the sync's deactivation scope).
+			delete_post_meta( $id, '_vincere_id' );
+		}
+
+		// Draft seeded jobs whose key left the matrix (filled seats etc.).
+		foreach ( $ids as $key => $id ) {
+			if ( ! isset( $map[ $key ] ) && get_post( (int) $id ) ) {
+				update_post_meta( (int) $id, '_active', '0' );
+				wp_update_post( [ 'ID' => (int) $id, 'post_status' => 'draft' ] );
+			}
+		}
+
+		update_option( 'verto_installer_jobs_ids', $ids );
+		update_option( 'verto_installer_jobs', self::JOBS_STRUCTURE );
 	}
 
 	/** Seed the "What's going on" posts (idempotent, batch-versioned).

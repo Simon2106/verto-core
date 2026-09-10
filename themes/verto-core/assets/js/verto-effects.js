@@ -463,3 +463,87 @@
     });
   });
 })();
+
+/* ── 10. Inline apply form (job detail pages, single-verto_job.php) ──
+      Same handler + progressive enhancement as the modal (§9), but the form
+      sits inline at #apply with the job prefilled server-side. Without JS:
+      plain multipart POST, redirect back with ?verto_apply=… → the banner
+      (scrolled into view below). With JS: async submit, success swaps the
+      form for the done block. ── */
+(function () {
+  "use strict";
+  var MAX_CV_BYTES = 5 * 1024 * 1024;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Non-JS redirect flash: bring the banner into view so the outcome is seen.
+    var flash = document.querySelector("[data-apply-flash]");
+    if (flash && window.location.search.indexOf("verto_apply=") !== -1) {
+      window.setTimeout(function () { flash.scrollIntoView({ block: "center" }); }, 80);
+    }
+
+    var form = document.querySelector("[data-verto-apply-inline]");
+    if (!form || !window.fetch || !window.FormData) return;
+    var card = form.closest("[data-verto-apply-card]");
+    var done = card ? card.querySelector("[data-apply-done]") : null;
+    var errBox = form.querySelector("[data-apply-error]");
+
+    var asyncFlag = document.createElement("input");
+    asyncFlag.type = "hidden";
+    asyncFlag.name = "verto_async";
+    asyncFlag.value = "1";
+    form.appendChild(asyncFlag);
+
+    function showError(msg) {
+      if (errBox) {
+        errBox.textContent = msg;
+        errBox.hidden = false;
+      }
+      var btn = form.querySelector('[type="submit"]');
+      if (btn) {
+        btn.disabled = false;
+        if (btn.dataset.label) btn.textContent = btn.dataset.label;
+      }
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (errBox) { errBox.hidden = true; errBox.textContent = ""; }
+
+      var file = form.querySelector('input[type="file"]');
+      if (file && file.files && file.files[0] && file.files[0].size > MAX_CV_BYTES) {
+        showError("Your CV is over 5 MB — please attach a smaller file.");
+        return;
+      }
+      var btn = form.querySelector('[type="submit"]');
+      if (btn) {
+        btn.dataset.label = btn.dataset.label || btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Sending…";
+      }
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (json) {
+          if (json && json.success) {
+            form.hidden = true;
+            if (done) {
+              done.hidden = false;
+              done.scrollIntoView({ block: "center" });
+            }
+          } else {
+            var msg = json && json.data && json.data.message
+              ? json.data.message
+              : "Something went wrong — please try again.";
+            showError(msg);
+          }
+        })
+        .catch(function () {
+          showError("Something went wrong sending your application — please try again, or email us your CV instead.");
+        });
+    });
+  });
+})();

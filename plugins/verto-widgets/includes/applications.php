@@ -520,53 +520,109 @@ class Verto_Applications {
 				<div class="verto-apply-modal__eyebrow">Apply</div>
 				<h3 class="verto-apply-modal__title" id="verto-apply-title" data-apply-job-label>Join Verto</h3>
 
-				<form class="verto-apply-form verto-form" method="post" enctype="multipart/form-data"
-					action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" data-verto-apply-form>
-					<input type="hidden" name="action" value="<?php echo esc_attr( self::ACTION ); ?>" />
-					<input type="hidden" name="verto_apply_nonce" value="<?php echo esc_attr( wp_create_nonce( self::NONCE ) ); ?>" />
-					<input type="hidden" name="verto_job_id" value="" />
-					<input type="hidden" name="verto_redirect" value="<?php echo esc_url( home_url( add_query_arg( [] ) ) ); ?>" />
-					<p class="verto-hp" aria-hidden="true">
-						<label>Website <input type="text" name="verto_website" tabindex="-1" autocomplete="off" /></label>
-					</p>
-
-					<label class="verto-apply-field">Role you&rsquo;re applying for
-						<input type="text" name="verto_job_title" value="" placeholder="e.g. Senior Consultant — or leave blank for a general application" />
-					</label>
-					<div class="verto-apply-form__grid">
-						<label class="verto-apply-field">Name *
-							<input type="text" name="verto_name" required maxlength="120" autocomplete="name" />
-						</label>
-						<label class="verto-apply-field">Email *
-							<input type="email" name="verto_email" required autocomplete="email" />
-						</label>
-						<label class="verto-apply-field">Phone
-							<input type="tel" name="verto_phone" maxlength="40" autocomplete="tel" />
-						</label>
-						<label class="verto-apply-field">LinkedIn
-							<input type="url" name="verto_linkedin" placeholder="https://linkedin.com/in/…" />
-						</label>
-					</div>
-					<label class="verto-apply-field">A short message
-						<textarea name="verto_message" rows="4" maxlength="5000" placeholder="Current desk, billings, what you're looking for — whatever you'd tell us over coffee."></textarea>
-					</label>
-					<label class="verto-apply-field verto-apply-field--file">CV * <span class="verto-apply-field__hint">(PDF or Word, max 5&nbsp;MB)</span>
-						<input type="file" name="verto_cv" required accept=".pdf,.doc,.docx" />
-					</label>
-					<label class="verto-apply-consent">
-						<input type="checkbox" name="verto_consent" value="1" required />
-						<span><?php echo esc_html( self::consent_text() ); ?></span>
-					</label>
-
-					<p class="verto-apply-error" data-apply-error hidden role="alert"></p>
-					<button type="submit" class="btn-base btn-primary verto-apply-submit">Send application</button>
-				</form>
+				<?php self::render_form( 'modal' ); ?>
 
 				<div class="verto-apply-done" data-apply-done hidden>
 					<div class="verto-apply-done__mark" aria-hidden="true">✓</div>
 					<p><?php echo esc_html( self::messages()['ok'] ); ?></p>
 					<a href="#!" class="btn-base btn-ghost-outline" data-apply-close>Close</a>
 				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * The application <form> itself, shared by the modal ($context 'modal')
+	 * and the inline apply card on the job detail page ($context 'inline').
+	 * Inline gets the job prefilled server-side (no JS required) and its own
+	 * data hook (data-verto-apply-inline) so verto-effects.js module 10 can
+	 * async-submit it without colliding with the modal's module 9.
+	 */
+	public static function render_form( string $context = 'modal', string $job_id = '', string $job_title = '', string $redirect = '' ) {
+		$inline = 'inline' === $context;
+		$hook   = $inline ? 'data-verto-apply-inline' : 'data-verto-apply-form';
+		if ( '' === $redirect ) {
+			$redirect = home_url( add_query_arg( [] ) );
+		}
+		?>
+		<form class="verto-apply-form verto-form" method="post" enctype="multipart/form-data"
+			action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" <?php echo esc_attr( $hook ); // phpcs:ignore -- bare boolean attribute ?>>
+			<input type="hidden" name="action" value="<?php echo esc_attr( self::ACTION ); ?>" />
+			<input type="hidden" name="verto_apply_nonce" value="<?php echo esc_attr( wp_create_nonce( self::NONCE ) ); ?>" />
+			<input type="hidden" name="verto_job_id" value="<?php echo esc_attr( preg_replace( '/\D+/', '', $job_id ) ); ?>" />
+			<input type="hidden" name="verto_redirect" value="<?php echo esc_url( $redirect ); ?>" />
+			<p class="verto-hp" aria-hidden="true">
+				<label>Website <input type="text" name="verto_website" tabindex="-1" autocomplete="off" /></label>
+			</p>
+
+			<label class="verto-apply-field">Role you&rsquo;re applying for
+				<input type="text" name="verto_job_title" value="<?php echo esc_attr( $job_title ); ?>" placeholder="e.g. Senior Consultant — or leave blank for a general application" />
+			</label>
+			<div class="verto-apply-form__grid">
+				<label class="verto-apply-field">Name *
+					<input type="text" name="verto_name" required maxlength="120" autocomplete="name" />
+				</label>
+				<label class="verto-apply-field">Email *
+					<input type="email" name="verto_email" required autocomplete="email" />
+				</label>
+				<label class="verto-apply-field">Phone
+					<input type="tel" name="verto_phone" maxlength="40" autocomplete="tel" />
+				</label>
+				<label class="verto-apply-field">LinkedIn
+					<input type="url" name="verto_linkedin" placeholder="https://linkedin.com/in/…" />
+				</label>
+			</div>
+			<label class="verto-apply-field">A short message
+				<textarea name="verto_message" rows="4" maxlength="5000" placeholder="Current desk, billings, what you're looking for — whatever you'd tell us over coffee."></textarea>
+			</label>
+			<label class="verto-apply-field verto-apply-field--file">CV * <span class="verto-apply-field__hint">(PDF or Word, max 5&nbsp;MB)</span>
+				<input type="file" name="verto_cv" required accept=".pdf,.doc,.docx" />
+			</label>
+			<label class="verto-apply-consent">
+				<input type="checkbox" name="verto_consent" value="1" required />
+				<span><?php echo esc_html( self::consent_text() ); ?></span>
+			</label>
+
+			<p class="verto-apply-error" data-apply-error hidden role="alert"></p>
+			<button type="submit" class="btn-base btn-primary verto-apply-submit">Send application</button>
+		</form>
+		<?php
+	}
+
+	/**
+	 * Inline apply card for the job detail page (single-verto_job.php) —
+	 * same handler, same fields, no modal: the form sits at #apply with the
+	 * job prefilled. Non-JS submissions bounce back to the job page with
+	 * ?verto_apply=… (the banner below), JS submissions go async via
+	 * verto-effects.js module 10.
+	 */
+	public static function render_inline( string $job_id, string $job_title, string $redirect = '' ) {
+		// Non-JS flash from a previous submission (respond() redirect).
+		$flash    = '';
+		$flash_ok = false;
+		if ( isset( $_GET['verto_apply'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$code     = sanitize_key( wp_unslash( $_GET['verto_apply'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$messages = self::messages();
+			if ( isset( $messages[ $code ] ) ) {
+				$flash    = $messages[ $code ];
+				$flash_ok = ( 'ok' === $code );
+			}
+		}
+		?>
+		<div class="verto-apply-inline" data-verto-apply-card>
+			<div class="verto-apply-modal__eyebrow">Apply</div>
+			<h2 class="verto-apply-inline__title"><?php echo esc_html( '' !== $job_title ? 'Apply — ' . $job_title : 'Send us your application' ); ?></h2>
+			<p class="verto-apply-inline__sub">Takes two minutes. The consultant who owns this desk reads every application personally.</p>
+			<?php if ( '' !== $flash ) : ?>
+				<div class="verto-apply-banner <?php echo $flash_ok ? 'is-ok' : 'is-error'; ?>" role="status" data-apply-flash><?php echo esc_html( $flash ); ?></div>
+			<?php endif; ?>
+			<?php if ( ! $flash_ok ) : ?>
+				<?php self::render_form( 'inline', $job_id, $job_title, $redirect ); ?>
+			<?php endif; ?>
+			<div class="verto-apply-done" data-apply-done hidden>
+				<div class="verto-apply-done__mark" aria-hidden="true">✓</div>
+				<p><?php echo esc_html( self::messages()['ok'] ); ?></p>
 			</div>
 		</div>
 		<?php

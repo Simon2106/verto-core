@@ -51,7 +51,9 @@ class Verto_Vincere {
 	const RUN_HOOK       = 'verto_vincere_sync_run';
 	const TR_ID_TOKEN    = 'verto_vincere_id_token';
 	const TR_OAUTH_STATE = 'verto_vincere_oauth_state';
-	const REWRITE_VER    = '1';
+	// v2: verto_job became public with the /jobs/ rewrite slug (job detail
+	// pages) — bumping forces the one-time soft flush in register_rewrite().
+	const REWRITE_VER    = '2';
 
 	// Chunked-sync tuning: one runner invocation stops after this many
 	// pages or seconds, whichever comes first, then re-schedules itself.
@@ -125,12 +127,21 @@ class Verto_Vincere {
 	/* ── CPT ───────────────────────────────────────────────────────────── */
 
 	public static function register_cpt() {
+		// Public since 0.14.0: every job gets its own detail page at
+		// /jobs/{slug}/ (theme template single-verto_job.php — brand-styled
+		// hero, office photos, team strip, advert, inline apply form). No
+		// archive: the jobs BOARD (widget) stays the listing. The rewrite
+		// flush for the new slug rides the REWRITE_VER bump above.
 		register_post_type( self::CPT, [
-			'labels'    => [ 'name' => 'Jobs (Vincere)', 'singular_name' => 'Job' ],
-			'public'    => false,
-			'show_ui'   => true,
-			'menu_icon' => 'dashicons-portfolio',
-			'supports'  => [ 'title', 'editor' ],
+			'labels'              => [ 'name' => 'Jobs (Vincere)', 'singular_name' => 'Job' ],
+			'public'              => true,
+			'has_archive'         => false,
+			'exclude_from_search' => true,
+			'show_in_rest'        => false,
+			'rewrite'             => [ 'slug' => 'jobs', 'with_front' => false ],
+			'show_ui'             => true,
+			'menu_icon'           => 'dashicons-portfolio',
+			'supports'            => [ 'title', 'editor' ],
 		] );
 	}
 
@@ -1020,7 +1031,11 @@ class Verto_Vincere {
 		foreach ( $posts as $post_id ) {
 			$vid = (string) get_post_meta( $post_id, '_vincere_id', true );
 			if ( '' === $vid ) {
-				continue; // manually created job — leave alone
+				// Manually created / installer-seeded job (_manual=1, no
+				// _vincere_id) — NEVER touched by the sync: it can't vanish
+				// from a feed it was never in. Only jobs that carry a
+				// _vincere_id are eligible for deactivation.
+				continue;
 			}
 			if ( ! isset( $lookup[ $vid ] ) ) {
 				update_post_meta( $post_id, '_active', '0' );
@@ -1058,7 +1073,14 @@ class Verto_Vincere {
 
 		$meta_query = [ [ 'key' => '_active', 'value' => '1' ] ];
 		if ( '1' === (string) $settings['internal_only'] ) {
-			$meta_query[] = [ 'key' => '_internal', 'value' => '1' ];
+			// Manual jobs (installer-seeded standing vacancies, _manual=1)
+			// are Verto's own desks by definition — always internal, even if
+			// someone forgets to tick _internal when adding one by hand.
+			$meta_query[] = [
+				'relation' => 'OR',
+				[ 'key' => '_internal', 'value' => '1' ],
+				[ 'key' => '_manual', 'value' => '1' ],
+			];
 		}
 		$posts = get_posts( [
 			'post_type'      => self::CPT,
@@ -1070,14 +1092,23 @@ class Verto_Vincere {
 			'no_found_rows'  => true,
 		] );
 		foreach ( $posts as $post ) {
-			$package = (string) get_post_meta( $post->ID, '_job_type', true );
+			// Package line: explicit _package (installer-seeded standing jobs)
+			// beats the synced _job_type ("Permanent · Full Time" etc.).
+			$package = (string) get_post_meta( $post->ID, '_package', true );
+			if ( '' === $package ) {
+				$package = (string) get_post_meta( $post->ID, '_job_type', true );
+			}
 			$cache[] = [
+				'id'          => (int) $post->ID,
 				'title'       => get_the_title( $post ),
 				'brand'       => (string) get_post_meta( $post->ID, '_brand', true ),
 				'location'    => (string) get_post_meta( $post->ID, '_location', true ),
 				'level'       => (string) get_post_meta( $post->ID, '_level', true ),
 				'package'     => $package ? $package : 'Competitive package',
 				'url'         => (string) get_post_meta( $post->ID, '_apply_url', true ),
+				// The job's own detail page (public CPT since 0.14.0) — the
+				// board rows click through here.
+				'permalink'   => (string) get_permalink( $post ),
 				// Consumed by the Apply modal (includes/applications.php):
 				'vincere_id'  => (string) get_post_meta( $post->ID, '_vincere_id', true ),
 				'owner_email' => (string) get_post_meta( $post->ID, '_owner_email', true ),

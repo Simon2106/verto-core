@@ -198,3 +198,38 @@ in brands.$brand.index.tsx). Port verbatim into installer defaults.
       entries, whats-going-on Stories band, about collage/cards, careers
       ShareSchemeFilm + real Milly/Sade promotion cards).
       Rebuild required on the group install (media import + new posts).
+- [x] v0.14.0 — job detail pages + standing internal vacancies.
+      verto_job CPT is now PUBLIC at /jobs/{slug}/ (has_archive false, the
+      board stays the listing; REWRITE_VER bumped to 2 → one-time soft
+      permalink flush, same pattern as the vincere callback). New theme
+      template single-verto_job.php: brand-styled hero on ink (brand logo +
+      inline --job-brand colour vars — verto gold / edison #2B8EE5 /
+      vertek #F82B60 / modulr #7FA8FC-on-ink — kicker Brand·Location·Level,
+      package line, Apply → #apply), OFFICE section per _location
+      (Verto_Installer::location_gallery(): Solent = Arena Business Centre +
+      skyline_uk + verto-05/03, summit-05, verto-04; Austin = 5900 Balcones
+      Drive US HQ + skyline_us + summit-04, barcelona-03, verto-05; Miami =
+      skyline_eu + "office opening soon" note + barcelona-01, summit-03,
+      gala-02), TEAM strip (6 verto_team on the job's brand, fallback verto),
+      ADVERT (.verto-prose post_content), inline APPLY card (same
+      admin-post verto_apply handler as the modal, job prefilled;
+      Verto_Applications::render_form/render_inline + verto-effects.js §10
+      async submit; modal untouched elsewhere). SEO title/description/OG
+      hooked pre-wp_head in the template.
+      Jobs board rows now click through to get_permalink of the job, with a
+      small "Apply ↗" pill still opening the modal (JS preventDefault); the
+      baked-in placeholder JOBS const is fallback-only now that the
+      installer seeds 10 STANDING INTERNAL VACANCIES (seed_internal_jobs,
+      versioned option verto_installer_jobs = jobs-0.14.0, ids in
+      verto_installer_jobs_ids, matrix-dropped jobs drafted): senior +
+      entry-level (12 months' recruitment experience) recruiter for
+      Edison Lux/Austin, Vertek/Solent, Vertek/Austin, ModulR/Miami
+      (opening-soon note), Verto Life Sciences/Solent — ~200-word adverts
+      each reusing the What We Offer perks language, meta _manual=1 +
+      _internal=1 + _package (board package line; _job_type=Permanent), NO
+      _vincere_id so the Vincere sync's deactivate_missing pass skips them
+      (verified: it only drafts posts WITH a _vincere_id), and get_jobs()'s
+      internal-only filter now ORs _internal=1 with _manual=1.
+      Group-site Rebuild required (seeds the jobs); visit Settings →
+      Permalinks once (or just load any page — the soft flush handles it)
+      so /jobs/… resolves.
