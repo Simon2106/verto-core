@@ -209,9 +209,9 @@ class Verto_Installer {
 		$map   = get_option( self::MEDIA_OPTION, [] );
 		// v0.13.1: a higher-quality summit video shipped — force a one-time
 		// re-import so existing installs pick up the new file on Rebuild.
-		if ( ! get_option( 'verto_media_summit_v2' ) ) {
+		if ( ! get_option( 'verto_media_summit_v3' ) ) {
 			unset( $map['summit_video'], $map['summit_poster'] );
-			update_option( 'verto_media_summit_v2', 1 );
+			update_option( 'verto_media_summit_v3', 1 );
 		}
 		$dir   = dirname( __DIR__ ) . '/assets/import/';
 		$files = [
