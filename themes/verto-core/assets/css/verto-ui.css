@@ -221,7 +221,7 @@ h1, h2, h3 {
    (mask-size contain, centred → full height, 81/80 aspect). The video is
    width:100% of that box, natural height, dropped 20% — the V's taper
    swallows the bottom overflow. Blurred fill keeps the upper arms alive. */
-.verto-hero__vbox { position: relative; height: 100%; aspect-ratio: 81 / 80; max-width: 100%; overflow: hidden; }
+.verto-hero__vbox { position: relative; height: 100%; aspect-ratio: 79.85 / 80.06; max-width: 100%; overflow: hidden; }
 .verto-hero__fill { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(26px) brightness(0.65) saturate(1.05); transform: scale(1.12); }
 .verto-hero__vbox video, .verto-hero__vbox img:not(.verto-hero__fill) { position: relative; display: block; width: 100%; height: auto; margin-top: -35%; }
 .verto-hero__copy { position: relative; max-width: 42rem; }
