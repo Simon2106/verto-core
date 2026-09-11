@@ -83,6 +83,7 @@ class Verto_Installer {
 		self::seed_internal_jobs();
 		self::create_pages( $media );
 		self::create_brand_pages();
+		self::sweep_em_dashes();
 		self::setup_menu();
 
 		wp_safe_redirect( admin_url( 'admin.php?page=verto-setup&built=1' ) );
@@ -2367,6 +2368,26 @@ class Verto_Installer {
 		$locations = get_theme_mod( 'nav_menu_locations', [] );
 		$locations['verto-primary'] = $menu_id;
 		set_theme_mod( 'nav_menu_locations', $locations );
+	}
+
+	/** One-time content sweep: earlier seeds wrote em dashes into DB content
+	 *  (job titles/adverts, story excerpts). Replace with en dashes. */
+	private static function sweep_em_dashes(): void {
+		if ( get_option( 'verto_emdash_sweep' ) ) return;
+		$posts = get_posts( [
+			'post_type'      => [ 'post', 'verto_job', 'verto_team', 'page' ],
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+		] );
+		foreach ( $posts as $p ) {
+			$t = str_replace( [ ' — ', '—' ], [ ' – ', '–' ], $p->post_title );
+			$x = str_replace( [ ' — ', '—' ], [ ' – ', '–' ], $p->post_excerpt );
+			$b = str_replace( [ ' — ', '—' ], [ ' – ', '–' ], $p->post_content );
+			if ( $t !== $p->post_title || $x !== $p->post_excerpt || $b !== $p->post_content ) {
+				wp_update_post( [ 'ID' => $p->ID, 'post_title' => $t, 'post_excerpt' => $x, 'post_content' => $b ] );
+			}
+		}
+		update_option( 'verto_emdash_sweep', 1 );
 	}
 }
 
