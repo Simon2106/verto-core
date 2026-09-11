@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto About Split — the prototype's split sections:
+ * Verto About Split – the prototype's split sections:
  *  - "landing": brand-landing About block (#f3f3f5 bg, copy left with brand
  *    dash + eyebrow, 4xl-5xl headline, mission, outline CTA | image right with
  *    the black stats overlay card: #0a0a0a, radius 4px, 0 30px 80px -30px shadow).
@@ -29,9 +29,15 @@ class Verto_Widget_About_Split extends \Elementor\Widget_Base {
 		$this->add_control( 'headline', [ 'label' => 'Headline', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Considered introductions, not CVs into the void.' ] );
 		$this->add_control( 'headline_italic', [ 'label' => 'Italic headline tail (story)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'body', [ 'label' => 'Body (blank line = new paragraph)', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'rows' => 8,
-			'default' => "Build teams for the projects that will define a generation — staffing what others can't, working quickly and discreetly, and to the standard those projects demand." ] );
+			'default' => "Build teams for the projects that will define a generation – staffing what others can't, working quickly and discreetly, and to the standard those projects demand." ] );
 		$this->add_control( 'cta_text', [ 'label' => 'CTA text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Learn more about us' ] );
 		$this->add_control( 'cta_link', [ 'label' => 'CTA link', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/about' ] ] );
+		// Round 5, item 2: the Edison landing CTA renders in the brand
+		// gradient with white text instead of the outline treatment.
+		$this->add_control( 'cta_style', [
+			'label' => 'CTA style', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [ 'outline' => 'Outline (brand)', 'gradient' => 'Brand gradient (white text)' ], 'default' => 'outline',
+		] );
 		$this->add_control( 'image', [ 'label' => 'Image', 'type' => \Elementor\Controls_Manager::MEDIA ] );
 		$this->add_control( 'image_alt', [ 'label' => 'Image alt', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Data centre corridor lined with server racks and glowing status lights' ] );
 		$this->add_control( 'logo', [ 'label' => 'Brand logo (story variant)', 'type' => \Elementor\Controls_Manager::MEDIA ] );
@@ -128,8 +134,13 @@ class Verto_Widget_About_Split extends \Elementor\Widget_Base {
 					<div class="vbs-asplit__body<?php echo $is_panel ? ' vbs-asplit__body--panel' : ''; ?>"<?php echo $is_panel ? '' : ' style="color:#3a3a3a;"'; ?>>
 						<?php foreach ( $this->paragraphs( $s['body'] ) as $p ) : ?><p><?php echo esc_html( $p ); ?></p><?php endforeach; ?>
 					</div>
-					<?php if ( $s['cta_text'] ) : ?>
-						<a class="vbs-outline-cta" style="border-color:var(--brand);color:var(--brand);" href="<?php echo esc_url( $s['cta_link']['url'] ?? '#' ); ?>"><?php echo esc_html( $s['cta_text'] ); ?></a>
+					<?php if ( $s['cta_text'] ) :
+						// Round 5, item 2: gradient CTA option (Edison "Talk to us").
+						$cta_css = 'gradient' === ( $s['cta_style'] ?? 'outline' )
+							? 'background:var(--brand-gradient, var(--brand));border-color:transparent;color:#fff;'
+							: 'border-color:var(--brand);color:var(--brand);';
+						?>
+						<a class="vbs-outline-cta" style="<?php echo esc_attr( $cta_css ); ?>" href="<?php echo esc_url( $s['cta_link']['url'] ?? '#' ); ?>"><?php echo esc_html( $s['cta_text'] ); ?></a>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -152,7 +163,10 @@ class Verto_Widget_About_Split extends \Elementor\Widget_Base {
 			<?php
 		};
 		?>
-		<div class="vbs-asplit<?php echo $s['reverse'] ? ' vbs-asplit--reverse' : ''; ?>"<?php echo $is_panel ? ' style="color:#0a0a0a;"' : ' style="background:#f3f3f5;color:#0a0a0a;"'; ?>>
+		<?php // Round 5, item 2: landing variant is symmetric – the image sits
+		// inset on the grey panel (equal padding both sides) instead of
+		// full-bleed, so it always fits the background cleanly. ?>
+		<div class="vbs-asplit<?php echo $s['reverse'] ? ' vbs-asplit--reverse' : ''; ?><?php echo $is_panel ? '' : ' vbs-asplit--frame'; ?>"<?php echo $is_panel ? ' style="color:#0a0a0a;"' : ' style="background:#f3f3f5;color:#0a0a0a;"'; ?>>
 			<div class="vbs-asplit__grid">
 				<?php
 				if ( $s['reverse'] ) { $image(); $copy(); }

@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Awards Strip — bordered card on ink: award badge left,
+ * Verto Awards Strip – bordered card on ink: award badge left,
  * eyebrow + heading + supporting copy right.
  */
 class Verto_Widget_Awards_Strip extends \Elementor\Widget_Base {
@@ -16,7 +16,7 @@ class Verto_Widget_Awards_Strip extends \Elementor\Widget_Base {
 		$this->start_controls_section( 'content', [ 'label' => 'Award' ] );
 		$this->add_control( 'badge', [ 'label' => 'Badge image', 'type' => \Elementor\Controls_Manager::MEDIA ] );
 		$this->add_control( 'badge2', [ 'label' => 'Second badge image (optional)', 'type' => \Elementor\Controls_Manager::MEDIA ] );
-		$this->add_control( 'badge2_alt', [ 'label' => 'Second badge alt text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => "Recruiter Awards 2026 — We've been shortlisted" ] );
+		$this->add_control( 'badge2_alt', [ 'label' => 'Second badge alt text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => "Recruiter Awards 2026 – We've been shortlisted" ] );
 		$this->add_control( 'eyebrow', [ 'label' => 'Eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Company awards' ] );
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'The Sunday Times Best Places to Work 2026. Shortlisted, Recruiter Awards 2026.' ] );
 		$this->add_control( 'body', [

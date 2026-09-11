@@ -2,9 +2,9 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Team Grid — renders the "verto_team" custom post type (client
+ * Verto Team Grid – renders the "verto_team" custom post type (client
  * adds/edits people in wp-admin → Team). Three modes: leaders (large,
- * circular), everyone, or "strip" — the brand-site TeamStrip port
+ * circular), everyone, or "strip" – the brand-site TeamStrip port
  * (muted section, eyebrow + "Meet the … desk." header, 4 square photo
  * cards with a brand-gradient hover overlay). Optionally filtered by
  * the _verto_brand meta the installer stamps on seeded people.
@@ -22,7 +22,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 			'options' => [ 'leaders' => 'Leadership (large)', 'all' => 'Everyone (compact)', 'strip' => 'Brand strip (4 cards + header)' ],
 			'default' => 'all',
 		] );
-		$this->add_control( 'brand', [ 'label' => 'Filter by brand (_verto_brand meta, e.g. modulr — matches any brand in the comma list)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'brand', [ 'label' => 'Filter by brand (_verto_brand meta, e.g. modulr – matches any brand in the comma list)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'tier', [
 			'label' => 'Filter by tier (_verto_tier meta)', 'type' => \Elementor\Controls_Manager::SELECT,
 			'options' => [ '' => 'All tiers', 'leadership' => 'Leadership', 'management' => 'Management', 'team' => 'The team (incl. ops)', 'ops' => 'Ops only' ],
@@ -45,7 +45,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 
 		$meta_query = [];
 		if ( $leaders ) $meta_query[] = [ 'key' => '_verto_leader', 'value' => '1' ];
-		// _verto_brand is a comma-separated list ('verto,vertek') — match any.
+		// _verto_brand is a comma-separated list ('verto,vertek') – match any.
 		if ( ! empty( $s['brand'] ) ) $meta_query[] = [ 'key' => '_verto_brand', 'value' => sanitize_key( $s['brand'] ), 'compare' => 'LIKE' ];
 
 		$q = new \WP_Query( [
@@ -57,7 +57,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 		] );
 
 		// Tier filter + ordering: leadership → management → team (ops fold into
-		// the team; people without _verto_tier — e.g. client-added — count as team).
+		// the team; people without _verto_tier – e.g. client-added – count as team).
 		$tier_of = static fn( $id ) => get_post_meta( $id, '_verto_tier', true ) ?: 'team';
 		$posts   = $q->posts;
 		$tier    = $s['tier'] ?? '';
@@ -80,7 +80,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 		$q->rewind_posts();
 
 		if ( ! $q->have_posts() ) {
-			echo '<p style="opacity:.7">No team members yet — add them under Team in wp-admin.</p>';
+			echo '<p style="opacity:.7">No team members yet – add them under Team in wp-admin.</p>';
 			return;
 		}
 
@@ -126,7 +126,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 		while ( $q->have_posts() ) {
 			$q->the_post();
 			$role = get_post_meta( get_the_ID(), '_verto_role', true ) ?: 'Consultant';
-			// Round 4, item 16: brand-coloured ring/tint per member — data-brand
+			// Round 4, item 16: brand-coloured ring/tint per member – data-brand
 			// carries the FIRST brand in the _verto_brand comma list (CSS maps it
 			// to the brand colour; unknown/empty = no treatment).
 			$member_brand = sanitize_key( trim( explode( ',', (string) get_post_meta( get_the_ID(), '_verto_brand', true ) )[0] ) );
@@ -134,7 +134,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 			if ( has_post_thumbnail() ) {
 				the_post_thumbnail( 'medium' );
 			} else {
-				// No headshot yet — initials placeholder until the client supplies one.
+				// No headshot yet – initials placeholder until the client supplies one.
 				printf( '<div class="verto-team__initials">%s</div>', esc_html( self::initials( get_the_title() ) ) );
 			}
 			echo '</div>';
@@ -144,7 +144,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 		wp_reset_postdata();
 	}
 
-	/** "Alex Hatfield" → "AH" — placeholder block for people without a photo. */
+	/** "Alex Hatfield" → "AH" – placeholder block for people without a photo. */
 	private static function initials( string $name ): string {
 		return strtoupper( implode( '', array_map( fn( $p ) => mb_substr( $p, 0, 1 ), array_slice( preg_split( '/\s+/', $name ), 0, 2 ) ) ) );
 	}

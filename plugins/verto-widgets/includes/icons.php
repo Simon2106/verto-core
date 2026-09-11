@@ -2,8 +2,8 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto icons — inline copies of the lucide icons the brand-site widgets use
- * (24×24 viewBox, stroke currentColor, stroke-width 1.5, fill none — exactly
+ * Verto icons – inline copies of the lucide icons the brand-site widgets use
+ * (24×24 viewBox, stroke currentColor, stroke-width 1.5, fill none – exactly
  * how the prototype renders them via lucide-react with strokeWidth={1.5}).
  *
  * verto_icon( 'globe-2', [ 'class' => 'vbs-feature__icon', 'style' => 'color:var(--brand)' ] )

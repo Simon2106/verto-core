@@ -1,22 +1,22 @@
 <?php
 /**
- * Job detail page — /jobs/{slug}/ for the public verto_job CPT
+ * Job detail page – /jobs/{slug}/ for the public verto_job CPT
  * (plugins/verto-widgets/includes/vincere.php registers it; jobs come from
  * the Vincere sync OR the installer's standing internal vacancies).
  *
  * "If they click on a senior recruiter job for Edison Lux in Austin, it takes
  * them to an Austin page with photos of Austin and the team plus the job
- * advert and apply button" — so, top to bottom:
- *   1. HERO in the job's BRAND styling — brand logo + colour (inline
+ * advert and apply button" – so, top to bottom:
+ *   1. HERO in the job's BRAND styling – brand logo + colour (inline
  *      --job-brand vars, body-class independent: an Edison Lux job renders
  *      Edison-blue even on the Verto group site), kicker, title, package,
  *      Apply button anchoring to the inline form.
- *   2. OFFICE — skyline + photo strip + blurb for the job's _location
+ *   2. OFFICE – skyline + photo strip + blurb for the job's _location
  *      (Verto_Installer::location_gallery(): Solent / Austin / Miami-soon).
- *   3. TEAM — up to six verto_team people on the job's brand (fallback verto).
- *   4. ADVERT — post_content (Vincere public_description for synced jobs,
+ *   3. TEAM – up to six verto_team people on the job's brand (fallback verto).
+ *   4. ADVERT – post_content (Vincere public_description for synced jobs,
  *      authored copy for manual ones), .verto-prose.
- *   5. APPLY — the application form INLINE at #apply, same admin-post handler
+ *   5. APPLY – the application form INLINE at #apply, same admin-post handler
  *      as the board's modal, job prefilled (Verto_Applications::render_inline).
  *
  * Degrades safely anywhere: every plugin/installer touchpoint is guarded, so
@@ -54,14 +54,14 @@ $verto_job_brands = [
 	'verto'      => [ 'label' => 'Verto Group', 'color' => '#d19f2f', 'fg' => '#1F2A44' ],
 	'edison-lux' => [ 'label' => 'Edison Lux', 'color' => '#2B8EE5', 'fg' => '#ffffff' ],
 	'vertek'     => [ 'label' => 'Vertek', 'color' => '#F82B60', 'fg' => '#ffffff' ],
-	'modulr'     => [ 'label' => 'ModulR', 'color' => '#7FA8FC', 'fg' => '#000A3B' ], // royal is too dark on ink — lifted per the board rows
+	'modulr'     => [ 'label' => 'ModulR', 'color' => '#7FA8FC', 'fg' => '#000A3B' ], // royal is too dark on ink – lifted per the board rows
 ];
 if ( ! isset( $verto_job_brands[ $verto_job_brand ] ) ) {
 	$verto_job_brand = 'verto';
 }
 $verto_job_b = $verto_job_brands[ $verto_job_brand ];
 
-/* Brand logo — theme asset first, then installer media (same as header.php). */
+/* Brand logo – theme asset first, then installer media (same as header.php). */
 $verto_job_logo = '';
 if ( 'verto' === $verto_job_brand ) {
 	$verto_job_logo = get_stylesheet_directory_uri() . '/assets/img/verto-logo.svg';
@@ -113,7 +113,7 @@ if ( ! $verto_job_team && 'verto' !== $verto_job_brand ) {
 }
 
 /* ── SEO: document title + meta description + OG (hooked before wp_head) ── */
-$verto_job_seo_title = $verto_job_title . ' — ' . $verto_job_b['label'] . ', ' . ( $verto_job_loc ? $verto_job_loc : 'Verto' );
+$verto_job_seo_title = $verto_job_title . ' – ' . $verto_job_b['label'] . ', ' . ( $verto_job_loc ? $verto_job_loc : 'Verto' );
 $verto_job_seo_desc  = wp_trim_words( wp_strip_all_tags( $verto_job->post_content ), 28 );
 if ( '' === $verto_job_seo_desc ) {
 	$verto_job_seo_desc = $verto_job_title . ' at ' . $verto_job_b['label'] . ' (' . $verto_job_loc . '). ' . $verto_job_package . '.';
@@ -142,7 +142,7 @@ get_header();
 ?>
 <main class="verto-jobdetail" style="--job-brand:<?php echo esc_attr( $verto_job_b['color'] ); ?>;--job-brand-fg:<?php echo esc_attr( $verto_job_b['fg'] ); ?>;">
 
-	<?php /* ── 1. HERO — the job's brand styling on ink ── */ ?>
+	<?php /* ── 1. HERO – the job's brand styling on ink ── */ ?>
 	<section class="verto-jobhero">
 		<div class="verto-container verto-jobhero__inner">
 			<?php if ( $verto_job_back ) : ?>
@@ -169,7 +169,7 @@ get_header();
 		</div>
 	</section>
 
-	<?php /* ── 2. OFFICE — photos of the location + the blurb ── */ ?>
+	<?php /* ── 2. OFFICE – photos of the location + the blurb ── */ ?>
 	<?php if ( $verto_job_office ) : ?>
 	<section class="verto-joboffice">
 		<div class="verto-container">
@@ -206,7 +206,7 @@ get_header();
 	</section>
 	<?php endif; ?>
 
-	<?php /* ── 3. TEAM — who you'd sit with ── */ ?>
+	<?php /* ── 3. TEAM – who you'd sit with ── */ ?>
 	<?php if ( $verto_job_team ) : ?>
 	<section class="verto-jobteam">
 		<div class="verto-container">
@@ -239,7 +239,7 @@ get_header();
 	</section>
 	<?php endif; ?>
 
-	<?php /* ── 4. ADVERT — the job description ── */ ?>
+	<?php /* ── 4. ADVERT – the job description ── */ ?>
 	<section class="verto-jobadvert" id="advert">
 		<div class="verto-container">
 			<span class="verto-jobs__eyebrow">The role</span>
@@ -249,24 +249,24 @@ get_header();
 				if ( trim( wp_strip_all_tags( (string) $verto_job_content ) ) ) {
 					echo $verto_job_content; // phpcs:ignore WordPress.Security.EscapeOutput -- post_content through the_content filters
 				} else {
-					echo '<p>Full details on application — tell us a little about yourself below and the consultant who owns this desk will come straight back to you.</p>';
+					echo '<p>Full details on application – tell us a little about yourself below and the consultant who owns this desk will come straight back to you.</p>';
 				}
 				?>
 			</div>
 		</div>
 	</section>
 
-	<?php /* ── 5. APPLY — inline form (same handler as the board's modal) ── */ ?>
+	<?php /* ── 5. APPLY – inline form (same handler as the board's modal) ── */ ?>
 	<section class="verto-jobapply" id="apply">
 		<div class="verto-container">
 			<?php if ( ! $verto_job_open ) : ?>
 				<div class="verto-apply-inline">
 					<h2 class="verto-apply-inline__title">This role has been filled.</h2>
-					<p class="verto-apply-inline__sub">The desk isn&rsquo;t always listed but the door is always open — <a href="<?php echo esc_url( $verto_job_back ? $verto_job_back : home_url( '/contact' ) ); ?>">see the current openings</a> or send us a note anyway.</p>
+					<p class="verto-apply-inline__sub">The desk isn&rsquo;t always listed but the door is always open – <a href="<?php echo esc_url( $verto_job_back ? $verto_job_back : home_url( '/contact' ) ); ?>">see the current openings</a> or send us a note anyway.</p>
 				</div>
 			<?php elseif ( '' !== $verto_apply_url ) : ?>
 				<div class="verto-apply-inline">
-					<h2 class="verto-apply-inline__title">Apply — <?php echo esc_html( $verto_job_title ); ?></h2>
+					<h2 class="verto-apply-inline__title">Apply – <?php echo esc_html( $verto_job_title ); ?></h2>
 					<p class="verto-apply-inline__sub">Applications for this role are handled on our careers portal.</p>
 					<a class="btn-base btn-primary" href="<?php echo esc_url( $verto_apply_url ); ?>">Apply on the portal &nearr;</a>
 				</div>
@@ -274,7 +274,7 @@ get_header();
 				<?php Verto_Applications::render_inline( $verto_job_vid, $verto_job_title, get_permalink( $verto_job ) ); ?>
 			<?php else : ?>
 				<div class="verto-apply-inline">
-					<h2 class="verto-apply-inline__title">Apply — <?php echo esc_html( $verto_job_title ); ?></h2>
+					<h2 class="verto-apply-inline__title">Apply – <?php echo esc_html( $verto_job_title ); ?></h2>
 					<p class="verto-apply-inline__sub">Email your CV to <a href="mailto:info@vertopeople.com">info@vertopeople.com</a> with the role in the subject line.</p>
 				</div>
 			<?php endif; ?>

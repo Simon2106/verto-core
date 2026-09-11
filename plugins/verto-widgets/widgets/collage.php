@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Collage — masonry/tile photo grid (About page hero collage).
+ * Verto Collage – masonry/tile photo grid (About page hero collage).
  * 4-column grid with varied tile spans (big 2×2 / wide 2×1 / standard 1×1),
  * rounded corners, optional caption scrim, and a subtle stagger reveal
  * driven by the section scroll-reveal (--tile-delay per tile).

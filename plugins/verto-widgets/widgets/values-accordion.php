@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Values Accordion — the brand-about "Our values" section
+ * Verto Values Accordion – the brand-about "Our values" section
  * (brands.$brand.about.tsx): sticky intro column left, numbered
  * <details> accordion right with brand-tinted rules and a rotating
  * plus glyph. First value open by default. Prefilled with Vertek's
@@ -33,13 +33,13 @@ class Verto_Widget_Values_Accordion extends \Elementor\Widget_Base {
 				[ 'title' => 'Straightforward. No overpromising.',
 				  'body'  => "We say what we mean and mean what we say. Candidates are sold on their merits, feedback is honest, and we never promise what we can't deliver." ],
 				[ 'title' => 'Process over chance.',
-				  'body'  => 'Great recruitment isn\'t luck. Our methodology has been built over years to get it right first time — frequent updates, thorough briefings, structure that removes failure at every stage.' ],
+				  'body'  => 'Great recruitment isn\'t luck. Our methodology has been built over years to get it right first time – frequent updates, thorough briefings, structure that removes failure at every stage.' ],
 				[ 'title' => 'An extension of your team.',
 				  'body'  => '94% of our clients work with us again. We understand the business properly, represent it well and build relationships that outlast a single hire.' ],
 				[ 'title' => 'High-conviction introductions.',
 				  'body'  => "We sell the opportunity as hard as we'd want someone to sell ours. The right candidates come energised, not just informed." ],
 				[ 'title' => 'Product knowledge, non-negotiable.',
-				  'body'  => "Every consultant specialises in a product area. We don't generalise across engineering because our clients and candidates don't — and neither should we." ],
+				  'body'  => "Every consultant specialises in a product area. We don't generalise across engineering because our clients and candidates don't – and neither should we." ],
 			],
 		] );
 		$this->end_controls_section();

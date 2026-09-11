@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Audience Cards — "For companies" (ink card) + "For candidates"
+ * Verto Audience Cards – "For companies" (ink card) + "For candidates"
  * (surface card) pair from the brand landing: rounded-3xl, p-10/12, kicker
  * at tracking 0.28em, 3xl-4xl display headline, bullets with brand dots,
  * btn-primary CTA with ArrowUpRight.
@@ -35,8 +35,8 @@ class Verto_Widget_Audience_Cards extends \Elementor\Widget_Base {
 					'style'    => 'ink',
 					'kicker'   => 'For companies',
 					'headline' => "Your next project is out there. It just isn't advertised.",
-					'body'     => "Whether you're scaling a data centre programme or shaping a skyline, one conversation opens doors that don't exist yet. Considered introductions, never CVs into the void — and discretion as standard.",
-					'bullets'  => "Curated introductions, not mass outreach\nConfidential and NDA-grade search handled as standard\nProject team builds — contract and permanent\nLong-game relationships across the project pipeline",
+					'body'     => "Whether you're scaling a data centre programme or shaping a skyline, one conversation opens doors that don't exist yet. Considered introductions, never CVs into the void – and discretion as standard.",
+					'bullets'  => "Curated introductions, not mass outreach\nConfidential and NDA-grade search handled as standard\nProject team builds – contract and permanent\nLong-game relationships across the project pipeline",
 					'cta_text' => 'Scale your project team',
 					'cta_link' => [ 'url' => '/clients' ],
 				],
@@ -44,7 +44,7 @@ class Verto_Widget_Audience_Cards extends \Elementor\Widget_Base {
 					'style'    => 'surface',
 					'kicker'   => 'For candidates',
 					'headline' => 'The best projects are rarely advertised.',
-					'body'     => 'The best talent is rarely searching. Modulr exists in that gap — making precise, considered introductions rather than firing CVs into the void, and protecting reputations on every engagement.',
+					'body'     => 'The best talent is rarely searching. Modulr exists in that gap – making precise, considered introductions rather than firing CVs into the void, and protecting reputations on every engagement.',
 					'bullets'  => "Data centre, colocation, architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
 					'cta_text' => 'Find your next project',
 					'cta_link' => [ 'url' => '/candidates' ],

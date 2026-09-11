@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Section Intro — eyebrow + line-reveal display heading + body + link,
+ * Verto Section Intro – eyebrow + line-reveal display heading + body + link,
  * matching the prototype's section headers.
  */
 class Verto_Widget_Section_Intro extends \Elementor\Widget_Base {

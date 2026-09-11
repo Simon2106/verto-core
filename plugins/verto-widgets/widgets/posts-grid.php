@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Posts Grid — latest posts as prototype-style cards:
+ * Verto Posts Grid – latest posts as prototype-style cards:
  * featured image with category label overlay, meta row, display title,
  * excerpt, read time. Powers the "What's going on" section from real
  * WP posts so the client publishes news natively.
@@ -45,7 +45,7 @@ class Verto_Widget_Posts_Grid extends \Elementor\Widget_Base {
 		}
 		$q = new \WP_Query( $args );
 		if ( ! $q->have_posts() ) {
-			echo '<p style="opacity:.7">No posts yet — publish a post and it appears here.</p>';
+			echo '<p style="opacity:.7">No posts yet – publish a post and it appears here.</p>';
 			return;
 		}
 		if ( ! empty( $s['header_heading'] ) ) {

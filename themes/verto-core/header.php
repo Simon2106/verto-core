@@ -1,6 +1,6 @@
 <?php
 /**
- * Verto Core header — overrides Hello Elementor's header with the
+ * Verto Core header – overrides Hello Elementor's header with the
  * prototype's sticky, blurred site header.
  *
  * Verto (group) site: logo left, uppercase nav centre, "Join us" pill right.
@@ -39,7 +39,7 @@ if ( $verto_is_brand_site ) {
 
 <header class="verto-header<?php echo $verto_is_brand_site ? ' verto-header--brand' : ''; ?>">
 	<div class="verto-header__inner">
-		<a class="verto-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php bloginfo( 'name' ); ?> — home">
+		<a class="verto-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php bloginfo( 'name' ); ?> – home">
 			<img src="<?php echo esc_url( $verto_logo ); ?>" alt="<?php bloginfo( 'name' ); ?>" />
 		</a>
 		<nav class="verto-header__nav" aria-label="Primary">

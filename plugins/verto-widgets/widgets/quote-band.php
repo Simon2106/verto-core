@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Quote Band — the prototype's dark parallax bands: a full-bleed
+ * Verto Quote Band – the prototype's dark parallax bands: a full-bleed
  * parallax image behind an ink gradient wash, with eyebrow + headline
  * (+ optional accent span), body, CTAs, floating stat card, staggered
  * label/body columns (Mission/Vision/Purpose) or pull quotes.
@@ -21,8 +21,8 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 		$this->add_control( 'overlay', [
 			'label' => 'Gradient wash', 'type' => \Elementor\Controls_Manager::SELECT,
 			'options' => [
-				'hero-left'   => 'Hero — ink from left (100deg)',
-				'hero-right'  => 'Hero — ink from right (260deg)',
+				'hero-left'   => 'Hero – ink from left (100deg)',
+				'hero-right'  => 'Hero – ink from right (260deg)',
 				'mission'     => 'Mission band (135deg, heavy)',
 				'testimonial' => 'Testimonial band (135deg)',
 				'case'        => 'Case study band (115deg)',
@@ -51,13 +51,13 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 			'options' => [ 'display-2' => 'Display 2', 'display-3' => 'Display 3' ], 'default' => 'display-2',
 		] );
 		$this->add_control( 'body', [ 'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => "Considered introductions, not CVs into the void. — and it's how we've built Modulr into the firm clients and candidates in architecture & data centres reach out to first." ] );
+			'default' => "Considered introductions, not CVs into the void. – and it's how we've built Modulr into the firm clients and candidates in architecture & data centres reach out to first." ] );
 		$this->add_control( 'cta1_text', [ 'label' => 'CTA 1 (solid)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'cta1_link', [ 'label' => 'CTA 1 link', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->add_control( 'cta2_text', [ 'label' => 'CTA 2 (outline)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'cta2_link', [ 'label' => 'CTA 2 link', 'type' => \Elementor\Controls_Manager::URL ] );
-		$this->add_control( 'stat_value', [ 'label' => 'Floating stat — value', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '3 regions' ] );
-		$this->add_control( 'stat_label', [ 'label' => 'Floating stat — label', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'US & EU coverage' ] );
+		$this->add_control( 'stat_value', [ 'label' => 'Floating stat – value', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '3 regions' ] );
+		$this->add_control( 'stat_label', [ 'label' => 'Floating stat – label', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'US & EU coverage' ] );
 
 		$cols = new \Elementor\Repeater();
 		$cols->add_control( 'label', [ 'label' => 'Label', 'type' => \Elementor\Controls_Manager::TEXT ] );
@@ -78,15 +78,15 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 			'label' => 'Section style', 'type' => \Elementor\Controls_Manager::SELECT,
 			'options' => [
 				'band'  => 'Dark parallax band (default)',
-				'light' => 'Light testimonials — page background, brand-rule quotes',
+				'light' => 'Light testimonials – page background, brand-rule quotes',
 			],
 			'default' => 'band',
 		] );
 		// Case study mode (prototype clients page): when a client name is set,
 		// the columns render as the Client/Sector meta + Challenge/Solution/
 		// Result grid instead of the staggered Mission/Vision/Purpose layout.
-		$this->add_control( 'case_client', [ 'label' => 'Case study — client (enables case layout)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
-		$this->add_control( 'case_sector', [ 'label' => 'Case study — sector', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'case_client', [ 'label' => 'Case study – client (enables case layout)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'case_sector', [ 'label' => 'Case study – sector', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->end_controls_section();
 	}
 
@@ -187,13 +187,13 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 					</div>
 				<?php endif; ?>
 
-				<?php if ( $s['quotes'] && $light ) : // light testimonials — brand rule left, alternating drop ?>
+				<?php if ( $s['quotes'] && $light ) : // light testimonials – brand rule left, alternating drop ?>
 					<div class="vbs-band__quotes vbs-band__quotes--light">
 						<?php foreach ( $s['quotes'] as $i => $q ) : ?>
 							<figure class="vbs-quote-l<?php echo 1 === $i % 2 ? ' vbs-quote-l--drop' : ''; ?>" style="border-left:2px solid var(--brand);">
 								<div class="vbs-quote-l__mark" style="color:var(--brand);background:var(--background);">&quot;</div>
 								<blockquote><?php echo esc_html( $q['quote'] ); ?></blockquote>
-								<figcaption>— <?php echo esc_html( $q['attribution'] ); ?></figcaption>
+								<figcaption>– <?php echo esc_html( $q['attribution'] ); ?></figcaption>
 							</figure>
 						<?php endforeach; ?>
 					</div>
@@ -203,7 +203,7 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 							<figure class="vbs-band__quote<?php echo 1 === $i % 2 ? ' vbs-band__quote--drop' : ''; ?>">
 								<div class="vbs-band__mark" style="color:var(--brand);">&quot;</div>
 								<blockquote><?php echo esc_html( $q['quote'] ); ?></blockquote>
-								<figcaption>— <?php echo esc_html( $q['attribution'] ); ?></figcaption>
+								<figcaption>– <?php echo esc_html( $q['attribution'] ); ?></figcaption>
 							</figure>
 						<?php endforeach; ?>
 					</div>

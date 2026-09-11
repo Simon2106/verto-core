@@ -903,10 +903,13 @@ figure.verto-quote { margin: 0; }
 .vbs-aud__headline { margin-top: 1.25rem; font-size: 1.875rem; line-height: 1.25; }
 @media (min-width: 768px) { .vbs-aud__headline { font-size: 2.25rem; } }
 .vbs-aud__body { margin-top: 1.25rem; font-size: 1rem; line-height: 1.5rem; opacity: 0.8; }
-.vbs-aud__bullets { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem; }
+.vbs-aud__bullets { margin-top: 1.75rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem; }
 .vbs-aud__bullets li { display: flex; gap: 0.75rem; }
 .vbs-aud__bullets .vbs-dot { margin-top: 0.5rem; }
-.vbs-aud__cta { align-self: flex-start; margin-top: 2rem; }
+/* Round 5, item 8: CTAs align on one line across the card pair — the card is
+   a flex column, so mt:auto pins every CTA to the bottom edge (the bullets'
+   margin-bottom keeps the minimum 2rem gap). */
+.vbs-aud__cta { align-self: flex-start; margin-top: auto; }
 
 /* ── Process rail (verto-process-rail) ── */
 .vbs-rail { padding-block: 6rem; }
@@ -1655,3 +1658,75 @@ body.verto-modal-open { overflow: hidden; }
 .verto-apply-inline__sub { margin: 0.75rem 0 1.75rem; font-size: 0.9rem; line-height: 1.6; color: var(--muted-foreground); }
 .verto-apply-inline .verto-apply-submit { background: var(--job-brand, var(--brand)); color: var(--job-brand-fg, var(--brand-foreground)); }
 .verto-apply-inline .verto-apply-banner { margin-bottom: 1.5rem; } /* is-ok/is-error skins live in the v0.9 apply block above */
+
+/* ═════════ v0.15 — client feedback round 5 ═════════ */
+
+/* ── Item 2: symmetric landing about-split ──
+   The image is inset on the grey panel with padding that mirrors the copy
+   column, so it always fits the background cleanly (was full-bleed). */
+.vbs-asplit--frame .vbs-asplit__grid { align-items: center; }
+.vbs-asplit--frame .vbs-asplit__imgwrap { margin: 0 1.5rem 3rem; min-height: 360px; }
+.vbs-asplit--frame .vbs-asplit__img { border-radius: 0.75rem; }
+@media (min-width: 768px) { .vbs-asplit--frame .vbs-asplit__imgwrap { margin-inline: 3rem; } }
+@media (min-width: 1024px) {
+  .vbs-asplit--frame .vbs-asplit__imgwrap { margin: 4rem 4rem 4rem 0; min-height: 460px; }
+  .vbs-asplit--frame.vbs-asplit--reverse .vbs-asplit__imgwrap { margin: 4rem 0 4rem 4rem; }
+}
+
+/* ── Item 3: specialism cards with a sector image band ──
+   16:9 image across the top of the card (bleeds to the card edges, under the
+   hover bar), icon and numbering kept beneath. Subtle ink wash keeps the six
+   interim crops sitting together as a set. */
+.vbs-card--img { padding-top: 0; }
+.vbs-spec__imgband {
+  position: relative; width: calc(100% + 4rem); margin: 0 -2rem 1.75rem;
+  aspect-ratio: 16 / 9; overflow: hidden;
+}
+.vbs-spec__imgband img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s; }
+.vbs-card--img:hover .vbs-spec__imgband img { transform: scale(1.04); }
+.vbs-spec__imgband::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--ink) 18%, transparent) 0%, transparent 45%, color-mix(in oklab, var(--ink) 22%, transparent) 100%);
+}
+
+/* ── Item 4: "Two desks. One market." (Edison home) ──
+   Section intro above the audience-card pair; intro constrained to the same
+   container width the cards use. */
+.vbs-desks { padding-top: 6rem; }
+.vbs-desks .verto-intro { max-width: 80rem; margin-inline: auto; padding-inline: 1.5rem; }
+@media (min-width: 768px) { .vbs-desks .verto-intro { padding-inline: 2.5rem; } }
+.vbs-desks .vbs-aud { padding-block: 3.5rem 6rem; }
+
+/* ── Item 5: compact services band (three engagement models → /clients) ── */
+.verto-services { padding-block: 4rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--background); }
+@media (min-width: 1024px) { .verto-services { padding-block: 4.5rem; } }
+.verto-services__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
+.verto-services__link { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; text-decoration: none; white-space: nowrap; }
+.verto-services__link:hover { text-decoration: underline; }
+.verto-services__grid { display: grid; gap: 1rem; }
+@media (min-width: 768px) { .verto-services__grid { grid-template-columns: repeat(3, 1fr); } }
+.verto-services__card {
+  position: relative; overflow: hidden; display: flex; flex-direction: column;
+  padding: 1.5rem 1.5rem 1.625rem; text-decoration: none; color: var(--foreground);
+  background: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  transition: background-color 0.3s;
+}
+.verto-services__card:hover { background: color-mix(in oklab, var(--foreground) 9%, var(--background)); }
+.verto-services__bar { position: absolute; top: 0; left: 0; height: 3px; width: 100%; transform-origin: left; transform: scaleX(0); transition: transform 0.5s; }
+.verto-services__card:hover .verto-services__bar { transform: scaleX(1); }
+.verto-services__kicker { font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; }
+.verto-services__title { margin-top: 0.5rem; font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -0.01em; }
+.verto-services__body { margin-top: 0.5rem; font-size: 0.875rem; line-height: 1.55; opacity: 0.75; }
+/* The brand Insights template renders the band inside main.verto-container —
+   drop the inner container's own padding so gutters don't double up. */
+.verto-container .verto-services .container-wide { padding-inline: 0; }
+.verto-container .verto-services { margin-top: 4rem; }
+
+/* ── Item 10: share-scheme awards photo — wide rounded figure ── */
+.verto-wide-photo { margin: 0 0 3.5rem; }
+.verto-wide-photo img { width: 100%; border-radius: 1.5rem; display: block; object-fit: cover; aspect-ratio: 2 / 1; }
+.verto-wide-photo figcaption { margin-top: 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--muted-foreground); }
+/* On the careers incentives split the figure sits beside the film — tighter */
+.verto-ink .verto-wide-photo { margin: 2rem 0 0; }
+.verto-ink .verto-wide-photo img { aspect-ratio: auto; border-radius: 1rem; }
+.verto-ink .verto-wide-photo figcaption { color: color-mix(in oklab, var(--ink-foreground) 70%, transparent); }

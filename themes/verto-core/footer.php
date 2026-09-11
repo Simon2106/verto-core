@@ -2,7 +2,7 @@
 /**
  * Verto Core footer.
  * Verto (group) site: logo + strapline, Group nav / Brands / Connect columns.
- * Brand sites: BrandFooter.tsx port — brand logo + focus line, Explore /
+ * Brand sites: BrandFooter.tsx port – brand logo + focus line, Explore /
  * Other brands / Connect columns, "© {year} {Brand}, a Verto Group brand."
  */
 $verto_brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';

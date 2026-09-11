@@ -1,10 +1,10 @@
 <?php
 /**
- * Posts index — the "What's Going On" magazine hub (Verto) or the brand
+ * Posts index – the "What's Going On" magazine hub (Verto) or the brand
  * "Insights" listing (modulr / vertek / edison-lux).
  *
  * Magazine layout (client-approved design, mirrors whats-going-on.tsx):
- *  1. Featured story — newest post rendered large (image left ~60%,
+ *  1. Featured story – newest post rendered large (image left ~60%,
  *     category chip + display-2 title + excerpt + date/read time right).
  *  2. Card grid of the remaining posts with category chips.
  *  3. Verto only: "Stories" video slot placeholders (client videos to come).
@@ -12,7 +12,7 @@
  */
 $verto_brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
 $verto_hub   = [
-	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Incentive trips, awards, promotions and the occasional market note — straight from the team.' ],
+	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Incentive trips, awards, promotions and the occasional market note – straight from the team.' ],
 	'modulr'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'architecture & data centres.', 'body' => 'The thinking from the consultants closest to the architecture & data centres market.' ],
 	'vertek'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'technical sales, service & engineering.', 'body' => 'The thinking from the consultants closest to the technical sales, service & engineering market.' ],
 	'edison-lux' => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'US energy staffing.', 'body' => 'The thinking from the consultants closest to the US energy staffing market.' ],
@@ -84,8 +84,15 @@ get_header();
 		<?php the_posts_pagination(); ?>
 	<?php endif; ?>
 
+	<?php if ( 'verto' !== $verto_brand && function_exists( 'verto_services_band_html' ) ) : ?>
+		<!-- Round 5, item 5: the compact services band (three engagement
+		     models → /clients) appears on every brand-site page, including
+		     this Insights listing. -->
+		<div class="verto-bs"><?php echo verto_services_band_html(); // phpcs:ignore ?></div>
+	<?php endif; ?>
+
 	<?php if ( 'verto' === $verto_brand ) : ?>
-		<!-- STORIES — the client's people-story films (Aug-2026 media drop).
+		<!-- STORIES – the client's people-story films (Aug-2026 media drop).
 		     Each slot renders its real video (poster + controls, preload="none");
 		     a slot whose media hasn't been imported falls back to the dashed
 		     placeholder, so the band degrades gracefully pre-build. -->
@@ -137,7 +144,7 @@ get_header();
 			</div>
 		</section>
 
-		<!-- INSTAGRAM — same embed as the verto-socials widget -->
+		<!-- INSTAGRAM – same embed as the verto-socials widget -->
 		<section class="verto-hub-socials">
 			<div class="verto-socials">
 				<div>

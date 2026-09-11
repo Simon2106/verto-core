@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-/** Verto Principles — numbered grid (Verto standard, career path, etc.). */
+/** Verto Principles – numbered grid (Verto standard, career path, etc.). */
 class Verto_Widget_Principles extends \Elementor\Widget_Base {
 	public function get_name() { return 'verto-principles'; }
 	public function get_title() { return 'Verto Principles Grid'; }
@@ -19,9 +19,9 @@ class Verto_Widget_Principles extends \Elementor\Widget_Base {
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ title }}}',
 			'default' => [
 				[ 'title' => 'Own your day', 'body' => "Nobody here waits to be told. Every consultant plans their market, runs their desk and takes satisfaction from doing exactly what they said they'd do." ],
-				[ 'title' => 'Phone first', 'body' => 'Markets move in conversations, not inboxes. We pick up the phone first — to candidates, to clients, to each other — and everything we know comes from that.' ],
-				[ 'title' => 'Ask better questions', 'body' => 'Curiosity is a working tool here. The best shortlist starts with the question nobody else asked — of the client, the candidate and ourselves.' ],
-				[ 'title' => 'Win as a team', 'body' => 'Deals are individual; success isn\'t. We celebrate together, travel together and hold each other to the same standard — whichever brand the placement lands in.' ],
+				[ 'title' => 'Phone first', 'body' => 'Markets move in conversations, not inboxes. We pick up the phone first – to candidates, to clients, to each other – and everything we know comes from that.' ],
+				[ 'title' => 'Ask better questions', 'body' => 'Curiosity is a working tool here. The best shortlist starts with the question nobody else asked – of the client, the candidate and ourselves.' ],
+				[ 'title' => 'Win as a team', 'body' => 'Deals are individual; success isn\'t. We celebrate together, travel together and hold each other to the same standard – whichever brand the placement lands in.' ],
 			],
 		] );
 		$this->add_control( 'columns', [

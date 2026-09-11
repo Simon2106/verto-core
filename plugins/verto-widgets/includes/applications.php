@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Applications — the "Apply" flow behind the Jobs Board widget.
+ * Verto Applications – the "Apply" flow behind the Jobs Board widget.
  *
  * Front end: an inline modal on every live jobs-board row (markup rendered by
  * render_modal() below, opened by verto-effects.js; without JS the modal is a
@@ -11,10 +11,10 @@ defined( 'ABSPATH' ) || exit;
  * Back end (this file):
  *   1. Validates the submission (nonce, honeypot, field + CV file checks).
  *   2. Stores it as a `verto_application` post (private, never public) with
- *      the CV as a private attachment — an application is NEVER lost, even
+ *      the CV as a private attachment – an application is NEVER lost, even
  *      when every later step fails.
  *   3. Pushes candidate → CV → application into Vincere (unless TEST MODE,
- *      the default — see test_mode() below).
+ *      the default – see test_mode() below).
  *   4. Emails the job owner (fallback: admin_email) a summary + the CV,
  *      whatever happened in step 3.
  *
@@ -22,19 +22,19 @@ defined( 'ABSPATH' ) || exit;
  * The api.vincere.io reference is JS-gated, so each call is isolated in its
  * own small function with the best evidence available:
  *
- *   • POST /api/v2/candidate — VERIFIED. A Vincere-acknowledged support
+ *   • POST /api/v2/candidate – VERIFIED. A Vincere-acknowledged support
  *     thread shows this exact endpoint with first_name / last_name / email /
  *     phone / candidate_source_id (github.com/vincere-io/restful-api-support
- *     issues/5 — their 500 came from form-encoding the body; JSON is
+ *     issues/5 – their 500 came from form-encoding the body; JSON is
  *     required). The public docs additionally list registration_date
  *     (ISO-8601, milliseconds + Z) among the required fields, so we send it.
  *
- *   • POST /api/v2/candidate/{id}/file — BEST EVIDENCE. The docs' candidate
+ *   • POST /api/v2/candidate/{id}/file – BEST EVIDENCE. The docs' candidate
  *     file endpoint takes a JSON body with file_name + base_64_content +
  *     document_type_ids (1 = CV/Resume) rather than multipart. If that shape
  *     is rejected we retry once with a `url` body (Vincere fetches the file).
  *
- *   • POST /api/v2/position/{position_id}/candidate/{candidate_id} — BEST
+ *   • POST /api/v2/position/{position_id}/candidate/{candidate_id} – BEST
  *     EVIDENCE. Creates the application/shortlist entry linking candidate to
  *     job (Cyclr's Vincere connector exposes this as "Add Application":
  *     cyclr.com/integrate/vincere). If it 404s we retry the mirrored
@@ -101,7 +101,7 @@ class Verto_Applications {
 	}
 
 	/**
-	 * TEST MODE — defaults ON so a mis-deploy can never pollute the client's
+	 * TEST MODE – defaults ON so a mis-deploy can never pollute the client's
 	 * live Vincere. Only `define( 'VERTO_VINCERE_PUSH_LIVE', true );` in
 	 * wp-config.php (or the filter) turns real pushes on.
 	 */
@@ -179,7 +179,7 @@ class Verto_Applications {
 		$app_id = wp_insert_post( [
 			'post_type'   => self::CPT,
 			'post_status' => 'private',
-			'post_title'  => $name . ' — ' . ( '' !== $job_title ? $job_title : 'General application' ),
+			'post_title'  => $name . ' – ' . ( '' !== $job_title ? $job_title : 'General application' ),
 		], true );
 		if ( is_wp_error( $app_id ) || ! $app_id ) {
 			self::respond( false, 'server', $async );
@@ -222,9 +222,9 @@ class Verto_Applications {
 
 		// ── Vincere push (or test mode) ──
 		if ( self::test_mode() ) {
-			$push = [ 'ok' => true, 'status' => 'Test mode — not pushed to Vincere' ];
+			$push = [ 'ok' => true, 'status' => 'Test mode – not pushed to Vincere' ];
 		} elseif ( ! class_exists( 'Verto_Vincere' ) || ! Verto_Vincere::configured() ) {
-			$push = [ 'ok' => false, 'status' => 'Vincere not configured on this site — enter manually' ];
+			$push = [ 'ok' => false, 'status' => 'Vincere not configured on this site – enter manually' ];
 		} else {
 			$push = self::push_to_vincere( $app_id, $data, $cv_path );
 		}
@@ -272,7 +272,7 @@ class Verto_Applications {
 	 * outcome is folded into the summary.
 	 */
 	private static function push_to_vincere( int $app_id, array $a, string $cv_path ): array {
-		// 1) Create the candidate (verified shape — JSON body, NOT form-encoded).
+		// 1) Create the candidate (verified shape – JSON body, NOT form-encoded).
 		$parts = preg_split( '/\s+/', trim( $a['name'] ), 2 );
 		$body  = [
 			'first_name'        => $parts[0],
@@ -302,7 +302,7 @@ class Verto_Applications {
 		$notes = [ 'candidate #' . $cid . ' created' ];
 		$ok    = true;
 
-		// 2) CV upload — base64 JSON body first, `url` body as fallback.
+		// 2) CV upload – base64 JSON body first, `url` body as fallback.
 		if ( '' !== $cv_path && is_readable( $cv_path ) && filesize( $cv_path ) <= self::MAX_BYTES ) {
 			$payload = [
 				'file_name'         => basename( $cv_path ),
@@ -317,7 +317,7 @@ class Verto_Applications {
 				$up2 = $url ? Verto_Vincere::api_post( 'candidate/' . $cid . '/file', [ 'file_name' => basename( $cv_path ), 'url' => $url ] ) : $up;
 				if ( is_wp_error( $up2 ) ) {
 					$ok      = false;
-					$notes[] = 'CV upload failed (' . $up->get_error_message() . ') — CV is on the email + in WordPress';
+					$notes[] = 'CV upload failed (' . $up->get_error_message() . ') – CV is on the email + in WordPress';
 				} else {
 					$notes[] = 'CV uploaded (via URL fallback)';
 				}
@@ -338,7 +338,7 @@ class Verto_Applications {
 					: $link;
 				if ( is_wp_error( $link2 ) ) {
 					$ok      = false;
-					$notes[] = 'link to position #' . $a['job_id'] . ' failed (' . $link->get_error_message() . ') — shortlist manually';
+					$notes[] = 'link to position #' . $a['job_id'] . ' failed (' . $link->get_error_message() . ') – shortlist manually';
 				} else {
 					$notes[] = 'linked to position #' . $a['job_id'] . ' (mirrored path)';
 				}
@@ -346,7 +346,7 @@ class Verto_Applications {
 				$notes[] = 'linked to position #' . $a['job_id'];
 			}
 		} else {
-			$notes[] = 'no position id (general application) — not linked';
+			$notes[] = 'no position id (general application) – not linked';
 		}
 
 		return [ 'ok' => $ok, 'status' => ( $ok ? 'Pushed: ' : 'Partial push: ' ) . implode( '; ', $notes ) ];
@@ -429,22 +429,22 @@ class Verto_Applications {
 
 		$site    = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
 		$role    = '' !== $a['job_title'] ? $a['job_title'] : 'General application';
-		$subject = sprintf( '[%s] New application: %s — %s', $site, $a['name'], $role );
+		$subject = sprintf( '[%s] New application: %s – %s', $site, $a['name'], $role );
 		$lines   = [
 			'New application received via ' . home_url( '/' ),
 			'',
 			'Role:     ' . $role . ( '' !== $a['job_id'] ? ' (Vincere position #' . $a['job_id'] . ')' : '' ),
 			'Name:     ' . $a['name'],
 			'Email:    ' . $a['email'],
-			'Phone:    ' . ( '' !== $a['phone'] ? $a['phone'] : '—' ),
-			'LinkedIn: ' . ( '' !== $a['linkedin'] ? $a['linkedin'] : '—' ),
+			'Phone:    ' . ( '' !== $a['phone'] ? $a['phone'] : '–' ),
+			'LinkedIn: ' . ( '' !== $a['linkedin'] ? $a['linkedin'] : '–' ),
 			'',
 			'Message:',
-			( '' !== $a['message'] ? $a['message'] : '—' ),
+			( '' !== $a['message'] ? $a['message'] : '–' ),
 			'',
 			'Vincere:  ' . $push_status,
 			'',
-			( '' !== $cv_path ? 'The CV is attached to this email.' : 'NOTE: the CV could not be stored — ask the candidate to resend it.' ),
+			( '' !== $cv_path ? 'The CV is attached to this email.' : 'NOTE: the CV could not be stored – ask the candidate to resend it.' ),
 			'View in WordPress: ' . admin_url( 'edit.php?post_type=' . self::CPT ),
 			'',
 			'GDPR: the candidate ticked the consent box (' . self::consent_text() . ')',
@@ -460,13 +460,13 @@ class Verto_Applications {
 	 */
 	public static function messages(): array {
 		return [
-			'ok'        => 'Thanks — your application is in. The consultant who owns this role will come back to you directly.',
-			'security'  => 'That took a little too long and the security check expired — please refresh the page and try again.',
-			'ratelimit' => 'Too many applications from this connection — please wait a few minutes and try again.',
+			'ok'        => 'Thanks – your application is in. The consultant who owns this role will come back to you directly.',
+			'security'  => 'That took a little too long and the security check expired – please refresh the page and try again.',
+			'ratelimit' => 'Too many applications from this connection – please wait a few minutes and try again.',
 			'invalid'   => 'Please check your name and email address and try again.',
 			'consent'   => 'Please tick the consent box so we can process your application.',
 			'file'      => 'Please attach your CV as a PDF or Word document (.pdf, .doc, .docx) no larger than 5 MB.',
-			'server'    => 'Something went wrong on our side — please try again, or email your CV to us instead.',
+			'server'    => 'Something went wrong on our side – please try again, or email your CV to us instead.',
 		];
 	}
 
@@ -557,7 +557,7 @@ class Verto_Applications {
 			</p>
 
 			<label class="verto-apply-field">Role you&rsquo;re applying for
-				<input type="text" name="verto_job_title" value="<?php echo esc_attr( $job_title ); ?>" placeholder="e.g. Senior Consultant — or leave blank for a general application" />
+				<input type="text" name="verto_job_title" value="<?php echo esc_attr( $job_title ); ?>" placeholder="e.g. Senior Consultant – or leave blank for a general application" />
 			</label>
 			<div class="verto-apply-form__grid">
 				<label class="verto-apply-field">Name *
@@ -574,7 +574,7 @@ class Verto_Applications {
 				</label>
 			</div>
 			<label class="verto-apply-field">A short message
-				<textarea name="verto_message" rows="4" maxlength="5000" placeholder="Current desk, billings, what you're looking for — whatever you'd tell us over coffee."></textarea>
+				<textarea name="verto_message" rows="4" maxlength="5000" placeholder="Current desk, billings, what you're looking for – whatever you'd tell us over coffee."></textarea>
 			</label>
 			<label class="verto-apply-field verto-apply-field--file">CV * <span class="verto-apply-field__hint">(PDF or Word, max 5&nbsp;MB)</span>
 				<input type="file" name="verto_cv" required accept=".pdf,.doc,.docx" />
@@ -591,7 +591,7 @@ class Verto_Applications {
 	}
 
 	/**
-	 * Inline apply card for the job detail page (single-verto_job.php) —
+	 * Inline apply card for the job detail page (single-verto_job.php) –
 	 * same handler, same fields, no modal: the form sits at #apply with the
 	 * job prefilled. Non-JS submissions bounce back to the job page with
 	 * ?verto_apply=… (the banner below), JS submissions go async via
@@ -612,7 +612,7 @@ class Verto_Applications {
 		?>
 		<div class="verto-apply-inline" data-verto-apply-card>
 			<div class="verto-apply-modal__eyebrow">Apply</div>
-			<h2 class="verto-apply-inline__title"><?php echo esc_html( '' !== $job_title ? 'Apply — ' . $job_title : 'Send us your application' ); ?></h2>
+			<h2 class="verto-apply-inline__title"><?php echo esc_html( '' !== $job_title ? 'Apply – ' . $job_title : 'Send us your application' ); ?></h2>
 			<p class="verto-apply-inline__sub">Takes two minutes. The consultant who owns this desk reads every application personally.</p>
 			<?php if ( '' !== $flash ) : ?>
 				<div class="verto-apply-banner <?php echo $flash_ok ? 'is-ok' : 'is-error'; ?>" role="status" data-apply-flash><?php echo esc_html( $flash ); ?></div>
@@ -633,7 +633,7 @@ class Verto_Applications {
 	public static function admin_columns( $columns ) {
 		return [
 			'cb'             => $columns['cb'] ?? '<input type="checkbox" />',
-			'title'          => 'Candidate — role',
+			'title'          => 'Candidate – role',
 			'verto_job'      => 'Job',
 			'verto_vincere'  => 'Vincere push',
 			'date'           => $columns['date'] ?? 'Date',
@@ -652,14 +652,14 @@ class Verto_Applications {
 		if ( 'verto_vincere' === $column ) {
 			$status = (string) get_post_meta( $post_id, '_vincere_status', true );
 			if ( '' === $status ) {
-				$status = '—';
+				$status = '–';
 			}
 			$colour = '#666';
 			if ( 0 === strpos( $status, 'Pushed' ) ) {
 				$colour = 'green';
 			} elseif ( 0 === strpos( $status, 'Test mode' ) ) {
 				$colour = '#996800';
-			} elseif ( '—' !== $status ) {
+			} elseif ( '–' !== $status ) {
 				$colour = '#c00';
 			}
 			printf( '<span style="color:%s;">%s</span>', esc_attr( $colour ), esc_html( $status ) );

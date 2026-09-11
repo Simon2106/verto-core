@@ -2,10 +2,10 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Process Rail — the prototype's numbered card/rail sections:
- *  - "zigzag": 4-up offset cards (candidate process) — alternate cards drop
+ * Verto Process Rail – the prototype's numbered card/rail sections:
+ *  - "zigzag": 4-up offset cards (candidate process) – alternate cards drop
  *    2rem, fg-6% tint, 3px brand top bar scale-x hover.
- *  - "cards3": 3-up staggered cards (hiring solutions / pillars) — middle
+ *  - "cards3": 3-up staggered cards (hiring solutions / pillars) – middle
  *    card drops 2rem, optional kicker line + brand dash + bullet list.
  *  - "line": horizontal rail with connector line and brand dots
  *    (client process / journey).
@@ -27,8 +27,8 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 		$this->add_control( 'line_style', [
 			'label' => 'Rail style (Horizontal rail only)', 'type' => \Elementor\Controls_Manager::SELECT,
 			'options' => [
-				'process' => 'Process — 01 number + title',
-				'journey' => 'Journey — brand-colour year, no number',
+				'process' => 'Process – 01 number + title',
+				'journey' => 'Journey – brand-colour year, no number',
 			],
 			'default' => 'process',
 		] );
@@ -39,7 +39,7 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 		$this->add_control( 'eyebrow', [ 'label' => 'Eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Hiring solutions' ] );
 		$this->add_control( 'heading', [ 'label' => 'Heading (line breaks kept)', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'rows' => 2, 'default' => "Sized to the project.\nBuilt for the market." ] );
 		$this->add_control( 'side_text', [ 'label' => 'Right-hand intro paragraph (optional)', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => "We construct a tailored hiring plan to meet your requirements — whether you're filling one role or building an entire commercial team." ] );
+			'default' => "We construct a tailored hiring plan to meet your requirements – whether you're filling one role or building an entire commercial team." ] );
 		$rep = new \Elementor\Repeater();
 		$rep->add_control( 'title', [ 'label' => 'Title', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'kicker', [ 'label' => 'Kicker / tagline', 'type' => \Elementor\Controls_Manager::TEXT ] );
@@ -51,7 +51,7 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 			'default' => [
 				[
 					'title'   => 'Engaged Search', 'kicker' => 'Our flagship model',
-					'body'    => "A committed partnership with a structured process — market mapping, verified shortlists, offer management. Built to remove the chance of failure and get it right first time. 100% success rate on the Engage model.",
+					'body'    => "A committed partnership with a structured process – market mapping, verified shortlists, offer management. Built to remove the chance of failure and get it right first time. 100% success rate on the Engage model.",
 					'bullets' => "Exclusive partnership\nStructured milestones\nFrequent read-outs",
 				],
 				[
@@ -61,7 +61,7 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 				],
 				[
 					'title'   => 'Team Builds', 'kicker' => 'Partnerships, not placements',
-					'body'    => 'When a new plant, project or region needs staffing from the ground up — we build the whole team. Proactively, against your timeline, reducing time-to-hire and the cost of the empty seat.',
+					'body'    => 'When a new plant, project or region needs staffing from the ground up – we build the whole team. Proactively, against your timeline, reducing time-to-hire and the cost of the empty seat.',
 					'bullets' => "Land-and-expand\nContract and permanent\nAgainst your project timeline",
 				],
 			],

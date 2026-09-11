@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Hero — dark ink hero: eyebrow, line-reveal headline, body, two CTAs,
+ * Verto Hero – dark ink hero: eyebrow, line-reveal headline, body, two CTAs,
  * V-mask media on the right, optional count-up stats strip beneath.
  */
 class Verto_Widget_Hero extends \Elementor\Widget_Base {
@@ -31,7 +31,7 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 		] );
 		$this->add_control( 'body', [
 			'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => 'Verto builds high-performance teams for the industries that keep everything else running — energy, engineering and the built environment. Three focused brands. One process-driven standard.',
+			'default' => 'Verto builds high-performance teams for the industries that keep everything else running – energy, engineering and the built environment. Three focused brands. One process-driven standard.',
 		] );
 		$this->add_control( 'cta1_text', [ 'label' => 'Primary CTA text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join us' ] );
 		$this->add_control( 'cta1_link', [ 'label' => 'Primary CTA link', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/careers' ] ] );
@@ -55,12 +55,13 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 		$srep->add_control( 'label', [ 'label' => 'Label', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$this->add_control( 'stat_items', [
 			'label' => 'Stats', 'type' => \Elementor\Controls_Manager::REPEATER,
-			'fields' => $srep->get_controls(), 'title_field' => '{{{ value }}}{{{ suffix }}} — {{{ label }}}',
+			'fields' => $srep->get_controls(), 'title_field' => '{{{ value }}}{{{ suffix }}} – {{{ label }}}',
 			'default' => [
-				[ 'value' => '40', 'suffix' => '%', 'label' => "Commission — one of the market's best splits" ],
-				[ 'value' => 'Equity', 'suffix' => '', 'label' => 'Share scheme — everyone owns a piece' ],
+				[ 'value' => '40', 'suffix' => '%', 'label' => "Commission – one of the market's best splits" ],
+				[ 'value' => 'Equity', 'suffix' => '', 'label' => 'Share scheme – everyone owns a piece' ],
 				[ 'value' => '2', 'suffix' => '×', 'label' => 'Holiday incentives every year' ],
-				[ 'value' => 'UK · US', 'suffix' => '', 'label' => 'International relocation opportunities' ],
+				// Round 5, item 9: client wants "US" only (was "UK · US").
+				[ 'value' => 'US', 'suffix' => '', 'label' => 'International relocation opportunities' ],
 			],
 		] );
 		$this->end_controls_section();

@@ -2,15 +2,46 @@
 /**
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
- * Description: Custom Elementor widgets for the Verto site family — V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.14.10
+ * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
+ * Version: 0.15.1
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.14.10' );
+define( 'VERTO_WIDGETS_VERSION', '0.15.1' );
+
+/**
+ * Round 5, item 5 – compact services band for the brand sites: the three
+ * engagement models from the Clients page, one line each, linking through
+ * to /clients. Shared by the installer (About / Candidates pages, via the
+ * HTML widget) and the theme's brand Insights template (home.php).
+ */
+function verto_services_band_html(): string {
+	$models = [
+		[ 'Engaged Search',            'Our flagship model',            'A committed partnership with a structured process – market mapping, verified shortlists, offer management. 100% success rate.' ],
+		[ 'Retained Executive Search', 'Director & C-suite mandates',   "Discreet, confidential search for the roles that can't be advertised – off-market approaches, NDA-protected mandates." ],
+		[ 'Team Builds',               'Partnerships, not placements',  'A new plant, project or region staffed from the ground up – proactively, against your timeline.' ],
+	];
+	$cards = '';
+	foreach ( $models as $i => [ $title, $kicker, $body ] ) {
+		$cards .= '<a class="verto-services__card" href="/clients">'
+			. '<span class="verto-services__bar" style="background:var(--brand);"></span>'
+			. '<span class="verto-services__kicker">' . esc_html( $kicker ) . '</span>'
+			. '<span class="verto-services__title">' . esc_html( $title ) . '</span>'
+			. '<span class="verto-services__body">' . esc_html( $body ) . '</span>'
+			. '</a>';
+	}
+	return '<div class="verto-services">'
+		. '<div class="container-wide">'
+		. '<div class="verto-services__head">'
+		. '<div class="vbs-asplit__kick"><span class="vbs-dash" style="background:var(--brand);"></span><span class="vbs-kicker" style="color:var(--brand);">Our solutions</span></div>'
+		. '<a class="verto-services__link" style="color:var(--brand);" href="/clients">How we work &rarr;</a>'
+		. '</div>'
+		. '<div class="verto-services__grid">' . $cards . '</div>'
+		. '</div></div>';
+}
 
 require_once __DIR__ . '/includes/icons.php';
 require_once __DIR__ . '/includes/installer.php';
@@ -94,7 +125,7 @@ add_filter( 'upload_mimes', function ( $mimes ) {
 	return $mimes;
 } );
 
-/** Team custom post type — client-editable people (photo = featured image,
+/** Team custom post type – client-editable people (photo = featured image,
  *  role + leader flag in the Team Details box). */
 add_action( 'init', function () {
 	register_post_type( 'verto_team', [

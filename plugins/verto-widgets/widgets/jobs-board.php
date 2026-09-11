@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Jobs Board — LHi layout: jobs list left (2/3), sticky filter rail
+ * Verto Jobs Board – LHi layout: jobs list left (2/3), sticky filter rail
  * right (1/3), brand colour-coding + sector tooltips, client-side filtering
  * (verto-effects.js).
  *
@@ -31,30 +31,30 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 	// so a built site always has live rows with proper detail pages. These
 	// consts only render on a site that has never run the installer or sync.
 	private const JOBS = [
-		[ 'title' => 'Senior Recruitment Consultant — US Energy', 'brand' => 'edison-lux', 'location' => 'Austin, TX', 'level' => 'Senior', 'package' => '$60–80k base + 40% commission + share scheme' ],
-		[ 'title' => 'Entry-Level Recruitment Consultant — Power & Energy', 'brand' => 'edison-lux', 'location' => 'Austin, TX', 'level' => 'Entry-level', 'package' => '$50–60k base + commission + share scheme' ],
-		[ 'title' => 'Senior Recruitment Consultant — Technical Sales', 'brand' => 'vertek', 'location' => 'Solent, UK', 'level' => 'Senior', 'package' => '£35–45k base + 40% commission + share scheme' ],
-		[ 'title' => 'Entry-Level Recruitment Consultant — Engineering', 'brand' => 'vertek', 'location' => 'Solent, UK', 'level' => 'Entry-level', 'package' => '£25–28k base + uncapped commission' ],
-		[ 'title' => 'Recruitment Consultant — HVAC & Refrigeration', 'brand' => 'vertek', 'location' => 'Austin, TX', 'level' => 'Senior', 'package' => '$55–70k base + 40% commission + share scheme' ],
-		[ 'title' => 'Recruitment Consultant — Data Centres & Critical Environments', 'brand' => 'modulr', 'location' => 'Miami, FL', 'level' => 'Senior', 'package' => '$60–80k base + 40% commission + share scheme' ],
-		[ 'title' => 'Team Manager — ModulR US', 'brand' => 'modulr', 'location' => 'Miami, FL', 'level' => 'Manager', 'package' => '$90–120k base + override + equity' ],
-		[ 'title' => 'Recruitment Consultant — Life Sciences', 'brand' => 'verto', 'location' => 'Solent, UK', 'level' => 'Senior', 'package' => '£35–45k base + 40% commission + share scheme' ],
-		[ 'title' => 'Talent & Resourcing Partner — Group', 'brand' => 'verto', 'location' => 'Solent, UK', 'level' => 'Entry-level', 'package' => '£24–27k base + bonus' ],
+		[ 'title' => 'Senior Recruitment Consultant – US Energy', 'brand' => 'edison-lux', 'location' => 'Austin, TX', 'level' => 'Senior', 'package' => '$60–80k base + 40% commission + share scheme' ],
+		[ 'title' => 'Entry-Level Recruitment Consultant – Power & Energy', 'brand' => 'edison-lux', 'location' => 'Austin, TX', 'level' => 'Entry-level', 'package' => '$50–60k base + commission + share scheme' ],
+		[ 'title' => 'Senior Recruitment Consultant – Technical Sales', 'brand' => 'vertek', 'location' => 'Solent, UK', 'level' => 'Senior', 'package' => '£35–45k base + 40% commission + share scheme' ],
+		[ 'title' => 'Entry-Level Recruitment Consultant – Engineering', 'brand' => 'vertek', 'location' => 'Solent, UK', 'level' => 'Entry-level', 'package' => '£25–28k base + uncapped commission' ],
+		[ 'title' => 'Recruitment Consultant – HVAC & Refrigeration', 'brand' => 'vertek', 'location' => 'Austin, TX', 'level' => 'Senior', 'package' => '$55–70k base + 40% commission + share scheme' ],
+		[ 'title' => 'Recruitment Consultant – Data Centres & Critical Environments', 'brand' => 'modulr', 'location' => 'Miami, FL', 'level' => 'Senior', 'package' => '$60–80k base + 40% commission + share scheme' ],
+		[ 'title' => 'Team Manager – ModulR US', 'brand' => 'modulr', 'location' => 'Miami, FL', 'level' => 'Manager', 'package' => '$90–120k base + override + equity' ],
+		[ 'title' => 'Recruitment Consultant – Life Sciences', 'brand' => 'verto', 'location' => 'Solent, UK', 'level' => 'Senior', 'package' => '£35–45k base + 40% commission + share scheme' ],
+		[ 'title' => 'Talent & Resourcing Partner – Group', 'brand' => 'verto', 'location' => 'Solent, UK', 'level' => 'Entry-level', 'package' => '£24–27k base + bonus' ],
 	];
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content', [ 'label' => 'Jobs' ] );
 		// Round 4, item 5: catchier heading, and no word "roles" in the section.
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Your next desk is here.' ] );
-		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks — not client vacancies. And if your desk isn't listed yet, we still want to hear from experienced consultants." ] );
+		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks – not client vacancies. And if your desk isn't listed yet, we still want to hear from experienced consultants." ] );
 		$this->add_control( 'apply_url', [ 'label' => 'Job click-through URL', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/contact' ] ] );
-		$this->add_control( 'vincere_shortcode', [ 'label' => 'Vincere shortcode (optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'description' => 'Once the Vincere plugin is installed, paste its shortcode — it replaces the placeholder roles.' ] );
+		$this->add_control( 'vincere_shortcode', [ 'label' => 'Vincere shortcode (optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'description' => 'Once the Vincere plugin is installed, paste its shortcode – it replaces the placeholder roles.' ] );
 		$this->end_controls_section();
 	}
 
 	/**
 	 * Live jobs synced from Vincere (includes/vincere.php). Empty array when
-	 * no sync has run yet — the placeholder JOBS const is the fallback, so
+	 * no sync has run yet – the placeholder JOBS const is the fallback, so
 	 * the board never renders empty.
 	 */
 	private function live_jobs() {
@@ -134,15 +134,15 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							$b = self::BRANDS[ $job['brand'] ];
 							// Row click-through, in priority order:
 							//   1. the job's own DETAIL PAGE (public verto_job
-							//      permalink — brand hero, office photos, team,
+							//      permalink – brand hero, office photos, team,
 							//      advert + inline apply) with a small
 							//      "Apply ↗" affordance that still opens the
 							//      modal directly (JS preventDefault stops the
 							//      row navigation; without JS the row link to
-							//      the detail page wins — the form is there);
+							//      the detail page wins – the form is there);
 							//   2. an explicit external apply URL (Vincere
 							//      portal base, when configured);
-							//   3. modal only (live row, no permalink — never
+							//   3. modal only (live row, no permalink – never
 							//      the case once the CPT is public);
 							//   4. placeholder rows: the widget's click-through.
 							$permalink  = (string) ( $job['permalink'] ?? '' );
@@ -188,7 +188,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 								</div>
 							</a>
 						<?php endforeach; ?>
-						<p class="verto-jobs__empty" hidden>Nothing matches those filters right now — but send us a note anyway; half our hires start that way.</p>
+						<p class="verto-jobs__empty" hidden>Nothing matches those filters right now – but send us a note anyway; half our hires start that way.</p>
 					<?php endif; ?>
 				</div>
 

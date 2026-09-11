@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Title Reveal — LHi-style headline where each line rises out of an
+ * Title Reveal – LHi-style headline where each line rises out of an
  * overflow mask, staggered, when scrolled into view.
  * Markup pairs with .verto-title-reveal CSS + verto-effects.js observer.
  */

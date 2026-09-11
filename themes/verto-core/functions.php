@@ -1,12 +1,12 @@
 <?php
 /**
- * Verto Core — child theme of Hello Elementor.
+ * Verto Core – child theme of Hello Elementor.
  *
  * One repo serves all four sites (Verto Group, Edison Lux, Vertek, ModulR).
  * Each site declares which brand it is via the `verto_brand` option
  * (Settings → General → Verto Brand, added below) or a VERTO_BRAND
  * constant in wp-config.php. The brand determines which token stylesheet
- * and font set load — everything else is shared.
+ * and font set load – everything else is shared.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -76,7 +76,7 @@ add_action( 'after_setup_theme', function () {
 
 /**
  * Cross-site brand URLs. Staging defaults below; when the production domains
- * go live, set the 'verto_brand_urls' option (or use the filter) — one place.
+ * go live, set the 'verto_brand_urls' option (or use the filter) – one place.
  */
 function verto_brand_url( string $brand ): string {
 	$defaults = [

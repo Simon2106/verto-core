@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Vincere CRM integration — pulls OPEN jobs from the client's Vincere tenant
+ * Vincere CRM integration – pulls OPEN jobs from the client's Vincere tenant
  * into the `verto_job` custom post type, which the Jobs Board widget renders
  * in place of its baked-in placeholder roles.
  *
@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *           ?client_id=…&state=…&redirect_uri=…&response_type=code
  *   2. Vincere redirects to {site}/vincere/callback/?code=…&state=…
  *      (the redirect URL registered with Vincere is
- *       https://verto-wp.on-forge.com/vincere/callback/ — this module
+ *       https://verto-wp.on-forge.com/vincere/callback/ – this module
  *       implements exactly that path via a rewrite rule).
  *   3. POST https://id.vincere.io/oauth2/token?client_id=…
  *           body: grant_type=authorization_code&code=…
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  *           id-token: {id_token}   x-api-key: {VINCERE_API_KEY}
  *   5. id_token is short-lived (~30–60 min); refresh with
  *           grant_type=refresh_token&refresh_token=… (no new refresh_token
- *      is issued on refresh — the original must be kept safe).
+ *      is issued on refresh – the original must be kept safe).
  */
 class Verto_Vincere {
 
@@ -52,7 +52,7 @@ class Verto_Vincere {
 	const TR_ID_TOKEN    = 'verto_vincere_id_token';
 	const TR_OAUTH_STATE = 'verto_vincere_oauth_state';
 	// v2: verto_job became public with the /jobs/ rewrite slug (job detail
-	// pages) — bumping forces the one-time soft flush in register_rewrite().
+	// pages) – bumping forces the one-time soft flush in register_rewrite().
 	const REWRITE_VER    = '2';
 
 	// Chunked-sync tuning: one runner invocation stops after this many
@@ -128,7 +128,7 @@ class Verto_Vincere {
 
 	public static function register_cpt() {
 		// Public since 0.14.0: every job gets its own detail page at
-		// /jobs/{slug}/ (theme template single-verto_job.php — brand-styled
+		// /jobs/{slug}/ (theme template single-verto_job.php – brand-styled
 		// hero, office photos, team strip, advert, inline apply form). No
 		// archive: the jobs BOARD (widget) stays the listing. The rewrite
 		// flush for the new slug rides the REWRITE_VER bump above.
@@ -227,7 +227,7 @@ class Verto_Vincere {
 			return;
 		}
 
-		// The refresh_token is only issued on this first exchange — keep it.
+		// The refresh_token is only issued on this first exchange – keep it.
 		if ( ! empty( $tokens['refresh_token'] ) ) {
 			update_option( self::OPT_REFRESH, (string) $tokens['refresh_token'], false ); // autoload no
 		}
@@ -235,7 +235,7 @@ class Verto_Vincere {
 		update_option( self::OPT_CONNECTED, time(), false );
 		delete_option( self::OPT_AUTH_FAIL );
 
-		// Kick off a first sync straight away (best effort — errors surface
+		// Kick off a first sync straight away (best effort – errors surface
 		// on the admin page, not to the browser).
 		wp_schedule_single_event( time() + 5, self::CRON_HOOK );
 
@@ -273,7 +273,7 @@ class Verto_Vincere {
 	/**
 	 * Return a valid id_token, auto-refreshing via the stored refresh_token.
 	 * On refresh failure flags the connection (admin notice + email) and
-	 * returns WP_Error — the admin must click Connect again.
+	 * returns WP_Error – the admin must click Connect again.
 	 */
 	public static function get_id_token( $force_refresh = false ) {
 		if ( ! self::configured() ) {
@@ -287,7 +287,7 @@ class Verto_Vincere {
 		}
 		$refresh = get_option( self::OPT_REFRESH );
 		if ( ! is_string( $refresh ) || '' === $refresh ) {
-			return new WP_Error( 'vincere_not_connected', 'Not connected to Vincere yet — click "Connect to Vincere".' );
+			return new WP_Error( 'vincere_not_connected', 'Not connected to Vincere yet – click "Connect to Vincere".' );
 		}
 		$tokens = self::token_request( [ 'grant_type' => 'refresh_token', 'refresh_token' => $refresh ] );
 		if ( is_wp_error( $tokens ) ) {
@@ -383,7 +383,7 @@ class Verto_Vincere {
 	 * POST https://{tenant}/api/v2/{path} with a JSON body and the same
 	 * id-token + x-api-key headers as api_get(). Retries once with a forced
 	 * token refresh on 401/403. $body may be an array or object (an object /
-	 * stdClass encodes to `{}` when empty — some Vincere endpoints reject a
+	 * stdClass encodes to `{}` when empty – some Vincere endpoints reject a
 	 * bare `[]`). Returns the decoded JSON array (possibly empty) or WP_Error.
 	 * Used by includes/applications.php to create candidates, upload CVs and
 	 * link applications to positions.
@@ -443,7 +443,7 @@ class Verto_Vincere {
 	}
 
 	public static function cron_sync() {
-		// Hourly safety net. Skip when a chunked run is already in flight —
+		// Hourly safety net. Skip when a chunked run is already in flight –
 		// the runner keeps re-scheduling itself until it finishes.
 		if ( self::run_active() ) {
 			return;
@@ -458,17 +458,17 @@ class Verto_Vincere {
 	 * user-facing request (walking thousands of positions inside one
 	 * admin-post request is what used to 504 at the gateway):
 	 *
-	 *   start_sync() — writes a cursor option and schedules RUN_HOOK.
+	 *   start_sync() – writes a cursor option and schedules RUN_HOOK.
 	 *                  Instant; never talks to Vincere itself.
-	 *   run_chunk()  — cron callback. Processes at most CHUNK_MAX_PAGES
+	 *   run_chunk()  – cron callback. Processes at most CHUNK_MAX_PAGES
 	 *                  pages (~100 jobs each) or CHUNK_MAX_SECONDS seconds,
 	 *                  persists progress back into the cursor, then either
 	 *                  re-schedules itself (+1s) or finishes up.
 	 *
 	 * On the FIRST chunk only, pick_shape() walks the ordered ladder of
 	 * request shapes, from the richest (full field list + server-side
-	 * open-jobs query) down to a guaranteed-minimal probe. Every attempt —
-	 * URL, HTTP status, first 400 chars of the response — is persisted to
+	 * open-jobs query) down to a guaranteed-minimal probe. Every attempt –
+	 * URL, HTTP status, first 400 chars of the response – is persisted to
 	 * OPT_ATTEMPTS and shown on the admin page, so a tenant rejection
 	 * ("Data is invalid" / QUERY_PARSE_FAIL) is visible verbatim in
 	 * wp-admin. The winning shape is remembered in OPT_GOOD_SHAPE (tried
@@ -502,7 +502,7 @@ class Verto_Vincere {
 		}
 		$now = time();
 		update_option( self::OPT_CURSOR, [
-			'shape'      => null,   // request shape — picked by the ladder on chunk #1
+			'shape'      => null,   // request shape – picked by the ladder on chunk #1
 			'start'      => 0,      // next `start=` offset to request
 			'pages'      => 0,      // pages fetched so far (across all chunks)
 			'seen'       => [],     // Vincere ids upserted so far (compact ints)
@@ -544,7 +544,7 @@ class Verto_Vincere {
 		$max_pages  = max( 1, (int) apply_filters( 'verto/vincere/max_pages', 60 ) );
 		$pages_done = 0; // pages fetched by THIS invocation
 
-		// Chunk #1: no shape chosen yet — run the attempt ladder once.
+		// Chunk #1: no shape chosen yet – run the attempt ladder once.
 		if ( empty( $cursor['shape'] ) ) {
 			$picked = self::pick_shape();
 			if ( is_wp_error( $picked ) ) {
@@ -602,7 +602,7 @@ class Verto_Vincere {
 			update_option( self::OPT_CURSOR, $cursor, false );
 		}
 
-		// Budget spent with work remaining — hand over to the next chunk.
+		// Budget spent with work remaining – hand over to the next chunk.
 		wp_schedule_single_event( time() + 1, self::RUN_HOOK );
 		spawn_cron();
 	}
@@ -615,20 +615,20 @@ class Verto_Vincere {
 		if ( isset( $cursor['total'] ) && null !== $cursor['total'] ) {
 			return (int) $cursor['start'] >= (int) $cursor['total'];
 		}
-		// No total reported — a short page means the walk is done.
+		// No total reported – a short page means the walk is done.
 		return count( $batch ) < (int) ( $cursor['shape']['limit'] ?? 100 );
 	}
 
 	/**
 	 * First chunk only: walk the attempt ladder until Vincere accepts a
 	 * request shape, logging every attempt to OPT_ATTEMPTS (the admin
-	 * "Last sync attempts" table). Each rung fetches only page one — the
+	 * "Last sync attempts" table). Each rung fetches only page one – the
 	 * chunked runner does the rest of the pagination. Returns
 	 * [ 'shape' => …, 'items' => first page, 'total' => int|null ]
 	 * or WP_Error when every rung failed.
 	 */
 	private static function pick_shape() {
-		// Field lists in decreasing richness — an unknown field name makes the
+		// Field lists in decreasing richness – an unknown field name makes the
 		// search endpoint 400 (QUERY_PARSE_FAIL), so thinner tiers follow.
 		$field_tiers = apply_filters( 'verto/vincere/field_tiers', [
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners',
@@ -637,7 +637,7 @@ class Verto_Vincere {
 		] );
 		// Optional server-side open-jobs query. NOTE: Vincere search is
 		// Solr-backed and rejects unparseable queries with HTTP 400
-		// "Data is invalid" — if this q fails, the ladder simply drops it
+		// "Data is invalid" – if this q fails, the ladder simply drops it
 		// and open jobs are filtered locally on closed_date instead.
 		// Vincere's Solr front-end requires a terminating '#' on the query
 		// (their own examples end in %23; omitting it = 'unexpected end of input').
@@ -661,7 +661,7 @@ class Verto_Vincere {
 		// If a previous sync found a working shape, try that one first so the
 		// steady state costs a single request instead of re-walking failures.
 		$good = get_option( self::OPT_GOOD_SHAPE );
-		// Ignore shapes remembered by an older plugin version — a new version
+		// Ignore shapes remembered by an older plugin version – a new version
 		// may carry a better default query that must get first crack.
 		if ( is_array( $good ) && ( $good['ver'] ?? '' ) !== VERTO_WIDGETS_VERSION ) {
 			$good = false;
@@ -694,15 +694,15 @@ class Verto_Vincere {
 				'body'   => (string) ( '' !== ( $request['error'] ?? '' ) ? 'WP error: ' . $request['error'] : ( $request['body'] ?? '' ) ),
 			];
 			if ( ! is_wp_error( $page ) ) {
-				$entry['result'] = 'OK — ' . count( $page['items'] ) . ' item(s)';
+				$entry['result'] = 'OK – ' . count( $page['items'] ) . ' item(s)';
 				$log[]  = $entry;
 				$winner = $attempt;
 				$first  = $page;
 				break;
 			}
-			$entry['result'] = 'FAILED — ' . $page->get_error_message();
+			$entry['result'] = 'FAILED – ' . $page->get_error_message();
 			$log[] = $entry;
-			// Auth / config problems can't be fixed by a thinner request —
+			// Auth / config problems can't be fixed by a thinner request –
 			// bail out of the ladder. Everything else (400 bad query/field,
 			// 5xx, transport hiccups) keeps degrading.
 			if ( in_array( $page->get_error_code(), [ 'vincere_config', 'vincere_not_connected', 'vincere_token' ], true ) ) {
@@ -763,7 +763,7 @@ class Verto_Vincere {
 		$capped      = ! empty( $cursor['capped'] );
 		$deactivated = 0;
 		if ( ! $capped ) {
-			// Only a complete walk may deactivate — a capped one hasn't seen
+			// Only a complete walk may deactivate – a capped one hasn't seen
 			// every open job, so drafting the unseen ones would be wrong.
 			$deactivated = self::deactivate_missing( array_map( 'strval', (array) $cursor['seen'] ) );
 		}
@@ -772,12 +772,12 @@ class Verto_Vincere {
 		$message = sprintf( '%d open job(s) synced, %d deactivated.', (int) $cursor['count'], $deactivated );
 		if ( $capped ) {
 			$message .= sprintf(
-				' NOTE: stopped at the %d-page safety cap (deactivation pass skipped — the walk was incomplete); raise it with the verto/vincere/max_pages filter.',
+				' NOTE: stopped at the %d-page safety cap (deactivation pass skipped – the walk was incomplete); raise it with the verto/vincere/max_pages filter.',
 				(int) $max_pages
 			);
 		}
 		if ( '' === (string) ( $shape['q'] ?? '' ) ) {
-			$message .= ' (degraded shape: ' . (string) ( $shape['label'] ?? '' ) . ' — see "Last sync attempts" below)';
+			$message .= ' (degraded shape: ' . (string) ( $shape['label'] ?? '' ) . ' – see "Last sync attempts" below)';
 		}
 
 		self::record_sync( 'ok', $message, (int) $cursor['count'] );
@@ -791,7 +791,7 @@ class Verto_Vincere {
 	 * URL shape verified against Vincere's own examples
 	 * (github.com/vincere-io issue threads), e.g.:
 	 *   /api/v2/position/search/fl=id,job_title,…?q=…&start=0&limit=100
-	 * — `fl` is a matrix segment on the path, `q`/`start`/`limit` are query
+	 * – `fl` is a matrix segment on the path, `q`/`start`/`limit` are query
 	 * params, pagination is offset-based via `start`, and the response is
 	 * { result: { start, total, items: [...] } }. A `;sort=field asc` matrix
 	 * segment is also supported but deliberately not sent (one less thing a
@@ -871,7 +871,7 @@ class Verto_Vincere {
 
 		$company  = self::field_text( $item['company'] ?? '' );
 		// Round 4, item 6 (BUG): the marker match must NEVER include the job
-		// TITLE — a client vacancy called "Internal Sales" was passing the
+		// TITLE – a client vacancy called "Internal Sales" was passing the
 		// internal filter. Brand/group field + company only.
 		$internal = self::is_internal( [ $brand_raw, $company ], (string) $settings['internal_marker'] );
 
@@ -960,7 +960,7 @@ class Verto_Vincere {
 		return 'verto';
 	}
 
-	/** Seniority from the title — matches the board's three filter levels. */
+	/** Seniority from the title – matches the board's three filter levels. */
 	private static function derive_level( $title ) {
 		if ( preg_match( '/\b(manager|head of|director|team lead)\b/i', $title ) ) {
 			return 'Manager';
@@ -1032,7 +1032,7 @@ class Verto_Vincere {
 			$vid = (string) get_post_meta( $post_id, '_vincere_id', true );
 			if ( '' === $vid ) {
 				// Manually created / installer-seeded job (_manual=1, no
-				// _vincere_id) — NEVER touched by the sync: it can't vanish
+				// _vincere_id) – NEVER touched by the sync: it can't vanish
 				// from a feed it was never in. Only jobs that carry a
 				// _vincere_id are eligible for deactivation.
 				continue;
@@ -1061,7 +1061,7 @@ class Verto_Vincere {
 	/**
 	 * Active synced jobs, shaped exactly like the widget's placeholder rows:
 	 * [ title, brand, location, level, package, url ]. Empty array until a
-	 * successful sync has run — the widget then falls back to placeholders.
+	 * successful sync has run – the widget then falls back to placeholders.
 	 */
 	public static function get_jobs() {
 		static $cache = null;
@@ -1074,7 +1074,7 @@ class Verto_Vincere {
 		$meta_query = [ [ 'key' => '_active', 'value' => '1' ] ];
 		if ( '1' === (string) $settings['internal_only'] ) {
 			// Manual jobs (installer-seeded standing vacancies, _manual=1)
-			// are Verto's own desks by definition — always internal, even if
+			// are Verto's own desks by definition – always internal, even if
 			// someone forgets to tick _internal when adding one by hand.
 			$meta_query[] = [
 				'relation' => 'OR',
@@ -1106,7 +1106,7 @@ class Verto_Vincere {
 				'level'       => (string) get_post_meta( $post->ID, '_level', true ),
 				'package'     => $package ? $package : 'Competitive package',
 				'url'         => (string) get_post_meta( $post->ID, '_apply_url', true ),
-				// The job's own detail page (public CPT since 0.14.0) — the
+				// The job's own detail page (public CPT since 0.14.0) – the
 				// board rows click through here.
 				'permalink'   => (string) get_permalink( $post ),
 				// Consumed by the Apply modal (includes/applications.php):
@@ -1147,7 +1147,7 @@ class Verto_Vincere {
 			'redirect_uri'  => self::redirect_uri(),
 			'response_type' => 'code',
 		] );
-		wp_redirect( $authorize ); // external — deliberately not wp_safe_redirect
+		wp_redirect( $authorize ); // external – deliberately not wp_safe_redirect
 		exit;
 	}
 
@@ -1161,14 +1161,14 @@ class Verto_Vincere {
 			exit;
 		}
 		// Queue + kick the background runner. The walk itself NEVER runs in
-		// this request — paging thousands of positions here is what used to
+		// this request – paging thousands of positions here is what used to
 		// 504 at the gateway.
 		self::start_sync();
 		wp_safe_redirect( self::settings_url( 'sync_started' ) );
 		exit;
 	}
 
-	/** Cancel link shown while a run is active — clears the cursor. */
+	/** Cancel link shown while a run is active – clears the cursor. */
 	public static function handle_cancel_sync() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( 'Nope.' );
@@ -1202,7 +1202,7 @@ class Verto_Vincere {
 		$fail = get_option( self::OPT_AUTH_FAIL );
 		if ( is_array( $fail ) && ! empty( $fail['message'] ) ) {
 			printf(
-				'<div class="notice notice-error"><p><strong>Vincere:</strong> token refresh failed (%s). Jobs will stop syncing — <a href="%s">re-connect to Vincere</a>.</p></div>',
+				'<div class="notice notice-error"><p><strong>Vincere:</strong> token refresh failed (%s). Jobs will stop syncing – <a href="%s">re-connect to Vincere</a>.</p></div>',
 				esc_html( $fail['message'] ),
 				esc_url( self::settings_url() )
 			);
@@ -1211,10 +1211,10 @@ class Verto_Vincere {
 
 	private static function notice_for( $msg ) {
 		$map = [
-			'connected'      => [ 'success', 'Connected to Vincere. First sync has been queued — refresh this page in a minute.' ],
+			'connected'      => [ 'success', 'Connected to Vincere. First sync has been queued – refresh this page in a minute.' ],
 			'synced'         => [ 'success', 'Sync complete.' ],
-			'sync_started'   => [ 'success', 'Sync started in the background — progress appears below and this page refreshes itself.' ],
-			'sync_running'   => [ 'warning', 'A sync is already running — progress below.' ],
+			'sync_started'   => [ 'success', 'Sync started in the background – progress appears below and this page refreshes itself.' ],
+			'sync_running'   => [ 'warning', 'A sync is already running – progress below.' ],
 			'sync_cancelled' => [ 'success', 'Sync run cancelled.' ],
 			'saved'          => [ 'success', 'Settings saved.' ],
 			'sync_error'     => [ 'error', 'Sync failed.' ],
@@ -1296,9 +1296,9 @@ class Verto_Vincere {
 							if ( '' === $refresh ) {
 								echo '<span style="color:#c00;">Not connected</span>';
 							} elseif ( is_string( $token ) && '' !== $token ) {
-								echo '<span style="color:green;">Connected</span> — id_token cached (auto-refreshes hourly)';
+								echo '<span style="color:green;">Connected</span> – id_token cached (auto-refreshes hourly)';
 							} else {
-								echo '<span style="color:green;">Connected</span> — id_token will refresh on next API call';
+								echo '<span style="color:green;">Connected</span> – id_token will refresh on next API call';
 							}
 						?></td>
 					</tr>
@@ -1308,7 +1308,7 @@ class Verto_Vincere {
 					<?php if ( $running ) : ?>
 						<tr>
 							<td>Sync in progress</td>
-							<td><span style="color:#996800;">Running</span> — started <?php echo esc_html( human_time_diff( (int) $cursor['started_at'] ) ); ?> ago; <?php echo (int) $cursor['count']; ?> job(s) upserted over <?php echo (int) $cursor['pages']; ?> page(s)<?php echo isset( $cursor['total'] ) && null !== $cursor['total'] ? ' — ' . (int) $cursor['start'] . ' of ' . (int) $cursor['total'] . ' positions walked' : ''; ?>. This page refreshes every 5 seconds.</td>
+							<td><span style="color:#996800;">Running</span> – started <?php echo esc_html( human_time_diff( (int) $cursor['started_at'] ) ); ?> ago; <?php echo (int) $cursor['count']; ?> job(s) upserted over <?php echo (int) $cursor['pages']; ?> page(s)<?php echo isset( $cursor['total'] ) && null !== $cursor['total'] ? ' – ' . (int) $cursor['start'] . ' of ' . (int) $cursor['total'] . ' positions walked' : ''; ?>. This page refreshes every 5 seconds.</td>
 						</tr>
 					<?php endif; ?>
 					<tr>
@@ -1316,7 +1316,7 @@ class Verto_Vincere {
 						<td><?php
 							if ( is_array( $last_sync ) && ! empty( $last_sync['time'] ) ) {
 								printf(
-									'%s ago — %s <em>%s</em>',
+									'%s ago – %s <em>%s</em>',
 									esc_html( human_time_diff( (int) $last_sync['time'] ) ),
 									'ok' === ( $last_sync['status'] ?? '' ) ? '<span style="color:green;">OK</span>' : '<span style="color:#c00;">FAILED</span>',
 									esc_html( (string) ( $last_sync['message'] ?? '' ) )
@@ -1336,7 +1336,7 @@ class Verto_Vincere {
 				Each sync tries progressively simpler request shapes until Vincere accepts one
 				(full fields + open-jobs query → same fields without the query → thinner field
 				lists → a bare <code>fl=id,job_title</code> probe). The exact request URL, HTTP
-				status and start of the response body are recorded below — if the tenant rejects
+				status and start of the response body are recorded below – if the tenant rejects
 				a query or field (e.g. <code>"Data is invalid" / QUERY_PARSE_FAIL</code>), the
 				rejection is visible here verbatim. The winning shape is remembered and tried
 				first next time.
@@ -1359,7 +1359,7 @@ class Verto_Vincere {
 								<td><?php echo (int) $i + 1; ?></td>
 								<td><?php echo esc_html( (string) ( $entry['label'] ?? '' ) ); ?></td>
 								<td style="word-break:break-all;"><code><?php echo esc_html( (string) ( $entry['url'] ?? '' ) ); ?></code></td>
-								<td><?php echo $entry['status'] ? (int) $entry['status'] : '—'; ?></td>
+								<td><?php echo $entry['status'] ? (int) $entry['status'] : '–'; ?></td>
 								<td><?php
 									$result = (string) ( $entry['result'] ?? '' );
 									$colour = 0 === strpos( $result, 'OK' ) ? 'green' : '#c00';
@@ -1374,7 +1374,7 @@ class Verto_Vincere {
 					<p class="description">Recorded <?php echo esc_html( human_time_diff( (int) $attempt_log['time'] ) ); ?> ago.</p>
 				<?php endif; ?>
 			<?php else : ?>
-				<p><em>No sync attempted yet — click "Sync now" below and refresh.</em></p>
+				<p><em>No sync attempted yet – click "Sync now" below and refresh.</em></p>
 			<?php endif; ?>
 
 			<div style="display:flex;gap:.5rem;align-items:center;">
@@ -1424,7 +1424,7 @@ class Verto_Vincere {
 					<tr>
 						<th scope="row">Board shows</th>
 						<td>
-							<label><input type="checkbox" name="internal_only" value="1" <?php checked( $settings['internal_only'], '1' ); ?> /> Only internal roles (recommended — the board is "Join Verto")</label>
+							<label><input type="checkbox" name="internal_only" value="1" <?php checked( $settings['internal_only'], '1' ); ?> /> Only internal roles (recommended – the board is "Join Verto")</label>
 						</td>
 					</tr>
 					<tr>

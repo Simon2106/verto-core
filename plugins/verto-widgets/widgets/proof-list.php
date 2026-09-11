@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Proof List — "Proof points" section (prototype about page):
+ * Verto Proof List – "Proof points" section (prototype about page):
  * muted background, numbered 01… items in a 2-col grid where every second
  * item drops 2rem.
  */

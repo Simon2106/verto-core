@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * V-Mask Media — clips a video or image inside the Verto "V" mark
+ * V-Mask Media – clips a video or image inside the Verto "V" mark
  * (multi-polygon SVG used as a CSS mask). Videos autoplay muted/looped
  * via verto-effects.js (.verto-autoplay).
  */

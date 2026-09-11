@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Brand Hero — brand-landing hero ported from the prototype
+ * Verto Brand Hero – brand-landing hero ported from the prototype
  * (brands.$brand.index.tsx): ink background, parallax image on the right
  * (78% width on desktop) behind a left→right ink gradient wash, uppercase
  * display-2 headline with a brand-coloured full stop, sub paragraph and

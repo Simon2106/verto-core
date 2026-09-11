@@ -2,12 +2,12 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Sector Coverage — per-brand desk lists (prototype SectorCoverage):
+ * Verto Sector Coverage – per-brand desk lists (prototype SectorCoverage):
  * intro left (4/12), brand groups right (8/12). Each group: colour-coded
  * header rule with dot + wordmark + descriptor + enter-link, then a
  * two-column list of desks with brand tick bars.
  *
- * Client feedback round 2 (img004): Edison Lux reads as Edison — Energy
+ * Client feedback round 2 (img004): Edison Lux reads as Edison – Energy
  * Green marks, with the small text link darkened for contrast on ivory.
  */
 class Verto_Widget_Sector_Coverage extends \Elementor\Widget_Base {
@@ -24,7 +24,7 @@ class Verto_Widget_Sector_Coverage extends \Elementor\Widget_Base {
 		$this->add_control( 'line2', [ 'label' => 'Heading line 2', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'we know who builds it.' ] );
 		$this->add_control( 'body1', [
 			'label' => 'Body paragraph 1', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => "Every consultant at Verto is a former operator, engineer or in-market recruiter — not a generalist. The sectors below aren't categories on a website; they're desks that ship hires every month.",
+			'default' => "Every consultant at Verto is a former operator, engineer or in-market recruiter – not a generalist. The sectors below aren't categories on a website; they're desks that ship hires every month.",
 		] );
 		$this->add_control( 'body2', [
 			'label' => 'Body paragraph 2', 'type' => \Elementor\Controls_Manager::TEXTAREA,
@@ -57,7 +57,7 @@ class Verto_Widget_Sector_Coverage extends \Elementor\Widget_Base {
 				  'color' => '#0464FA',
 				  'link_text' => 'Enter Modulr', 'link' => [ 'url' => '#' ],
 				  'items' => "Architecture\nData Centres\nMEP Engineering" ],
-				[ 'wordmark' => 'VERTO GROUP', 'descriptor' => 'Life Sciences — held at group level',
+				[ 'wordmark' => 'VERTO GROUP', 'descriptor' => 'Life Sciences – held at group level',
 				  'color' => '#d19f2f',
 				  'link_text' => 'Talk to the group', 'link' => [ 'url' => '/contact' ],
 				  'items' => "Drug Development\nClinical Operations\nBiometrics & Data\nCommercial & Medical Affairs" ],

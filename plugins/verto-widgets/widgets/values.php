@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Values — the five values as hover-fill cards on ink.
+ * Verto Values – the five values as hover-fill cards on ink.
  * Prefilled with the client's real values (vertopeople.com wording).
  */
 class Verto_Widget_Values extends \Elementor\Widget_Base {

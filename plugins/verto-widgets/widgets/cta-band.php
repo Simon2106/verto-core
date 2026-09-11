@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto CTA Band — closing call to action (prototype about page):
+ * Verto CTA Band – closing call to action (prototype about page):
  * rounded-3xl ink card, centred display-3 headline, solid + outline CTAs.
  */
 class Verto_Widget_Cta_Band extends \Elementor\Widget_Base {

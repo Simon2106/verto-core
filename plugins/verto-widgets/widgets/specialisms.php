@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Specialisms — "What we cover." grid (prototype brand landing):
+ * Verto Specialisms – "What we cover." grid (prototype brand landing):
  * 6 cards on foreground-6% tint, 3px brand top bar that scales in from the
  * left on hover (500ms), lucide icon, 01–06 numbering, display title, body.
  */
@@ -19,6 +19,9 @@ class Verto_Widget_Specialisms extends \Elementor\Widget_Base {
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'What we cover.' ] );
 		$rep = new \Elementor\Repeater();
 		$rep->add_control( 'icon', [ 'label' => 'Icon (lucide slug)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'server' ] );
+		// Round 5, item 3: optional sector image – renders as a 16:9 band
+		// across the top of the card, above the icon (icon is kept).
+		$rep->add_control( 'image', [ 'label' => 'Sector image (optional)', 'type' => \Elementor\Controls_Manager::MEDIA ] );
 		$rep->add_control( 'title', [ 'label' => 'Title', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'description', [ 'label' => 'Description', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
 		$this->add_control( 'items', [
@@ -47,8 +50,13 @@ class Verto_Widget_Specialisms extends \Elementor\Widget_Base {
 				</div>
 				<div class="vbs-spec__grid">
 					<?php foreach ( $s['items'] as $i => $it ) : ?>
-						<div class="vbs-card" style="background:color-mix(in oklab, var(--foreground) 6%, var(--background));">
+						<div class="vbs-card<?php echo ! empty( $it['image']['url'] ) ? ' vbs-card--img' : ''; ?>" style="background:color-mix(in oklab, var(--foreground) 6%, var(--background));">
 							<span class="vbs-card__bar" style="background:var(--brand);"></span>
+							<?php if ( ! empty( $it['image']['url'] ) ) : ?>
+								<div class="vbs-spec__imgband">
+									<img src="<?php echo esc_url( $it['image']['url'] ); ?>" alt="<?php echo esc_attr( $it['title'] ); ?>" loading="lazy" />
+								</div>
+							<?php endif; ?>
 							<?php echo verto_icon( $it['icon'], [ 'class' => 'vbs-spec__icon', 'style' => 'color:var(--brand);' ] ); // phpcs:ignore ?>
 							<div class="vbs-spec__num">0<?php echo (int) $i + 1; ?></div>
 							<h3 class="vbs-spec__title"><?php echo esc_html( $it['title'] ); ?></h3>

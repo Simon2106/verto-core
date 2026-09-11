@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Brand Tiles — logo-led 3D flip cards for the sub-brands.
+ * Verto Brand Tiles – logo-led 3D flip cards for the sub-brands.
  * Front: brand logo + focus line on ink with brand-coloured glow/stripe.
  * Back: name, positioning copy, CTA. Colour-coded via per-item brand colour.
  */
@@ -24,7 +24,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 		$rep->add_control( 'invert_logo', [ 'label' => 'Invert logo (for dark logos on the dark tile)', 'type' => \Elementor\Controls_Manager::SWITCHER, 'return_value' => 'yes' ] );
 		$rep->add_control( 'light_face', [
 			'label' => 'Light face (white tile for a coloured logo)', 'type' => \Elementor\Controls_Manager::SWITCHER, 'return_value' => 'yes',
-			'description' => 'White/very-light front face with dark text and no top stripe — for coloured logos that clash on dark or gradient grounds (e.g. the Edison Lux gradient mark).',
+			'description' => 'White/very-light front face with dark text and no top stripe – for coloured logos that clash on dark or gradient grounds (e.g. the Edison Lux gradient mark).',
 		] );
 		$rep->add_control( 'bg', [ 'label' => 'Tile background (brand ink)', 'type' => \Elementor\Controls_Manager::COLOR ] );
 		$rep->add_control( 'face_gradient', [
@@ -33,7 +33,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 		] );
 		$rep->add_control( 'name_gradient', [
 			'label' => 'Wordmark gradient (CSS, optional)', 'type' => \Elementor\Controls_Manager::TEXT,
-			'description' => 'Round 4, item 4 — renders the brand name on the hover face as gradient text, e.g. the Edison Lux primary-lockup green→blue: linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%).',
+			'description' => 'Round 4, item 4 – renders the brand name on the hover face as gradient text, e.g. the Edison Lux primary-lockup green→blue: linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%).',
 		] );
 		$rep->add_control( 'sectors', [
 			'label' => 'Sector coverage (one per line)', 'type' => \Elementor\Controls_Manager::TEXTAREA,
@@ -50,7 +50,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 				  // Round 4, item 4: wordmark text in the EL primary-lockup gradient.
 				  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 				  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
-				  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector — from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.' ],
+				  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.' ],
 				// Round 4, item 13: new ModulR positioning + trimmed sector list
 				// (Interior Design & Fit-out dropped pending client decision).
 				[ 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
@@ -59,7 +59,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 				// Round 4, item 12: Vertek now US + Europe, six client-named sectors.
 				[ 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60', 'bg' => '#0E1013',
 				  'sectors' => "Fluid Power (pumps, seals, valves & hydraulics)\nHVAC\nDefense & Advanced Manufacturing\nIndustrial Automation\nCNC & Metalworking\nCompressors",
-				  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving — across the US and Europe.' ],
+				  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the US and Europe.' ],
 			],
 		] );
 		$this->end_controls_section();
@@ -72,10 +72,10 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 			$color = $t['color'] ?: 'var(--accent)';
 			$bg    = $t['bg'] ?: 'var(--ink)';
 			$url   = $t['link']['url'] ?? '#';
-			/* Glow stays baked into the face background — a separate glow layer
+			/* Glow stays baked into the face background – a separate glow layer
 			   composites as a solid block during the 3D flip. A brand gradient
 			   replaces the ink ground when set, with a soft navy vignette keeping
-			   white content legible. A light face (round 3, item 2 — Edison Lux's
+			   white content legible. A light face (round 3, item 2 – Edison Lux's
 			   coloured gradient-mark logo) uses a white/very-light ground with
 			   dark text and no top stripe instead. */
 			$light = ( $t['light_face'] ?? '' ) === 'yes';

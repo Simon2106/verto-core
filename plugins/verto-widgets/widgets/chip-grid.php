@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Chip Grid — dense sectors grid (prototype "Where we recruit"):
+ * Verto Chip Grid – dense sectors grid (prototype "Where we recruit"):
  * 1px brand-tinted grout via gap-px on an 18% brand mix, cells on the page
  * background with a faded 01… index and the sector name.
  */

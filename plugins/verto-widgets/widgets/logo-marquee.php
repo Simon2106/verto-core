@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Verto Logo Marquee — "Trusted by" infinite logo scroller (prototype
+ * Verto Logo Marquee – "Trusted by" infinite logo scroller (prototype
  * LogoMarquee): edge-masked track, 45s linear loop, pause on hover,
  * grayscale logos at 60% opacity that lift to 100% on hover.
  * Items are logo.dev domains (placeholder logos) or uploaded images.
