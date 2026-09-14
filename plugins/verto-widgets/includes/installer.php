@@ -1363,20 +1363,18 @@ class Verto_Installer {
 	private static function brand_tiles_items( array $media ): array {
 		return [
 			[ '_id' => self::eid(), 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
-			  // Client feedback round 3, item 2: the tile shows the COLOURED
-			  // Edison primary logo (gradient mark + dark text). It clashes on
-			  // the round-2 gradient face, so the face is white/very-light with
-			  // dark text and no blue top stripe.
-			  'light_face' => 'yes',
-			  // Round 4, item 4: wordmark in the EL primary-lockup green→blue.
+			  // Client (Sep 2026): dark face with a touch of the brand gradient
+			  // glowing through the corners (per the profile-image reference),
+			  // white logo lockup, gradient wordmark kept.
+			  'face_gradient' => 'radial-gradient(58% 52% at 88% 8%, rgba(60,199,55,0.38), transparent 66%), radial-gradient(62% 56% at 6% 94%, rgba(43,142,229,0.42), transparent 66%), #0B1A2B',
 			  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 			  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
-			  'logo' => self::media_setting( $media, 'logo_edison_colour' ),
+			  'logo' => self::media_setting( $media, 'logo_edison' ),
 			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
 			  'link' => [ 'url' => verto_brand_url( 'edison-lux' ) ] ],
 			// Round 4, item 13: new ModulR positioning; sectors trimmed to three
 			// (Interior Design & Fit-out dropped pending client decision).
-			[ '_id' => self::eid(), 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
+			[ '_id' => self::eid(), 'name' => 'MODULR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
 			  'sectors' => "Architecture\nData Centres\nMEP Engineering",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
 			  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',

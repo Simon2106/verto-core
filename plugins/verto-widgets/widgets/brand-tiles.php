@@ -53,7 +53,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 				  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.' ],
 				// Round 4, item 13: new ModulR positioning + trimmed sector list
 				// (Interior Design & Fit-out dropped pending client decision).
-				[ 'name' => 'ModulR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
+				[ 'name' => 'MODULR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
 				  'sectors' => "Architecture\nData Centres\nMEP Engineering",
 				  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.' ],
 				// Round 4, item 12: Vertek now US + Europe, six client-named sectors.
