@@ -219,6 +219,7 @@ class Verto_Installer {
 			'summit_video'  => 'summit-video.mp4',
 			'summit_poster' => 'summit-poster.jpg',
 			'logo_edison'   => 'edison-lux-logo.png',
+			'logo_edison_white' => 'edison-lux-logo-white.png',
 			'logo_edison_colour' => 'edison-lux-logo-colour.png',
 			'logo_modulr'   => 'modulr-logo.svg',
 			'logo_modulr_png' => 'modulr-logo.png',
@@ -1369,7 +1370,7 @@ class Verto_Installer {
 			  'face_gradient' => 'radial-gradient(58% 52% at 88% 8%, rgba(60,199,55,0.38), transparent 66%), radial-gradient(62% 56% at 6% 94%, rgba(43,142,229,0.42), transparent 66%), #0B1A2B',
 			  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 			  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
-			  'logo' => self::media_setting( $media, 'logo_edison' ),
+			  'logo' => self::media_setting( $media, 'logo_edison_white' ),
 			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
 			  'link' => [ 'url' => verto_brand_url( 'edison-lux' ) ] ],
 			// Round 4, item 13: new ModulR positioning; sectors trimmed to three
