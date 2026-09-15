@@ -464,6 +464,158 @@
   });
 })();
 
+/* ── 11. Testimonials carousel ([data-verto-quotes-carousel]) – quote-band
+      quotes_layout=carousel: one quote per view (two side-by-side on wide
+      screens via CSS flex-basis), auto-advance every 6s, pause on
+      hover/focus/touch, resume after idle, prev/next chevrons + dot
+      indicators injected here (widget markup stays untouched, mirroring
+      the timeline module §8), swipe on mobile via native scroll-snap.
+      Reduced motion – no autoplay and no smooth scrolling; chevrons, dots
+      and swipe still navigate. ── */
+(function () {
+  "use strict";
+  var ADVANCE_MS = 6000;
+  var RESUME_MS = 8000;
+  var CHEVRON = {
+    prev: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg>',
+    next: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>',
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    document.querySelectorAll("[data-verto-quotes-carousel]").forEach(function (scroller) {
+      var track = scroller.querySelector(".vbs-qcar__track");
+      if (!track) return;
+      var slides = Array.prototype.slice.call(track.querySelectorAll(".vbs-qcar__slide"));
+      if (slides.length < 2) return;
+
+      // Chevrons + dots, injected below the quotes so the widget markup
+      // stays untouched. Order: prev, dots, next (centred cluster).
+      var nav = document.createElement("div");
+      nav.className = "vbs-qcar__nav";
+      var dots = document.createElement("div");
+      dots.className = "vbs-qcar__dots";
+      var buttons = {};
+      ["prev", "next"].forEach(function (dir) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "vbs-qcar__btn";
+        btn.setAttribute("aria-label", "prev" === dir ? "Previous testimonial" : "Next testimonial");
+        btn.innerHTML = CHEVRON[dir];
+        buttons[dir] = btn;
+      });
+      nav.appendChild(buttons.prev);
+      nav.appendChild(dots);
+      nav.appendChild(buttons.next);
+      scroller.parentNode.insertBefore(nav, scroller.nextSibling);
+
+      var idx = 0;
+      var paused = false;
+      var programmatic = false;
+      var progTimer = 0;
+      var idleTimer = 0;
+      var dotEls = [];
+
+      // Offset of a slide within the scroll content (scroll-independent),
+      // robust against positioned ancestors (unlike offsetLeft).
+      function slideLeft(i) {
+        return slides[i].getBoundingClientRect().left - track.getBoundingClientRect().left;
+      }
+      function perView() {
+        var w = slides[0].getBoundingClientRect().width;
+        return w > 0 ? Math.max(1, Math.round(scroller.clientWidth / w)) : 1;
+      }
+      // With two quotes per view the last page starts perView-1 slides early.
+      function pageCount() {
+        return Math.max(1, slides.length - perView() + 1);
+      }
+
+      function mark(i) {
+        idx = Math.max(0, Math.min(i, pageCount() - 1));
+        dotEls.forEach(function (d, j) {
+          d.classList.toggle("is-active", j === idx);
+          d.setAttribute("aria-current", j === idx ? "true" : "false");
+        });
+      }
+      function go(i) {
+        var pages = pageCount();
+        i = ((i % pages) + pages) % pages;
+        programmatic = true;
+        clearTimeout(progTimer);
+        progTimer = setTimeout(function () { programmatic = false; }, 900);
+        scroller.scrollTo({
+          left: slideLeft(i),
+          behavior: reduced ? "auto" : "smooth",
+        });
+        mark(i);
+      }
+
+      function pause() { paused = true; clearTimeout(idleTimer); }
+      function scheduleResume() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(function () { paused = false; }, RESUME_MS);
+      }
+      // Manual interaction: hold the autoplay off for a while.
+      function hold() { pause(); scheduleResume(); }
+
+      function buildDots() {
+        dots.innerHTML = "";
+        dotEls = [];
+        for (var i = 0; i < pageCount(); i++) {
+          (function (i) {
+            var d = document.createElement("button");
+            d.type = "button";
+            d.className = "vbs-qcar__dot";
+            d.setAttribute("aria-label", "Go to testimonial " + (i + 1));
+            d.addEventListener("click", function () { hold(); go(i); });
+            dots.appendChild(d);
+            dotEls.push(d);
+          })(i);
+        }
+      }
+
+      buildDots();
+      mark(0);
+
+      buttons.prev.addEventListener("click", function () { hold(); go(idx - 1); });
+      buttons.next.addEventListener("click", function () { hold(); go(idx + 1); });
+      scroller.addEventListener("pointerenter", pause);
+      scroller.addEventListener("pointerleave", scheduleResume);
+      scroller.addEventListener("touchstart", pause, { passive: true });
+      scroller.addEventListener("touchend", scheduleResume);
+      [scroller, nav].forEach(function (el) {
+        el.addEventListener("focusin", pause);
+        el.addEventListener("focusout", scheduleResume);
+      });
+
+      // Sync the dots to manual swipes (native scroll stays the mechanism).
+      scroller.addEventListener("scroll", function () {
+        if (programmatic) return;
+        hold();
+        var x = scroller.scrollLeft;
+        var nearest = 0;
+        for (var i = 0; i < slides.length; i++) {
+          if (Math.abs(slideLeft(i) - x) < Math.abs(slideLeft(nearest) - x)) nearest = i;
+        }
+        mark(nearest);
+      }, { passive: true });
+
+      // A resize can change quotes-per-view (1 vs 2) and so the page count.
+      window.addEventListener("resize", function () {
+        if (dotEls.length !== pageCount()) buildDots();
+        mark(idx);
+      });
+
+      if (!reduced) {
+        setInterval(function () {
+          if (!paused && "hidden" !== document.visibilityState) go(idx + 1);
+        }, ADVANCE_MS);
+      }
+    });
+  });
+})();
+
 /* ── 10. Inline apply form (job detail pages, single-verto_job.php) ──
       Same handler + progressive enhancement as the modal (§9), but the form
       sits inline at #apply with the job prefilled server-side. Without JS:

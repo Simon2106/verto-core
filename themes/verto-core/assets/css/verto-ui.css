@@ -182,10 +182,12 @@ h1, h2, h3 {
 
 /* ═════════════════════ v0.2 — section components ═════════════════════ */
 
-/* Type scale (mirrors prototype display classes) */
-.verto-display-1 { font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1.02; font-weight: 700; letter-spacing: -0.02em; }
-.verto-display-2 { font-family: var(--font-display); font-size: clamp(2.25rem, 5vw, 3.75rem); line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; }
-.verto-display-3 { font-family: var(--font-display); font-size: clamp(1.875rem, 4vw, 3rem); line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
+/* Type scale (mirrors prototype display classes)
+   Round 6, item 4: desktop maxima reduced ~15-20% site-wide (5.5→4.5rem,
+   3.75→3.25rem, 3→2.5rem); mobile minima unchanged. */
+.verto-display-1 { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.02; font-weight: 700; letter-spacing: -0.02em; }
+.verto-display-2 { font-family: var(--font-display); font-size: clamp(2.25rem, 4.2vw, 3.25rem); line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; }
+.verto-display-3 { font-family: var(--font-display); font-size: clamp(1.875rem, 3.4vw, 2.5rem); line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
 
 /* Containers */
 .verto-container { margin-inline: auto; width: 100%; max-width: 80rem; padding-inline: 1.5rem; }
@@ -333,9 +335,11 @@ h1, h2, h3 {
 .verto-form__row { display: grid; gap: 0 1rem; }
 @media (min-width: 640px) { .verto-form__row { grid-template-columns: 1fr 1fr; } }
 
-/* Section shell used by the installer-built pages */
-.verto-container-pad { padding: 5rem 1.5rem; }
-@media (min-width: 768px) { .verto-container-pad { padding: 6rem 2.5rem; } }
+/* Section shell used by the installer-built pages
+   Round 6, item 5: section padding reduced (6rem→4.5rem) so the page
+   stops feeling empty between blocks. */
+.verto-container-pad { padding: 4.5rem 1.5rem; }
+@media (min-width: 768px) { .verto-container-pad { padding: 4.5rem 2.5rem; } }
 .verto-container-pad > .elementor-container { max-width: 80rem; margin-inline: auto; }
 
 /* ═════════════ v0.4 — header, footer, hero polish, section intro ═════════════ */
@@ -434,7 +438,7 @@ body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: f
 .verto-ink .verto-intro__body { color: color-mix(in oklab, var(--ink-foreground) 68%, transparent); }
 .verto-intro__link { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; font-size: 0.875rem; font-weight: 500; color: var(--accent); text-decoration: none; }
 .verto-intro__link:hover { color: var(--accent); text-decoration: underline; }
-.verto-intro + .verto-tiles, .verto-intro + .verto-values, .verto-intro + .verto-quotes { margin-top: 3.5rem; }
+.verto-intro + .verto-tiles, .verto-intro + .verto-values, .verto-intro + .verto-quotes { margin-top: 2.5rem; }
 
 /* Muted (light) section shell + tile logo invert helper */
 .verto-muted { background: var(--muted); }
@@ -444,25 +448,26 @@ body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: f
 .verto-tile__face--light { color: #0B1A2B; }
 .verto-tile__face--light .verto-tile__focus { opacity: 0.75; }
 
-/* Ensure installer sections get generous rhythm */
-.verto-container-pad { padding: 6rem 1.5rem; }
-@media (min-width: 768px) { .verto-container-pad { padding: 6rem 2.5rem; } }
+/* Ensure installer sections get consistent rhythm (round 6, item 5) */
+.verto-container-pad { padding: 4.5rem 1.5rem; }
+@media (min-width: 768px) { .verto-container-pad { padding: 4.5rem 2.5rem; } }
 
 /* ═════════ v0.4.1 — exact prototype section rhythm + values glow ═════════ */
 
-/* Prototype rhythm: py-24 (6rem) mobile → py-32 (8rem) desktop.
+/* Prototype rhythm, round 6 item 5: py-16 (4rem→4.5rem here) mobile →
+   py-20 (5.5rem) desktop – the old 6/8rem left sections feeling empty.
    !important: Elementor's per-section generated CSS loads after ours and
    would otherwise zero these out. */
-.verto-container-pad { padding: 6rem 1.5rem !important; }
-@media (min-width: 1024px) { .verto-container-pad { padding: 8rem 2.5rem !important; } }
-/* Values section runs py-28 (7rem) at all sizes in the prototype */
-.verto-container-pad--values { padding-block: 7rem !important; }
+.verto-container-pad { padding: 4.5rem 1.5rem !important; }
+@media (min-width: 1024px) { .verto-container-pad { padding: 5.5rem 2.5rem !important; } }
+/* Values section ran py-28 in the prototype; now py-20 equivalent */
+.verto-container-pad--values { padding-block: 5rem !important; }
 
-/* Intro → content gaps (prototype: mt-14 tiles/quotes, mt-16 values) */
-.verto-intro + .verto-tiles { margin-top: 3.5rem; }
-.verto-intro + .verto-values { margin-top: 4rem; }
-.verto-intro + .verto-quotes { margin-top: 3.5rem; }
-.verto-intro + .verto-offer { margin-top: 3.5rem; }
+/* Intro → content gaps (round 6, item 5: mt-14→mt-10, mt-16→mt-12) */
+.verto-intro + .verto-tiles { margin-top: 2.5rem; }
+.verto-intro + .verto-values { margin-top: 3rem; }
+.verto-intro + .verto-quotes { margin-top: 2.5rem; }
+.verto-intro + .verto-offer { margin-top: 2.5rem; }
 
 /* Values section signature background: gold vignette + drifting shimmer */
 .verto-glow { position: relative; overflow: hidden; }
@@ -483,9 +488,12 @@ body.verto-nav-open .verto-header__menu { flex-direction: column; align-items: f
 .verto-glow > * { position: relative; z-index: 1; }
 
 /* Quotes marquee strip — sits directly under the employee-voices intro,
-   full-bleed, with bottom padding matching the section rhythm */
-.verto-quotes-strip { padding: 0 0 6rem !important; margin-top: -3rem; }
-@media (min-width: 1024px) { .verto-quotes-strip { padding-bottom: 8rem !important; } }
+   full-bleed, with bottom padding matching the section rhythm
+   (round 6, items 5+7: tighter vertical rhythm). */
+.verto-quotes-strip { padding: 0 0 4.5rem !important; margin-top: -3rem; }
+@media (min-width: 1024px) { .verto-quotes-strip { padding-bottom: 5.5rem !important; } }
+/* Round 6, item 7: quote cards stretch to equal height across the track */
+.verto-quotes__track { align-items: stretch; }
 
 /* Neutralise WP/browser defaults inside quote cards (indent + italics) */
 figure.verto-quote { margin: 0; }
@@ -523,9 +531,9 @@ figure.verto-quote { margin: 0; }
 .verto-awards__eyebrow { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.28em; color: var(--accent); }
 .verto-awards__heading { margin: 0.75rem 0 0; font-family: var(--font-display); font-size: clamp(1.5rem, 2.5vw, 1.875rem); line-height: 1.2; letter-spacing: -0.02em; }
 .verto-awards__body { margin-top: 0.75rem; max-width: 42rem; font-size: 0.875rem; line-height: 1.6; opacity: 0.75; }
-/* Awards section shell — tucked under the quotes strip */
-.verto-awards-pad { padding: 0 1.5rem 6rem !important; margin-top: -2.5rem; }
-@media (min-width: 1024px) { .verto-awards-pad { padding: 0 2.5rem 8rem !important; } }
+/* Awards section shell — tucked under the quotes strip (round 6, item 5) */
+.verto-awards-pad { padding: 0 1.5rem 4.5rem !important; margin-top: -2.5rem; }
+@media (min-width: 1024px) { .verto-awards-pad { padding: 0 2.5rem 5.5rem !important; } }
 .verto-awards-pad > .elementor-container { max-width: 80rem; margin-inline: auto; }
 
 /* ── Posts grid (What's going on cards) ── */
@@ -544,6 +552,31 @@ figure.verto-quote { margin: 0; }
 .verto-post-card__title a { color: var(--foreground); text-decoration: none; }
 .verto-post-card__excerpt { margin-top: 1rem; font-size: 1rem; line-height: 1.6; color: var(--muted-foreground); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .verto-post-card__foot { margin-top: auto; padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted-foreground); }
+/* Round 6, item 3: posts whose content embeds a video (the [video] shortcode
+   or a <video> tag) get a centred play badge on the card media so they read
+   as video before the click – home WGO trio + the magazine hub cards. */
+.verto-post-card__play {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center;
+  width: 3.5rem; height: 3.5rem; border-radius: 50%;
+  background: color-mix(in oklab, var(--ink) 55%, transparent);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.verto-post-card__play::after {
+  content: ""; display: block; margin-left: 4px;
+  border-style: solid; border-width: 9px 0 9px 15px;
+  border-color: transparent transparent transparent var(--accent);
+}
+.verto-post-card__media:hover .verto-post-card__play,
+.verto-featured__media:hover .verto-post-card__play {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+/* Featured (magazine hub) slot carries a slightly larger badge */
+.verto-featured__media .verto-post-card__play { width: 4.5rem; height: 4.5rem; }
+.verto-featured__media .verto-post-card__play::after { border-width: 11px 0 11px 19px; }
 
 /* ═════════ v0.5 — jobs board UI, about page, timeline, team ═════════ */
 
@@ -690,13 +723,15 @@ figure.verto-quote { margin: 0; }
 }
 .eyebrow::before { content: ""; display: inline-block; width: 1.75rem; height: 1px; background: currentColor; }
 
+/* Round 6, item 4: brand-site display steps track the reduced group scale
+   (desktop maxima down ~15-20%; mobile bases unchanged). */
 .display-1 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 3rem; line-height: 1.02; }
-@media (min-width: 768px)  { .display-1 { font-size: 4.5rem; } }
-@media (min-width: 1024px) { .display-1 { font-size: 5.5rem; } }
+@media (min-width: 768px)  { .display-1 { font-size: 3.75rem; } }
+@media (min-width: 1024px) { .display-1 { font-size: 4.5rem; } }
 .display-2 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 2.25rem; line-height: 1.05; }
-@media (min-width: 768px)  { .display-2 { font-size: 3.75rem; } }
+@media (min-width: 768px)  { .display-2 { font-size: 3.25rem; } }
 .display-3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 1.875rem; line-height: 1.1; }
-@media (min-width: 768px)  { .display-3 { font-size: 3rem; } }
+@media (min-width: 768px)  { .display-3 { font-size: 2.5rem; } }
 .display-4 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: 1.5rem; line-height: 1.15; }
 @media (min-width: 768px)  { .display-4 { font-size: 2.25rem; } }
 .vbs-mt5 { margin-top: 1.25rem; }
@@ -1732,3 +1767,54 @@ body.verto-modal-open { overflow: hidden; }
 .verto-ink .verto-wide-photo { margin: 2rem 0 0; }
 .verto-ink .verto-wide-photo img { aspect-ratio: auto; border-radius: 1rem; }
 .verto-ink .verto-wide-photo figcaption { color: color-mix(in oklab, var(--ink-foreground) 70%, transparent); }
+
+/* Round 6, item 7: the employee-voices media column is a composed stack –
+   the V-mask team image with the share-certificates photo tucked beneath
+   it, rounded and slightly offset, so the column reads finished. */
+.verto-voices-photo { margin: -1.5rem 0 0 auto; width: 82%; transform: translateX(-1.25rem); position: relative; z-index: 1; }
+.verto-voices-photo img {
+  width: 100%; display: block; object-fit: cover; aspect-ratio: 4 / 3;
+  border-radius: 1rem; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  border: 1px solid color-mix(in oklab, var(--ink-foreground) 14%, transparent);
+}
+@media (max-width: 767px) { .verto-voices-photo { display: none; } }
+
+/* ── Round 6: testimonials carousel (quote-band quotes_layout=carousel) –
+      one quote per view (two side-by-side from 1024px), native scroll-snap
+      swipe with the scrollbar hidden; chevrons + dot indicators injected by
+      verto-effects.js §11 as a centred cluster below the quotes. ── */
+.vbs-qcar { margin-top: 3.5rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
+.vbs-qcar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.vbs-qcar__track { display: flex; align-items: flex-start; }
+/* Slide padding keeps the light style's floating quote mark (absolutely
+   positioned above/left of the figure) inside the scroll clip. */
+.vbs-qcar__slide { flex: 0 0 100%; min-width: 0; box-sizing: border-box; scroll-snap-align: start; padding: 0.75rem 1rem 0.25rem; }
+@media (min-width: 1024px) { .vbs-qcar__slide { flex-basis: 50%; padding-right: 3rem; } }
+.vbs-qcar__nav { --qcar-fg: var(--ink-foreground); display: flex; align-items: center; justify-content: center; gap: 1.25rem; margin-top: 2.5rem; }
+.vbs-qcar--light + .vbs-qcar__nav { --qcar-fg: var(--foreground); }
+.vbs-qcar__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: 9999px; padding: 0;
+  border: 1px solid color-mix(in oklab, var(--qcar-fg) 30%, transparent);
+  background: transparent; color: var(--qcar-fg);
+  cursor: pointer; transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.vbs-qcar__btn svg { width: 1rem; height: 1rem; display: block; }
+.vbs-qcar__btn:hover, .vbs-qcar__btn:focus-visible {
+  border-color: var(--brand); color: var(--brand);
+  background: color-mix(in oklab, var(--brand) 10%, transparent);
+}
+.vbs-qcar__dots { display: flex; align-items: center; gap: 0.5rem; }
+.vbs-qcar__dot {
+  width: 0.5rem; height: 0.5rem; border-radius: 9999px; border: 0; padding: 0;
+  background: color-mix(in oklab, var(--qcar-fg) 30%, transparent);
+  cursor: pointer; transition: background 0.2s, width 0.2s;
+}
+.vbs-qcar__dot:hover, .vbs-qcar__dot:focus-visible { background: color-mix(in oklab, var(--brand) 60%, transparent); }
+.vbs-qcar__dot.is-active { width: 1.375rem; background: var(--brand); }
+/* Client / Candidate badge on a quote (round 6; colours inline per-brand). */
+.vbs-quote-tag {
+  display: inline-block; margin-bottom: 0.875rem; padding: 0.2rem 0.65rem;
+  border: 1px solid; border-radius: 9999px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em;
+}

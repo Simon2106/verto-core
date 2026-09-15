@@ -70,6 +70,12 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 		$quotes = new \Elementor\Repeater();
 		$quotes->add_control( 'quote', [ 'label' => 'Quote', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
 		$quotes->add_control( 'attribution', [ 'label' => 'Attribution', 'type' => \Elementor\Controls_Manager::TEXT ] );
+		// Round 6: optional Client / Candidate badge on each quote.
+		$quotes->add_control( 'tag', [
+			'label' => 'Tag', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [ '' => 'None', 'client' => 'Client', 'candidate' => 'Candidate' ],
+			'default' => '',
+		] );
 		$this->add_control( 'quotes', [
 			'label' => 'Quotes', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $quotes->get_controls(), 'title_field' => '{{{ attribution }}}', 'default' => [],
@@ -81,6 +87,17 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 				'light' => 'Light testimonials – page background, brand-rule quotes',
 			],
 			'default' => 'band',
+		] );
+		// Round 6: the brand-home testimonials band runs as a carousel –
+		// one quote per view (two side-by-side on wide screens), auto-advance,
+		// chevrons + dots injected by verto-effects.js §11.
+		$this->add_control( 'quotes_layout', [
+			'label' => 'Quotes layout', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [
+				'grid'     => 'Static grid (default)',
+				'carousel' => 'Carousel – auto-advance, chevrons + dots',
+			],
+			'default' => 'grid',
 		] );
 		// Case study mode (prototype clients page): when a client name is set,
 		// the columns render as the Client/Sector meta + Challenge/Solution/
@@ -187,26 +204,53 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 					</div>
 				<?php endif; ?>
 
-				<?php if ( $s['quotes'] && $light ) : // light testimonials – brand rule left, alternating drop ?>
-					<div class="vbs-band__quotes vbs-band__quotes--light">
-						<?php foreach ( $s['quotes'] as $i => $q ) : ?>
-							<figure class="vbs-quote-l<?php echo 1 === $i % 2 ? ' vbs-quote-l--drop' : ''; ?>" style="border-left:2px solid var(--brand);">
-								<div class="vbs-quote-l__mark" style="color:var(--brand);background:var(--background);">&quot;</div>
-								<blockquote><?php echo esc_html( $q['quote'] ); ?></blockquote>
-								<figcaption>– <?php echo esc_html( $q['attribution'] ); ?></figcaption>
-							</figure>
-						<?php endforeach; ?>
-					</div>
-				<?php elseif ( $s['quotes'] ) : ?>
-					<div class="vbs-band__quotes">
-						<?php foreach ( $s['quotes'] as $i => $q ) : ?>
-							<figure class="vbs-band__quote<?php echo 1 === $i % 2 ? ' vbs-band__quote--drop' : ''; ?>">
-								<div class="vbs-band__mark" style="color:var(--brand);">&quot;</div>
-								<blockquote><?php echo esc_html( $q['quote'] ); ?></blockquote>
-								<figcaption>– <?php echo esc_html( $q['attribution'] ); ?></figcaption>
-							</figure>
-						<?php endforeach; ?>
-					</div>
+				<?php if ( $s['quotes'] ) :
+					// Round 6: shared figure builder for both styles; the carousel
+					// layout wraps each figure in a slide (chevrons/dots injected
+					// by verto-effects.js §11), the grid keeps the alternating drop.
+					$carousel = 'carousel' === ( $s['quotes_layout'] ?? 'grid' );
+					$tags     = [ 'client' => 'Client', 'candidate' => 'Candidate' ];
+					$figures  = [];
+					foreach ( $s['quotes'] as $i => $q ) {
+						$tag = ( ! empty( $q['tag'] ) && isset( $tags[ $q['tag'] ] ) )
+							? sprintf(
+								'<span class="vbs-quote-tag" style="color:var(--brand);border-color:color-mix(in oklab, var(--brand) 45%%, transparent);">%s</span>',
+								esc_html( $tags[ $q['tag'] ] )
+							)
+							: '';
+						$drop = ! $carousel && 1 === $i % 2;
+						if ( $light ) {
+							$figures[] = sprintf(
+								'<figure class="vbs-quote-l%s" style="border-left:2px solid var(--brand);"><div class="vbs-quote-l__mark" style="color:var(--brand);background:var(--background);">&quot;</div>%s<blockquote>%s</blockquote><figcaption>– %s</figcaption></figure>',
+								$drop ? ' vbs-quote-l--drop' : '',
+								$tag,
+								esc_html( $q['quote'] ),
+								esc_html( $q['attribution'] )
+							);
+						} else {
+							$figures[] = sprintf(
+								'<figure class="vbs-band__quote%s"><div class="vbs-band__mark" style="color:var(--brand);">&quot;</div>%s<blockquote>%s</blockquote><figcaption>– %s</figcaption></figure>',
+								$drop ? ' vbs-band__quote--drop' : '',
+								$tag,
+								esc_html( $q['quote'] ),
+								esc_html( $q['attribution'] )
+							);
+						}
+					}
+					?>
+					<?php if ( $carousel ) : ?>
+						<div class="vbs-qcar<?php echo $light ? ' vbs-qcar--light' : ''; ?>" data-verto-quotes-carousel aria-roledescription="carousel" aria-label="Testimonials">
+							<div class="vbs-qcar__track">
+								<?php foreach ( $figures as $fig ) : ?>
+									<div class="vbs-qcar__slide"><?php echo $fig; // phpcs:ignore -- escaped above ?></div>
+								<?php endforeach; ?>
+							</div>
+						</div>
+					<?php else : ?>
+						<div class="vbs-band__quotes<?php echo $light ? ' vbs-band__quotes--light' : ''; ?>">
+							<?php echo implode( '', $figures ); // phpcs:ignore -- escaped above ?>
+						</div>
+					<?php endif; ?>
 				<?php endif; ?>
 			</div>
 		</div>

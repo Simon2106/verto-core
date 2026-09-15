@@ -3,20 +3,21 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.16.2
+ * Version: 0.17.1
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.16.2' );
+define( 'VERTO_WIDGETS_VERSION', '0.17.1' );
 
 /**
  * Round 5, item 5 – compact services band for the brand sites: the three
  * engagement models from the Clients page, one line each, linking through
- * to /clients. Shared by the installer (About / Candidates pages, via the
- * HTML widget) and the theme's brand Insights template (home.php).
+ * to /clients. Shared by the installer (Home / About / Candidates pages,
+ * via the HTML widget) and the theme's brand Insights template (home.php).
+ * The Clients page IS the services page, so the band is skipped there.
  */
 function verto_services_band_html(): string {
 	$models = [

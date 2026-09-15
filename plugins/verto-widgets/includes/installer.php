@@ -906,14 +906,33 @@ class Verto_Installer {
 	}
 
 	/** Batch 3 – round 5, item 10: the share-scheme awards night (runs once,
-	 *  on fresh AND existing installs – existing sites gain it on Rebuild). */
+	 *  on fresh AND existing installs – existing sites gain it on Rebuild).
+	 *  Round 6, item 3: the post embeds the share-scheme film, so its card
+	 *  reads as video (play badge); existing installs gain the embed on
+	 *  Rebuild via the migration below. */
 	private static function seed_share_awards_post( array $media, array $cat_ids ): void {
-		if ( get_option( 'verto_installer_posts_certs' ) ) return;
+		$vid = '';
+		if ( ! empty( $media['share_video']['url'] ) ) {
+			$poster = empty( $media['share_poster']['url'] ) ? '' : ' poster="' . esc_url( $media['share_poster']['url'] ) . '"';
+			$vid    = "\n\n" . '[video mp4="' . esc_url( $media['share_video']['url'] ) . '"' . $poster . ' preload="none"]';
+		}
+		$existing = get_option( 'verto_installer_posts_certs' );
+		if ( $existing ) {
+			// Migration (round 6, item 3): append the film to the already
+			// seeded post if it doesn't embed a video yet.
+			foreach ( (array) $existing as $pid ) {
+				$post = $pid ? get_post( $pid ) : null;
+				if ( $post && $vid && ! has_shortcode( $post->post_content, 'video' ) && false === stripos( $post->post_content, '<video' ) ) {
+					wp_update_post( [ 'ID' => $pid, 'post_content' => $post->post_content . $vid ] );
+				}
+			}
+			return;
+		}
 		$cat_id = $cat_ids['Wins'] ?? 0;
 		$id = wp_insert_post( [
 			'post_title'   => 'Share scheme awards night',
 			'post_excerpt' => 'Gold balloons, a certificate in every pair of hands – the night the share scheme stopped being a line in the handbook and became a piece of paper with your name on it.',
-			'post_content' => "Gold balloons, a stage, and a Verto People Share Scheme Award certificate in every pair of hands. The awards night is the share scheme made real: every person in the business owns a piece of Verto, and once a year we hand over the paperwork that proves it.\n\nIt's the perk we talk about most for a reason – commission pays for the month, equity pays for the years. Everyone in this photo owns part of the company they're building.",
+			'post_content' => "Gold balloons, a stage, and a Verto People Share Scheme Award certificate in every pair of hands. The awards night is the share scheme made real: every person in the business owns a piece of Verto, and once a year we hand over the paperwork that proves it.\n\nIt's the perk we talk about most for a reason – commission pays for the month, equity pays for the years. Everyone in this photo owns part of the company they're building." . $vid,
 			'post_status'  => 'publish',
 			'post_type'    => 'post',
 			'post_date'    => '2026-09-05 19:00:00',
@@ -993,11 +1012,29 @@ class Verto_Installer {
 				] ),
 				self::widget( 'verto-brand-tiles', [ 'items' => self::brand_tiles_items( $media ) ] ),
 			], 'verto-muted verto-container-pad' ),
-			// Client feedback round 3, item 3 – home order: Hero → Brands →
-			// Jobs → What's Going On → Employee voices/quotes + awards →
-			// Values → Instagram. Standalone sector coverage is gone from
-			// Home (it lives on the brand tiles' hover faces); it stays on About.
+			// Round 6, item 6 – home order: Hero → Brands → Jobs → What We
+			// Offer ("The package, in full") → What's Going On → Employee
+			// voices/quotes + awards → Values → Instagram. Standalone sector
+			// coverage is gone from Home (it lives on the brand tiles' hover
+			// faces); it stays on About.
 			self::section( [ self::widget( 'verto-jobs-board' ) ], 'verto-ink verto-container-pad' ),
+			// Round 4, item 11: the client-logo strip is dead for good; 14
+			// perks as a notched dark card grid instead (also on Careers).
+			// Round 6, item 6: moved up – directly under the jobs board.
+			self::section( [
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'What we offer',
+					'lines'   => [
+						[ '_id' => self::eid(), 'line' => 'The package,' ],
+						[ '_id' => self::eid(), 'line' => 'in full.' ],
+					],
+					'body' => "Fourteen reasons a desk here beats the one you're at – in money, ownership, travel and the things other agencies call perks and we call standard.",
+				] ),
+				// Round 5, item 10: the share-scheme awards-night photo – wide,
+				// rounded, above the perks grid.
+				self::widget( 'html', [ 'html' => self::share_certs_figure( $media ) ] ),
+				self::widget( 'verto-perks' ),
+			], 'verto-muted verto-container-pad' ),
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => "What's going on",
@@ -1022,12 +1059,16 @@ class Verto_Installer {
 					'body' => 'Real quotes from the team are on their way – these are placeholders while we collect them.',
 				] ),
 			], [
+				// Round 6, item 7: the media column is a composed stack – the
+				// V-mask team image with the share-certificates photo tucked
+				// beneath it (rounded, slight offset).
 				self::widget( 'verto-v-mask-media', [
 					'media_type'      => 'image',
 					'image'           => self::media_setting( $media, 'ibiza8' ),
 					'height'          => [ 'size' => 280, 'unit' => 'px' ],
 					'overlay_opacity' => [ 'size' => 15 ],
 				] ),
+				self::widget( 'html', [ 'html' => self::voices_photo_figure( $media ) ] ),
 			], 'verto-ink verto-container-pad', 66 ),
 			self::section( [
 				self::widget( 'verto-quotes' ),
@@ -1053,23 +1094,6 @@ class Verto_Installer {
 				] ),
 				self::widget( 'verto-values' ),
 			], 'verto-values-light verto-container-pad verto-container-pad--values' ),
-			// Round 4, item 11: "What we offer" – the client-logo strip is dead
-			// for good; 14 perks as a notched dark card grid instead (also on
-			// the Careers page).
-			self::section( [
-				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'What we offer',
-					'lines'   => [
-						[ '_id' => self::eid(), 'line' => 'The package,' ],
-						[ '_id' => self::eid(), 'line' => 'in full.' ],
-					],
-					'body' => "Fourteen reasons a desk here beats the one you're at – in money, ownership, travel and the things other agencies call perks and we call standard.",
-				] ),
-				// Round 5, item 10: the share-scheme awards-night photo – wide,
-				// rounded, above the perks grid.
-				self::widget( 'html', [ 'html' => self::share_certs_figure( $media ) ] ),
-				self::widget( 'verto-perks' ),
-			], 'verto-muted verto-container-pad' ),
 			// Client feedback round 2, item 13: Instagram feed on the homepage.
 			self::section( [ self::widget( 'verto-socials' ) ], 'verto-container-pad' ),
 		];
@@ -1348,6 +1372,16 @@ class Verto_Installer {
 			. '</figure>';
 	}
 
+	/** Round 6, item 7 – the share-certificates photo as a small rounded,
+	 *  offset figure stacked under the V-mask image in the employee-voices
+	 *  media column. Renders nothing until the media is imported. */
+	private static function voices_photo_figure( array $media ): string {
+		if ( empty( $media['share_certs']['url'] ) ) return '';
+		return '<figure class="verto-voices-photo" style="margin-block:0;">'
+			. '<img src="' . esc_url( $media['share_certs']['url'] ) . '" alt="The Verto team with their share-scheme certificates" loading="lazy" />'
+			. '</figure>';
+	}
+
 	/** Portrait share-scheme interview film for the careers page –
 	 *  click-to-play (poster + native controls, preload="none"). */
 	private static function share_scheme_video_html( array $media ): string {
@@ -1375,14 +1409,20 @@ class Verto_Installer {
 			  'link' => [ 'url' => verto_brand_url( 'edison-lux' ) ] ],
 			// Round 4, item 13: new ModulR positioning; sectors trimmed to three
 			// (Interior Design & Fit-out dropped pending client decision).
+			// Round 6, item 1: "up the vibrant blue a little" – brighter
+			// royal-blue (#0464FA) glows in the face, logo contrast kept.
 			[ '_id' => self::eid(), 'name' => 'MODULR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
+			  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(4,100,250,0.5), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(4,100,250,0.32), transparent 65%), #000724',
 			  'sectors' => "Architecture\nData Centres\nMEP Engineering",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
 			  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',
 			  'link' => [ 'url' => verto_brand_url( 'modulr' ) ] ],
 			// Round 4, item 12: Vertek is US + Europe, with the client's six
 			// named sectors on the hover face.
+			// Round 6, item 2: "a bit more pink" – more of the Signal Red
+			// (#F82B60) from the logo, as stronger glows over the near-black.
 			[ '_id' => self::eid(), 'name' => 'Vertek', 'focus' => 'Technical Sales, Service & Engineering', 'color' => '#F82B60', 'bg' => '#0E1013',
+			  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(248,43,96,0.34), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(248,43,96,0.22), transparent 65%), #0E1013',
 			  'sectors' => "Fluid Power (pumps, seals, valves & hydraulics)\nHVAC\nDefense & Advanced Manufacturing\nIndustrial Automation\nCNC & Metalworking\nCompressors",
 			  'logo' => self::media_setting( $media, 'logo_vertek' ),
 			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the US and Europe.',
@@ -1474,9 +1514,9 @@ class Verto_Installer {
 				// Round 5, item 7: placeholder testimonials for the home band –
 				// clearly marked; the client is sending the real quotes.
 				'home_testimonials' => [
-					[ 'quote' => 'Modulr built our data-centre delivery team under NDA – three regions, fourteen hires, zero leaks and zero attrition.', 'attribution' => 'Programme Director, hyperscale operator – placeholder, real testimonial to follow' ],
-					[ 'quote' => "I wasn't looking. One considered introduction later I'm leading the studio I'd admired for years – and the conversation stayed confidential throughout.", 'attribution' => 'Associate Principal, architecture practice – placeholder, real testimonial to follow' ],
-					[ 'quote' => 'No CVs into the void – a shortlist of three, all interviewable, all briefed. We hired two of them.', 'attribution' => 'Practice Principal, AOR firm – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'client',    'quote' => 'Modulr built our data-centre delivery team under NDA – three regions, fourteen hires, zero leaks and zero attrition.', 'attribution' => 'Programme Director, hyperscale operator – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'candidate', 'quote' => "I wasn't looking. One considered introduction later I'm leading the studio I'd admired for years – and the conversation stayed confidential throughout.", 'attribution' => 'Associate Principal, architecture practice – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'client',    'quote' => 'No CVs into the void – a shortlist of three, all interviewable, all briefed. We hired two of them.', 'attribution' => 'Practice Principal, AOR firm – placeholder, real testimonial to follow' ],
 				],
 				'audiences' => [
 					'company' => [
@@ -1564,12 +1604,18 @@ class Verto_Installer {
 					[ 'icon' => 'atom',      'image' => 'spec_edison_05', 'title' => 'Nuclear',                             'description' => 'New build, SMR, fusion, decommissioning and defence – engineering, operations and maintenance.' ],
 					[ 'icon' => 'briefcase', 'image' => 'spec_edison_06', 'title' => 'EPC – Construction & Commissioning',  'description' => "FEED, detailed design, construction, commissioning and project delivery." ],
 				],
-				// Round 5, item 7: placeholder testimonials for the home band –
-				// clearly marked; the client is sending the real quotes.
+				// Round 6: REAL Edison Lux testimonials (client-supplied, verbatim
+				// – do not rewrite). First names inside the quotes (Dan, Noah,
+				// Joe, Milly) are Edison consultants; the attribution is the
+				// client's or candidate's own job title.
 				'home_testimonials' => [
-					[ 'quote' => 'Edison Lux staffed our combined-cycle outage team on schedule – operators, supervisors and a commissioning lead – without a single dropped shift.', 'attribution' => 'Plant Manager, CCGT operator – placeholder, real testimonial to follow' ],
-					[ 'quote' => "They called me about one role, and it was the right one. Relocation, comp, the lot handled – I was in the control room six weeks later.", 'attribution' => 'Shift Supervisor, gas generation – placeholder, real testimonial to follow' ],
-					[ 'quote' => 'The only agency we brief without a spec sheet. They know our fleet, our org chart and who is actually available in this market.', 'attribution' => 'VP of Engineering, IPP – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'client',    'quote' => 'Dan was excellent to work with very responsive and informative very straightforward approach to recruiting', 'attribution' => 'Combined Cycle Plant Manager' ],
+					[ 'tag' => 'candidate', 'quote' => "Noah is a stud. He has been very helpful, he's taken the time to understand what's important to me in my search for a new home. I look forward to continuing to work with him.", 'attribution' => 'Control Room Operator, 2nd Engineer' ],
+					[ 'tag' => 'client',    'quote' => 'Dan has outpaced all other recruiters in response and candidate quality.', 'attribution' => 'Sales Director, Industrial OEM' ],
+					[ 'tag' => 'client',    'quote' => 'Joe is extremely driven, responsive, and helpful and has brought us great candidates that fit the requirements that we are looking for. Happy to recommend him to any friend or colleague', 'attribution' => 'Project Manager, Solar EPC' ],
+					[ 'tag' => 'client',    'quote' => "I've recently started working with Milly Compton on recruitment projects for our power generation team. In this short time, she has demonstrated a strong understanding of our needs and the industry as a whole. Milly has quickly grasped the technical demands of our sector and has already helped us identify top candidates for key roles. Her recruitment efforts have been instrumental in strengthening our team with qualified professionals who align well with our company's culture and operational requirements. Milly is highly professional, thorough, and communicative, making her a valuable asset throughout the recruitment process.", 'attribution' => 'Service Manager, Energy Infrastructure Solutions' ],
+					[ 'tag' => 'client',    'quote' => 'I have come to know Milly as a highly capable and knowledgeable professional with strong expertise in Executive Recruiting. They have demonstrated sound business judgment, a clear understanding of market dynamics, and the ability to successfully plan and execute business initiatives. In particular, I have been impressed by their tenacity and ability to secure highly talented candidates for executive level roles.', 'attribution' => 'VP of Sales, Critical Power' ],
+					[ 'tag' => 'client',    'quote' => 'Milly Compton has consistently demonstrated an exceptional understanding of the power generation sector, including its unique challenges and evolving needs. Their ability to source, evaluate, and place top-tier candidates has made a significant impact on our hiring process. Milly has delivered candidates who not only meet our technical requirements but also align with our organizational culture.', 'attribution' => 'Sales Manager, Industrial Power Products' ],
 				],
 				'audiences' => [
 					'company' => [
@@ -1657,9 +1703,9 @@ class Verto_Installer {
 				// Round 5, item 7: placeholder testimonials for the home band –
 				// clearly marked; the client is sending the real quotes.
 				'home_testimonials' => [
-					[ 'quote' => "Vertek's shortlist was three deep and every one of them knew the product. We hired in eleven days.", 'attribution' => 'VP of Sales, fluid power manufacturer – placeholder, real testimonial to follow' ],
-					[ 'quote' => 'They sold my experience before I ever sat in an interview. The offer matched the brief, and the brief matched the job.', 'attribution' => 'Technical Sales Engineer, HVAC – placeholder, real testimonial to follow' ],
-					[ 'quote' => 'Our fifth hire through Vertek in two years. Same consultant, same standard, no surprises.', 'attribution' => 'Managing Director, industrial distributor – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'client',    'quote' => "Vertek's shortlist was three deep and every one of them knew the product. We hired in eleven days.", 'attribution' => 'VP of Sales, fluid power manufacturer – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'candidate', 'quote' => 'They sold my experience before I ever sat in an interview. The offer matched the brief, and the brief matched the job.', 'attribution' => 'Technical Sales Engineer, HVAC – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'client',    'quote' => 'Our fifth hire through Vertek in two years. Same consultant, same standard, no surprises.', 'attribution' => 'Managing Director, industrial distributor – placeholder, real testimonial to follow' ],
 				],
 				'audiences' => [
 					'company' => [
@@ -1902,12 +1948,15 @@ class Verto_Installer {
 				] ] ),
 			], 'verto-bs vbs-desks' );
 		}
-		// Round 5, items 6+7: the "Trusted by" logo marquee is gone everywhere;
-		// a testimonials band (clearly-marked placeholders until the client's
-		// real quotes arrive) takes its slot.
+		// Round 5, items 6+7 (+ round 6): the "Trusted by" logo marquee is gone
+		// everywhere; a testimonials carousel takes its slot. Edison Lux now
+		// carries the client's REAL quotes; Modulr and Vertek stay on
+		// clearly-marked placeholders until their real ones arrive.
+		$real_quotes = 'edison-lux' === $brand;
 		$home = array_merge( $home, [
 			self::section( [ self::widget( 'verto-quote-band', [
 				'quotes_style'   => 'light',
+				'quotes_layout'  => 'carousel',
 				'pad'            => 'band',
 				'image'          => [],
 				'eyebrow'        => 'Testimonials',
@@ -1915,11 +1964,17 @@ class Verto_Installer {
 				'heading_pre'    => 'What clients and candidates say.',
 				'heading_accent' => '',
 				'heading_post'   => '',
-				'body'           => 'Placeholder quotes – real client and candidate testimonials are being collected and will replace these.',
+				'body'           => $real_quotes
+					? 'Real feedback from the clients we staff for and the people we place – gathered from every engagement.'
+					: 'Placeholder quotes – real client and candidate testimonials are being collected and will replace these.',
 				'stat_value'     => '',
 				'stat_label'     => '',
 				'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['home_testimonials'] ?? [] ),
 			] ) ], 'verto-bs' ),
+			// Round 6: the compact services band (three engagement models →
+			// /clients) joins the brand HOME pages too – directly after the
+			// testimonials carousel.
+			self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' ),
 			self::section( [ self::widget( 'verto-audience-cards', [ 'items' => [
 				[ '_id' => self::eid(), 'style' => 'ink', 'kicker' => 'For companies',
 				  'headline' => $c['audiences']['company']['headline'], 'body' => $c['audiences']['company']['body'],

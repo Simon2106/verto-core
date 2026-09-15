@@ -35,12 +35,18 @@ get_header();
 		<?php if ( $verto_first ) : the_post();
 			$cats     = get_the_category();
 			$cat_name = $cats ? $cats[0]->name : 'News';
+			$verto_raw = (string) get_post_field( 'post_content', get_the_ID() );
 			$words    = str_word_count( wp_strip_all_tags( get_the_content() ) );
 			$mins     = max( 1, (int) round( $words / 200 ) );
+			// Round 6, item 3: video stories carry a play badge on the media.
+			$verto_is_video = has_shortcode( $verto_raw, 'video' ) || false !== stripos( $verto_raw, '<video' );
 			?>
 			<article class="verto-featured">
 				<a class="verto-featured__media" href="<?php the_permalink(); ?>" aria-label="<?php the_title_attribute(); ?>">
 					<?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'full' ); } ?>
+					<?php if ( $verto_is_video ) : ?>
+						<span class="verto-post-card__play" aria-hidden="true"></span>
+					<?php endif; ?>
 				</a>
 				<div class="verto-featured__body">
 					<div class="verto-featured__top">
@@ -63,13 +69,19 @@ get_header();
 			<?php while ( have_posts() ) : the_post();
 				$cats     = get_the_category();
 				$cat_name = $cats ? $cats[0]->name : 'News';
+				$verto_raw = (string) get_post_field( 'post_content', get_the_ID() );
 				$words    = str_word_count( wp_strip_all_tags( get_the_content() ) );
 				$mins     = max( 1, (int) round( $words / 200 ) );
+				// Round 6, item 3: video stories carry a play badge + "Video" label.
+				$verto_is_video = has_shortcode( $verto_raw, 'video' ) || false !== stripos( $verto_raw, '<video' );
 				?>
 				<article class="verto-post-card">
 					<a class="verto-post-card__media" href="<?php the_permalink(); ?>">
 						<?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'large' ); } ?>
-						<span class="verto-post-card__type"><span class="dot"></span>Article</span>
+						<span class="verto-post-card__type"><span class="dot"></span><?php echo $verto_is_video ? 'Video' : 'Article'; ?></span>
+						<?php if ( $verto_is_video ) : ?>
+							<span class="verto-post-card__play" aria-hidden="true"></span>
+						<?php endif; ?>
 						<span class="verto-cat-chip verto-cat-chip--dark"><?php echo esc_html( $cat_name ); ?></span>
 					</a>
 					<div class="verto-post-card__body">

@@ -71,13 +71,20 @@ class Verto_Widget_Posts_Grid extends \Elementor\Widget_Base {
 			$q->the_post();
 			$cats     = get_the_category();
 			$cat_name = $cats ? $cats[0]->name : 'News';
+			$raw      = (string) get_post_field( 'post_content', get_the_ID() );
 			$words    = str_word_count( wp_strip_all_tags( get_the_content() ) );
 			$mins     = max( 1, (int) round( $words / 200 ) );
+			// Round 6, item 3: posts embedding a video ([video] shortcode or a
+			// <video> tag) read as video – play badge + "Video" type label.
+			$is_video = has_shortcode( $raw, 'video' ) || false !== stripos( $raw, '<video' );
 			?>
 			<article class="verto-post-card">
 				<a class="verto-post-card__media" href="<?php the_permalink(); ?>">
 					<?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'large' ); } ?>
-					<span class="verto-post-card__type"><span class="dot"></span>Article</span>
+					<span class="verto-post-card__type"><span class="dot"></span><?php echo $is_video ? 'Video' : 'Article'; ?></span>
+					<?php if ( $is_video ) : ?>
+						<span class="verto-post-card__play" aria-hidden="true"></span>
+					<?php endif; ?>
 					<span class="verto-post-card__cat"><?php echo esc_html( $cat_name ); ?></span>
 				</a>
 				<div class="verto-post-card__body">
