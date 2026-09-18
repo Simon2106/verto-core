@@ -427,7 +427,7 @@
 
       var file = form.querySelector('input[type="file"]');
       if (file && file.files && file.files[0] && file.files[0].size > MAX_CV_BYTES) {
-        showError("Your CV is over 5 MB — please attach a smaller file.");
+        showError("Your CV is over 5 MB – please attach a smaller file.");
         return;
       }
       var btn = form.querySelector('[type="submit"]');
@@ -453,12 +453,12 @@
           } else {
             var msg = json && json.data && json.data.message
               ? json.data.message
-              : "Something went wrong — please try again.";
+              : "Something went wrong – please try again.";
             showError(msg);
           }
         })
         .catch(function () {
-          showError("Something went wrong sending your application — please try again, or email us your CV instead.");
+          showError("Something went wrong sending your application – please try again, or email us your CV instead.");
         });
     });
   });
@@ -663,7 +663,7 @@
 
       var file = form.querySelector('input[type="file"]');
       if (file && file.files && file.files[0] && file.files[0].size > MAX_CV_BYTES) {
-        showError("Your CV is over 5 MB — please attach a smaller file.");
+        showError("Your CV is over 5 MB – please attach a smaller file.");
         return;
       }
       var btn = form.querySelector('[type="submit"]');
@@ -689,13 +689,116 @@
           } else {
             var msg = json && json.data && json.data.message
               ? json.data.message
-              : "Something went wrong — please try again.";
+              : "Something went wrong – please try again.";
             showError(msg);
           }
         })
         .catch(function () {
-          showError("Something went wrong sending your application — please try again, or email us your CV instead.");
+          showError("Something went wrong sending your application – please try again, or email us your CV instead.");
         });
+    });
+  });
+})();
+
+/* ── 12. Recent-events rail (.verto-events, WGO hub) – poster tiles with
+      play badges. Each <video> ships preload="none", so no bytes move
+      until the badge is pressed; the press reveals native controls and
+      starts playback inline. When the film ends the tile returns to its
+      poster-and-badge state. */
+(function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".verto-events__media").forEach(function (media) {
+      var btn = media.querySelector(".verto-events__play");
+      var video = media.querySelector("video");
+      if (!btn || !video) return;
+      btn.addEventListener("click", function () {
+        media.classList.add("is-playing");
+        video.controls = true;
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});
+      });
+      video.addEventListener("ended", function () {
+        media.classList.remove("is-playing");
+        video.controls = false;
+        try { video.load(); } catch (e) { /* poster restore is best-effort */ }
+      });
+    });
+  });
+})();
+
+/* ── 13. Sales-days mosaic ([data-verto-salesdays], careers) – ten compact
+      muted films behind poster frames. Zero video bytes on page load: each
+      <video> ships preload="none" with no src (the file waits in data-src)
+      and is attached on the first hover/tap only. Fine pointers play on
+      hover and pause + rewind on mouseleave; touch devices tap to toggle;
+      prefers-reduced-motion means click-to-play everywhere. At most two
+      tiles play at once – starting a third pauses the oldest. Keyboard:
+      tiles are focusable, Enter/Space toggles. ── */
+(function () {
+  "use strict";
+  var MAX_PLAYING = 2;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+    document.querySelectorAll("[data-verto-salesdays]").forEach(function (root) {
+      var hint = root.querySelector("[data-salesday-hint]");
+      if (hint && !fine.matches) hint.textContent = "Tap to play";
+      var playing = []; // oldest first
+
+      // Hover drives playback only on fine pointers without reduced motion;
+      // everywhere else (touch, reduced motion) the tile is click-to-play.
+      function hoverMode() { return fine.matches && !reduced.matches; }
+
+      function stop(video) {
+        var i = playing.indexOf(video);
+        if (i !== -1) playing.splice(i, 1);
+        video.pause();
+        try { video.currentTime = 0; } catch (e) { /* not seekable yet */ }
+        var tile = video.closest("[data-salesday-tile]");
+        if (tile) tile.classList.remove("is-playing");
+      }
+
+      function start(video) {
+        // First interaction: attach the src – nothing downloaded before this.
+        if (!video.getAttribute("src") && video.dataset.src) {
+          video.setAttribute("src", video.dataset.src);
+        }
+        while (playing.length >= MAX_PLAYING) stop(playing[0]); // pause the oldest
+        playing.push(video);
+        video.muted = true;
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});
+        var tile = video.closest("[data-salesday-tile]");
+        if (tile) tile.classList.add("is-playing");
+        if (hint) hint.hidden = true;
+      }
+
+      root.querySelectorAll("[data-salesday-tile]").forEach(function (tile) {
+        var video = tile.querySelector("video");
+        if (!video) return;
+        tile.setAttribute("tabindex", "0");
+        tile.setAttribute("role", "button");
+        var label = video.getAttribute("aria-label");
+        if (label) tile.setAttribute("aria-label", "Play – " + label);
+
+        tile.addEventListener("mouseenter", function () {
+          if (hoverMode()) start(video);
+        });
+        tile.addEventListener("mouseleave", function () {
+          if (hoverMode()) stop(video);
+        });
+        tile.addEventListener("click", function () {
+          if (hoverMode()) return; // hover already handles fine pointers
+          if (video.paused) start(video); else stop(video);
+        });
+        tile.addEventListener("keydown", function (e) {
+          if (e.key !== "Enter" && e.key !== " ") return;
+          e.preventDefault();
+          if (video.paused) start(video); else stop(video);
+        });
+      });
     });
   });
 })();

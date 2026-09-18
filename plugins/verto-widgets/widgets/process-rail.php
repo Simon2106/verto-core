@@ -3,10 +3,11 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Verto Process Rail – the prototype's numbered card/rail sections:
- *  - "zigzag": 4-up offset cards (candidate process) – alternate cards drop
- *    2rem, fg-6% tint, 3px brand top bar scale-x hover.
- *  - "cards3": 3-up staggered cards (hiring solutions / pillars) – middle
- *    card drops 2rem, optional kicker line + brand dash + bullet list.
+ *  - "zigzag": 4-up offset cards (candidate process / the four hiring
+ *    models) – alternate cards drop 2rem, fg-6% tint, 3px brand top bar
+ *    scale-x hover, optional kicker + bullets + flagship badge.
+ *  - "cards3": 3-up staggered cards (pillars) – middle card drops 2rem,
+ *    optional kicker line + brand dash + bullet list.
  *  - "line": horizontal rail with connector line and brand dots
  *    (client process / journey).
  */
@@ -43,6 +44,7 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 		$rep = new \Elementor\Repeater();
 		$rep->add_control( 'title', [ 'label' => 'Title', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'kicker', [ 'label' => 'Kicker / tagline', 'type' => \Elementor\Controls_Manager::TEXT ] );
+		$rep->add_control( 'badge', [ 'label' => 'Badge (e.g. "Our flagship" – marks the lead card)', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'body', [ 'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
 		$rep->add_control( 'bullets', [ 'label' => 'Bullets (one per line)', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
 		$this->add_control( 'items', [
@@ -50,19 +52,24 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ title }}}',
 			'default' => [
 				[
-					'title'   => 'Engaged Search', 'kicker' => 'Our flagship model',
-					'body'    => "A committed partnership with a structured process – market mapping, verified shortlists, offer management. Built to remove the chance of failure and get it right first time. 100% success rate on the Engage model.",
-					'bullets' => "Exclusive partnership\nStructured milestones\nFrequent read-outs",
+					'title'   => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
+					'body'    => 'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement.',
+					'bullets' => "Maximum visibility\nBetter fill rates\nFewer offer rejections",
 				],
 				[
-					'title'   => 'Retained Executive Search', 'kicker' => 'Director and C-suite mandates',
-					'body'    => "Discreet, confidential search for VP, MD, director and C-suite appointments. Off-market approaches, NDA-protected mandates and full lifecycle stakeholder management for the roles that can't be advertised.",
-					'bullets' => "Retained, fully confidential\nNDA-protected searches\nStakeholder & offer management",
+					'title'   => 'Exclusive', 'kicker' => 'One search, one partner',
+					'body'    => 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.',
+					'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage",
 				],
 				[
-					'title'   => 'Team Builds', 'kicker' => 'Partnerships, not placements',
-					'body'    => 'When a new plant, project or region needs staffing from the ground up – we build the whole team. Proactively, against your timeline, reducing time-to-hire and the cost of the empty seat.',
-					'bullets' => "Land-and-expand\nContract and permanent\nAgainst your project timeline",
+					'title'   => 'Contingent', 'kicker' => 'The classic model',
+					'body'    => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
+					'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on",
+				],
+				[
+					'title'   => 'Contract', 'kicker' => 'Interim & project specialists',
+					'body'    => 'Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.',
+					'bullets' => "Compliantly engaged\nReady fast\nProjects, cover and peaks",
 				],
 			],
 		] );
@@ -112,9 +119,11 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 					<div class="<?php echo $is3 ? 'vbs-rail__grid3' : 'vbs-rail__grid4'; ?>">
 						<?php foreach ( $s['items'] as $i => $it ) :
 							$stagger = $is3 ? ( 1 === $i ) : ( 1 === $i % 2 );
+							$badge   = trim( (string) ( $it['badge'] ?? '' ) );
 							?>
-							<div class="vbs-card<?php echo $is3 ? ' vbs-card--p8' : ' vbs-card--p7'; ?><?php echo $stagger ? ' vbs-card--drop' : ''; ?>" style="background:color-mix(in oklab, var(--foreground) 6%, var(--background));">
+							<div class="vbs-card<?php echo $is3 ? ' vbs-card--p8' : ' vbs-card--p7'; ?><?php echo $stagger ? ' vbs-card--drop' : ''; ?><?php echo $badge ? ' vbs-card--lead' : ''; ?>" style="background:color-mix(in oklab, var(--foreground) 6%, var(--background));">
 								<span class="vbs-card__bar" style="background:var(--brand);"></span>
+								<?php if ( $badge ) : ?><span class="vbs-card__badge"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
 								<?php if ( $is3 && $it['kicker'] ) : ?>
 									<div class="vbs-rail__numrow">
 										<div class="vbs-rail__num3" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
@@ -124,7 +133,7 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 									<div class="<?php echo $is3 ? 'vbs-rail__num3' : 'vbs-rail__num'; ?>" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
 								<?php endif; ?>
 								<h3 class="<?php echo $is3 ? 'vbs-rail__title3' : 'vbs-rail__title4'; ?>"><?php echo esc_html( $it['title'] ); ?></h3>
-								<?php if ( $is3 && $it['kicker'] ) : ?><p class="vbs-rail__kicker"><?php echo esc_html( $it['kicker'] ); ?></p><?php endif; ?>
+								<?php if ( $it['kicker'] ) : ?><p class="vbs-rail__kicker"><?php echo esc_html( $it['kicker'] ); ?></p><?php endif; ?>
 								<p class="<?php echo $is3 ? 'vbs-rail__body3' : 'vbs-rail__body'; ?>"><?php echo esc_html( $it['body'] ); ?></p>
 								<?php
 								$bullets = array_filter( array_map( 'trim', explode( "\n", (string) $it['bullets'] ) ) );

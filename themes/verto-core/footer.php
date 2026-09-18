@@ -11,7 +11,7 @@ $verto_is_brand_site = 'verto' !== $verto_brand;
 <?php if ( $verto_is_brand_site ) :
 	$verto_names = [ 'modulr' => 'Modulr', 'vertek' => 'Vertek', 'edison-lux' => 'Edison Lux' ];
 	$verto_focus = [
-		'modulr'     => 'Architecture & Data Centres',
+		'modulr'     => 'Architecture, Data Centres & Built Environment',
 		'vertek'     => 'Technical Sales, Service & Engineering',
 		'edison-lux' => 'US Energy Staffing',
 	];

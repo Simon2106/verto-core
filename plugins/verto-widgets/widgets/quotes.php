@@ -3,8 +3,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Verto Quote Marquee – auto-scrolling employee quotes, pause on hover.
- * ⚠️ Prefilled with PLACEHOLDER quotes; replace when the client's real
- * employee quotes arrive.
+ * Carries the client's REAL employee quotes; attribution is job title only.
  */
 class Verto_Widget_Quotes extends \Elementor\Widget_Base {
 
@@ -17,16 +16,17 @@ class Verto_Widget_Quotes extends \Elementor\Widget_Base {
 		$this->start_controls_section( 'content', [ 'label' => 'Quotes' ] );
 		$rep = new \Elementor\Repeater();
 		$rep->add_control( 'quote', [ 'label' => 'Quote', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
-		$rep->add_control( 'who', [ 'label' => 'Name / role', 'type' => \Elementor\Controls_Manager::TEXT ] );
-		$rep->add_control( 'org', [ 'label' => 'Detail (joined year · office)', 'type' => \Elementor\Controls_Manager::TEXT ] );
+		$rep->add_control( 'who', [ 'label' => 'Job title', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$this->add_control( 'items', [
 			'label' => 'Quotes', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ who }}}',
 			'default' => [
-				[ 'quote' => "I joined as a graduate with no recruitment experience. Four years on I run my own market, I've been to Barcelona and Prague on incentive trips, and I own a piece of the business I helped build.", 'who' => 'Placeholder – Senior Consultant', 'org' => 'Joined 2022 · Solent' ],
-				[ 'quote' => "The 40% commission is what got my attention. The reason I've stayed is the way we work – phone first, plan led, and a team that actually celebrates each other's deals.", 'who' => 'Placeholder – Recruitment Consultant', 'org' => 'Joined 2023 · Solent' ],
-				[ 'quote' => "I moved from the UK to Austin with Verto. The relocation wasn't a perk buried in a handbook – the business planned my desk, my visa and my first three months before I flew.", 'who' => 'Placeholder – Principal Consultant', 'org' => 'Joined 2021 · Austin' ],
-				[ 'quote' => "Two incentive holidays a year sounds like a gimmick until you're on the second one, sat with the whole company, and nobody's checking their phone.", 'who' => 'Placeholder – Consultant', 'org' => 'Joined 2024 · Solent' ],
+				[ 'quote' => "I like the togetherness. Everyone has the same goals and it's great to work in an environment that matches how you want to shape your future. Well looked after, and the opportunity to earn life-changing money is fantastic.", 'who' => 'Team Leader' ],
+				[ 'quote' => "The best thing about Verto is the earning potential, and the flexibility. I've earned more commission in one month at Verto than I did across the year in previous companies. I'm also able to work around my life schedule, and trusted to be left to my own devices to build my own desk.", 'who' => 'Senior Recruitment Consultant' ],
+				[ 'quote' => "Verto is a dynamic and exciting place to work. The pace of growth and change is unlike anything I've experienced before, and there's a real sense that we're constantly moving forward. What really makes Verto stand out is the team. It's a fun, ambitious and engaging environment where everyone gets involved. From team sprints and sales days to the everyday buzz around the office, there's always something driving us forward. The opportunity to grow here feels wide open. Combine that with great earning potential, genuine career progression and a brilliant team to work alongside, and there's only one question: why didn't I get the call to join Verto sooner?", 'who' => 'VP of Engineering' ],
+				[ 'quote' => "Verto gives you the opportunity to thrive and really sees the potential in you. There's no limit to how far you can go, and you're always encouraged and supported to grow and achieve more. I also really like how transparent Verto is. You always know where you stand, and your hard work is recognised. Coming from an architecture background, Verto has given me the opportunity to use my industry knowledge and turn it into a career in recruitment, while continuing to learn and grow every day.", 'who' => 'Recruitment Consultant' ],
+				[ 'quote' => "Verto People gives me the best of both worlds: real autonomy to run my desk like my own business, plus the team and infrastructure to back it up. It's a place that rewards hustle, and it keeps me hungry to hit bigger numbers.", 'who' => 'Recruitment Consultant' ],
+				[ 'quote' => "Working at Verto is a good mix of hard work, focus and fun. The team culture is both collaborative and competitive, and that gets emphasised in the monthly Sales Days, which are always good fun. It's a business that genuinely gives you the opportunity to be the best version of yourself and build a fantastic career.", 'who' => 'Recruitment Consultant' ],
 			],
 		] );
 		$this->end_controls_section();
@@ -39,11 +39,14 @@ class Verto_Widget_Quotes extends \Elementor\Widget_Base {
 		$loop = array_merge( $items, $items ); // duplicate for seamless scroll
 		echo '<div class="verto-quotes"><div class="verto-quotes__track">';
 		foreach ( $loop as $q ) {
+			// Long quotes take a wider card so the row doesn't tower; the
+			// track's align-items:stretch keeps every card equal height.
+			$wide = mb_strlen( (string) $q['quote'] ) > 380 ? ' verto-quote--wide' : '';
 			printf(
-				'<figure class="verto-quote"><span class="verto-quote__mark" aria-hidden="true">&ldquo;</span><blockquote class="verto-quote__text">%s</blockquote><figcaption><div class="verto-quote__who">%s</div><div class="verto-quote__org">%s</div></figcaption></figure>',
+				'<figure class="verto-quote%s"><span class="verto-quote__mark" aria-hidden="true">&ldquo;</span><blockquote class="verto-quote__text">%s</blockquote><figcaption><div class="verto-quote__who">%s</div></figcaption></figure>',
+				esc_attr( $wide ),
 				esc_html( $q['quote'] ),
-				esc_html( $q['who'] ),
-				esc_html( $q['org'] )
+				esc_html( $q['who'] )
 			);
 		}
 		echo '</div></div>';

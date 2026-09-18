@@ -70,6 +70,7 @@ class Verto_Installer {
 			// brand's standalone site instead of the Verto Group site.
 			$media = self::import_media();
 			self::seed_team();
+			self::migrate_team_photos();
 			self::seed_brand_posts( $brand, $media );
 			self::create_brand_site_pages( $brand, $media );
 			self::setup_brand_menu( $brand );
@@ -80,6 +81,7 @@ class Verto_Installer {
 		$media = self::import_media();
 		self::seed_posts( $media );
 		self::seed_team();
+		self::migrate_team_photos();
 		self::seed_internal_jobs();
 		self::create_pages( $media );
 		self::create_brand_pages();
@@ -214,6 +216,13 @@ class Verto_Installer {
 			unset( $map['summit_video'], $map['summit_poster'] );
 			update_option( 'verto_media_summit_v4', 1 );
 		}
+		// v0.18.0: the real Austin skyline photo replaced the interim
+		// skyline-us.jpg – force a one-time re-import so existing installs
+		// pick up the new file on Rebuild.
+		if ( ! get_option( 'verto_media_skyline_v2' ) ) {
+			unset( $map['skyline_us'] );
+			update_option( 'verto_media_skyline_v2', 1 );
+		}
 		$dir   = dirname( __DIR__ ) . '/assets/import/';
 		$files = [
 			'summit_video'  => 'summit-video.mp4',
@@ -301,6 +310,42 @@ class Verto_Installer {
 			// Round 5, item 10: the share-scheme awards-night photo – the team
 			// with their Verto People Share Scheme Award certificates.
 			'share_certs'        => 'share-certificates.jpg',
+			/* ── Sep-2026 event films (client drop) – portrait 720×1280 h264/aac,
+			   faststart, poster frames pulled from the films themselves. They
+			   power the "Recent events" rail on the WGO hub, the About charity
+			   card, the careers incentives pairing and the WGO post embeds. */
+			'summit_film'         => 'summit-film.mp4',        // inside the summer summit party
+			'summit_film_poster'  => 'summit-film-poster.jpg',
+			'ibiza_trip_film'     => 'ibiza-trip.mp4',         // the winners' incentive trip to Ibiza
+			'ibiza_trip_poster'   => 'ibiza-trip-poster.jpg',
+			'charity_film'        => 'charity-film.mp4',       // the Maeve's Mission charity gala
+			'charity_film_poster' => 'charity-film-poster.jpg',
+			/* ── Sep-2026 sales-day films (client drop) – ten short muted
+			   loops for the careers hover-to-play mosaic. Compact portrait
+			   480×854 h264, no audio, ≤30s each; posters pulled from the
+			   films themselves. Client brief: "Sales days are massive for
+			   us … don't want massive video windows but if we could show
+			   these somehow all on one section and hover over to play." */
+			'salesday_01'        => 'salesday-01.mp4',
+			'salesday_01_poster' => 'salesday-01-poster.jpg',
+			'salesday_02'        => 'salesday-02.mp4',
+			'salesday_02_poster' => 'salesday-02-poster.jpg',
+			'salesday_03'        => 'salesday-03.mp4',
+			'salesday_03_poster' => 'salesday-03-poster.jpg',
+			'salesday_04'        => 'salesday-04.mp4',
+			'salesday_04_poster' => 'salesday-04-poster.jpg',
+			'salesday_05'        => 'salesday-05.mp4',
+			'salesday_05_poster' => 'salesday-05-poster.jpg',
+			'salesday_06'        => 'salesday-06.mp4',
+			'salesday_06_poster' => 'salesday-06-poster.jpg',
+			'salesday_07'        => 'salesday-07.mp4',
+			'salesday_07_poster' => 'salesday-07-poster.jpg',
+			'salesday_08'        => 'salesday-08.mp4',
+			'salesday_08_poster' => 'salesday-08-poster.jpg',
+			'salesday_09'        => 'salesday-09.mp4',
+			'salesday_09_poster' => 'salesday-09-poster.jpg',
+			'salesday_10'        => 'salesday-10.mp4',
+			'salesday_10_poster' => 'salesday-10-poster.jpg',
 		];
 
 		foreach ( $files as $key => $file ) {
@@ -409,9 +454,9 @@ class Verto_Installer {
 			'Dan Bisset'   => [ 'brands' => [ 'edison-lux' ], 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'vertek-dan-bisset.jpg' ],
 			'George East'  => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'vertek-george-east.jpg' ],
 			'Ben Tiffin'   => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin.jpg' ],
-			'Gary Hunt'    => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Head of Sales Recruitment', 'photo' => 'vertek-gary-hunt.jpg' ],
+			'Gary Hunt'    => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Head of Sales Recruitment', 'photo' => 'vertek-gary-hunt-v2.png' ],
 			'Ben Cranston' => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => null ],
-			'Sade Kendall' => [ 'brands' => [ 'modulr' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'modulr-sade-kendall.webp' ],
+			'Sade Kendall' => [ 'brands' => [ 'modulr' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'modulr-sade-kendall-v2.png' ],
 			/* ── Ops (Verto group pages only – fold into "The team" section) ── */
 			'Karabo Mothopeng' => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => null ],
 			'Angel Ndlovu'     => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => null ],
@@ -446,7 +491,7 @@ class Verto_Installer {
 			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-lewis-dominy.jpg' ],
 			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-noah-ward.jpg' ],
 			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-oliver-hesmondhalgh.jpg' ],
-			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-milly-compton.jpg' ],
+			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-milly-compton-v2.png' ],
 		];
 	}
 
@@ -533,6 +578,54 @@ class Verto_Installer {
 		}
 		update_option( 'verto_team_missing_photos', $missing );
 		update_option( 'verto_installer_team', self::TEAM_STRUCTURE );
+	}
+
+	/** Team-photo batch version – bump when the client sends new treated
+	 *  headshots so existing installs swap them in on their next Rebuild. */
+	const TEAM_PHOTOS = 'photos-0.19.0';
+
+	/**
+	 * Versioned team-photo migration (Sep-2026 drop): the client's treated
+	 * headshots for Milly Compton (Edison Lux), Gary Hunt (Vertek) and Sade
+	 * Kendall (ModulR – identified against the existing roster headshot).
+	 * seed_team() skips people who already have a thumbnail, so EXISTING
+	 * installs need this pass to replace the old photos in place. Runs once
+	 * per TEAM_PHOTOS version; skips anyone whose thumbnail already points
+	 * at the new file (fresh installs – seed_team attached it via team_map).
+	 */
+	private static function migrate_team_photos(): void {
+		if ( self::TEAM_PHOTOS === get_option( 'verto_installer_team_photos' ) ) return;
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+
+		$dir     = dirname( __DIR__ ) . '/assets/import/';
+		$updates = [
+			'Milly Compton' => 'edison-milly-compton-v2.png',
+			'Gary Hunt'     => 'vertek-gary-hunt-v2.png',
+			'Sade Kendall'  => 'modulr-sade-kendall-v2.png',
+		];
+		foreach ( $updates as $name => $file ) {
+			if ( ! file_exists( $dir . $file ) ) continue;
+			$posts = get_posts( [
+				'post_type'      => 'verto_team',
+				'post_status'    => 'any',
+				'posts_per_page' => 1,
+				'title'          => $name,
+			] );
+			if ( ! $posts ) continue;
+			$id    = $posts[0]->ID;
+			$thumb = get_post_thumbnail_id( $id );
+			if ( $thumb ) {
+				$attached = (string) get_post_meta( $thumb, '_wp_attached_file', true );
+				if ( false !== strpos( $attached, pathinfo( $file, PATHINFO_FILENAME ) ) ) continue; // already the new photo
+			}
+			$tmp = wp_tempnam( $file );
+			copy( $dir . $file, $tmp );
+			$att = media_handle_sideload( [ 'name' => $file, 'tmp_name' => $tmp ], $id );
+			if ( ! is_wp_error( $att ) ) set_post_thumbnail( $id, $att );
+		}
+		update_option( 'verto_installer_team_photos', self::TEAM_PHOTOS );
 	}
 
 	/* ── Job detail pages: office galleries + standing internal vacancies ── */
@@ -903,6 +996,47 @@ class Verto_Installer {
 		}
 		self::seed_media_drop_posts( $media, $cat_ids );
 		self::seed_share_awards_post( $media, $cat_ids );
+		self::seed_event_film_embeds( $media );
+	}
+
+	/** Batch 4 – Sep-2026 event films: embed the Ibiza incentive film into
+	 *  "Next stop: Ibiza" (batch 1) and the summit film into "Inside the
+	 *  summer summit" (batch 2), so both cards read as video (play badge).
+	 *  Follows the seed_share_awards_post() migration pattern: versioned in
+	 *  its own option, so EXISTING installs gain the embeds on Rebuild;
+	 *  fresh installs run it in the same build, right after the posts seed. */
+	private static function seed_event_film_embeds( array $media ): void {
+		if ( get_option( 'verto_installer_posts_films' ) ) return;
+		$vid = static function ( $video_key, $poster_key ) use ( $media ) {
+			if ( empty( $media[ $video_key ]['url'] ) ) return '';
+			$poster = empty( $media[ $poster_key ]['url'] ) ? '' : ' poster="' . esc_url( $media[ $poster_key ]['url'] ) . '"';
+			return "\n\n" . '[video mp4="' . esc_url( $media[ $video_key ]['url'] ) . '"' . $poster . ' preload="none"]';
+		};
+		$embeds = [
+			'Next stop: Ibiza'         => $vid( 'ibiza_trip_film', 'ibiza_trip_poster' ),
+			'Inside the summer summit' => $vid( 'summit_film', 'summit_film_poster' ),
+		];
+		// The films ship with the plugin, so both should exist by now – but if
+		// an import failed, leave the option unset so the next Rebuild retries.
+		if ( in_array( '', $embeds, true ) ) return;
+		$done = [];
+		$pids = array_merge(
+			(array) get_option( 'verto_installer_posts', [] ),
+			(array) get_option( 'verto_installer_posts_media', [] )
+		);
+		foreach ( $pids as $pid ) {
+			$post = $pid ? get_post( $pid ) : null;
+			if ( ! $post ) continue;
+			foreach ( $embeds as $needle => $embed ) {
+				if ( false === strpos( $post->post_title, $needle ) ) continue;
+				if ( ! has_shortcode( $post->post_content, 'video' ) && false === stripos( $post->post_content, '<video' ) ) {
+					wp_update_post( [ 'ID' => $post->ID, 'post_content' => $post->post_content . $embed ] );
+				}
+				$done[] = (int) $post->ID;
+				break;
+			}
+		}
+		update_option( 'verto_installer_posts_films', $done ? $done : [ 0 ] );
 	}
 
 	/** Batch 3 – round 5, item 10: the share-scheme awards night (runs once,
@@ -1056,7 +1190,7 @@ class Verto_Installer {
 						[ '_id' => self::eid(), 'line' => "Don't take our" ],
 						[ '_id' => self::eid(), 'line' => 'word for it.' ],
 					],
-					'body' => 'Real quotes from the team are on their way – these are placeholders while we collect them.',
+					'body' => 'Straight from the team – what working here is actually like.',
 				] ),
 			], [
 				// Round 6, item 7: the media column is a composed stack – the
@@ -1148,19 +1282,33 @@ class Verto_Installer {
 				] ] ),
 			], 'verto-muted verto-container-pad' ),
 			// Incentives + share scheme – the client's share-scheme interview film
-			// (click-to-play: poster + controls, nothing loads until pressed).
+			// paired with the Ibiza incentive-trip film (Sep-2026 drop). Both are
+			// click-to-play: poster + controls, nothing loads until pressed.
 			self::section2( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Incentives & ownership',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Hit target. Board the plane.' ] ],
-					'body'    => "Two international incentive trips a year, winners' lunches, sales days and personal training sessions. Barcelona 2025, Prague in January, Ibiza this summer – and a share scheme that includes every person in the business. Press play to hear what owning a piece of Verto actually means to the team.",
+					'body'    => "Two international incentive trips a year, winners' lunches, sales days and personal training sessions. Barcelona 2025, Prague in January, Ibiza this summer – and a share scheme that includes every person in the business. Press play to hear what owning a piece of Verto actually means to the team, and to see where hitting target took the winners this summer.",
 				] ),
 				// Round 5, item 10: the share-scheme awards-night photo sits
-				// beside the share-scheme film (was the Barcelona group shot).
+				// beside the incentive films (was the Barcelona group shot).
 				self::widget( 'html', [ 'html' => self::share_certs_figure( $media ) ] ),
 			], [
-				self::widget( 'html', [ 'html' => self::share_scheme_video_html( $media ) ] ),
+				self::widget( 'html', [ 'html' => self::incentive_films_html( $media ) ] ),
 			], 'verto-ink verto-container-pad', 50 ),
+			// Sales days – client (Sep 2026): "Sales days are massive for us
+			// and something we've been leading in the local area. Don't want
+			// massive video windows but if we could show these somehow all on
+			// one section and hover over to play." Ten compact muted films in
+			// one dense mosaic; posters only on load, hover (or tap) to play.
+			self::section( [
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'Sales days',
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'One day a month, all in.' ] ],
+					'body'    => "A company favourite: a full day of competition, prizes and noise, every month – and something we've been leading in the local area.",
+				] ),
+				self::widget( 'verto-salesdays-mosaic', [ 'items' => self::salesdays_items( $media ) ] ),
+			], 'verto-muted verto-container-pad' ),
 			self::section( [ self::widget( 'verto-socials' ) ], 'verto-container-pad' ),
 			self::section( [
 				self::widget( 'verto-section-intro', [
@@ -1330,21 +1478,28 @@ class Verto_Installer {
 		update_option( 'page_on_front', $home_id );
 	}
 
-	/** Community & DE&I cards. The two gala cards use the client's real
-	 *  charity-gala photography (Aug-2026 drop); the DE&I card keeps its
-	 *  placeholder until the client's commitments/numbers arrive. */
+	/** Community & DE&I cards. The gala card uses the client's real
+	 *  charity-gala photography (Aug-2026 drop); the charity card carries the
+	 *  Sep-2026 charity-gala film (poster + click-to-play, nothing loads
+	 *  until pressed); the DE&I card keeps its placeholder until the
+	 *  client's commitments/numbers arrive. */
 	private static function community_cards_html( array $media = [] ): string {
 		$cards = [
 			// Round 4, item 17: two galas now – most recent for Maeve's Mission,
 			// after the 2023 Amelia-Mae Foundation gala.
-			[ 'Gala nights', "Black-tie charity galas – most recently for Maeve's Mission, following the 2023 gala that raised £15,504 for the Amelia-Mae Foundation.", 'gala_01', 'The team on stage at the charity gala' ],
-			[ 'Charity & fundraising', 'Every office backs a cause the team chooses – fundraisers, sponsored events and hands-on volunteering through the year.', 'gala_02', 'Black-tie group at the charity gala' ],
-			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments – and the numbers behind them – publish here soon.', null, '' ],
+			[ 'Gala nights', "Black-tie charity galas – most recently for Maeve's Mission, following the 2023 gala that raised £15,504 for the Amelia-Mae Foundation.", 'gala_01', 'The team on stage at the charity gala', null, null ],
+			[ 'Charity & fundraising', 'Every office backs a cause the team chooses – fundraisers, sponsored events and hands-on volunteering through the year.', 'gala_02', 'Black-tie group at the charity gala', 'charity_film', 'charity_film_poster' ],
+			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments – and the numbers behind them – publish here soon.', null, '', null, null ],
 		];
 		$html = '<div class="verto-community">';
-		foreach ( $cards as [ $title, $body, $mkey, $alt ] ) {
+		foreach ( $cards as [ $title, $body, $mkey, $alt, $vkey, $pkey ] ) {
 			$html .= '<article class="verto-community__card">';
-			if ( $mkey && ! empty( $media[ $mkey ]['url'] ) ) {
+			if ( $vkey && ! empty( $media[ $vkey ]['url'] ) ) {
+				$poster = ( $pkey && ! empty( $media[ $pkey ]['url'] ) ) ? ' poster="' . esc_url( $media[ $pkey ]['url'] ) . '"' : '';
+				$html  .= '<div class="verto-community__media verto-community__media--video">'
+					. '<video controls preload="none" playsinline' . $poster . ' src="' . esc_url( $media[ $vkey ]['url'] ) . '" aria-label="' . esc_attr( $title . ' – the charity gala film' ) . '"></video>'
+					. '</div>';
+			} elseif ( $mkey && ! empty( $media[ $mkey ]['url'] ) ) {
 				$html .= '<div class="verto-community__media"><img src="' . esc_url( $media[ $mkey ]['url'] ) . '" alt="' . esc_attr( $alt ) . '" loading="lazy" /></div>';
 			} else {
 				$html .= '<div class="verto-community__ph">'
@@ -1395,6 +1550,50 @@ class Verto_Installer {
 			. '</figure>';
 	}
 
+	/** Careers incentives pairing – the share-scheme interview film beside
+	 *  the Ibiza incentive-trip film (Sep-2026 drop), two compact portrait
+	 *  films, each click-to-play (poster + native controls, preload="none").
+	 *  Falls back to the single share-scheme film until the Ibiza film has
+	 *  been imported. */
+	private static function incentive_films_html( array $media ): string {
+		if ( empty( $media['ibiza_trip_film']['url'] ) ) {
+			return self::share_scheme_video_html( $media );
+		}
+		$films = [
+			[ 'share_video', 'share_poster', 'The share scheme', 'Still from the Verto share-scheme interviews' ],
+			[ 'ibiza_trip_film', 'ibiza_trip_poster', 'The Ibiza trip', "The winners' incentive trip to Ibiza, summer 2026" ],
+		];
+		$html = '<div class="verto-films-duo">';
+		foreach ( $films as [ $vkey, $pkey, $label, $aria ] ) {
+			if ( empty( $media[ $vkey ]['url'] ) ) continue;
+			$poster = empty( $media[ $pkey ]['url'] ) ? '' : ' poster="' . esc_url( $media[ $pkey ]['url'] ) . '"';
+			$html  .= '<figure class="verto-video-story verto-video-story--compact">'
+				. '<video controls preload="none" playsinline' . $poster . ' src="' . esc_url( $media[ $vkey ]['url'] ) . '" aria-label="' . esc_attr( $aria ) . '"></video>'
+				. '<figcaption>' . esc_html( $label ) . '</figcaption>'
+				. '</figure>';
+		}
+		return $html . '</div>';
+	}
+
+	/** Sales-day mosaic tiles – the ten Sep-2026 sales-day films (keys
+	 *  salesday_01…salesday_10 + posters) as repeater items for the
+	 *  verto-salesdays-mosaic widget. Films that have not been imported
+	 *  yet are simply skipped, so the mosaic renders whatever is there. */
+	private static function salesdays_items( array $media ): array {
+		$items = [];
+		for ( $i = 1; $i <= 10; $i++ ) {
+			$key = sprintf( 'salesday_%02d', $i );
+			if ( empty( $media[ $key ]['url'] ) ) continue;
+			$items[] = [
+				'_id'    => self::eid(),
+				'video'  => self::media_setting( $media, $key ),
+				'poster' => self::media_setting( $media, $key . '_poster' ),
+				'label'  => sprintf( 'Sales day film %d of 10', $i ),
+			];
+		}
+		return $items;
+	}
+
 	private static function brand_tiles_items( array $media ): array {
 		return [
 			[ '_id' => self::eid(), 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
@@ -1411,7 +1610,7 @@ class Verto_Installer {
 			// (Interior Design & Fit-out dropped pending client decision).
 			// Round 6, item 1: "up the vibrant blue a little" – brighter
 			// royal-blue (#0464FA) glows in the face, logo contrast kept.
-			[ '_id' => self::eid(), 'name' => 'MODULR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
+			[ '_id' => self::eid(), 'name' => 'MODULR', 'focus' => 'Architecture, Data Centres & Built Environment', 'color' => '#0464FA', 'bg' => '#000724',
 			  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(4,100,250,0.5), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(4,100,250,0.32), transparent 65%), #000724',
 			  'sectors' => "Architecture\nData Centres\nMEP Engineering",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
@@ -1471,8 +1670,8 @@ class Verto_Installer {
 		$all = [
 			'modulr' => [
 				'name'        => 'Modulr',
-				'focus'       => 'Architecture & Data Centres',
-				'focus_lower' => 'architecture & data centres',
+				'focus'       => 'Architecture, Data Centres & Built Environment',
+				'focus_lower' => 'architecture, data centres & the built environment',
 				'hero'        => [
 					'line1'  => 'Connecting talent.',
 					'line2'  => 'Powering progress',
@@ -2153,22 +2352,28 @@ class Verto_Installer {
 				'cta_text'  => "How $name works",
 				'cta_link'  => [ 'url' => '/about' ],
 			] ) ], 'verto-bs' ),
+			// The four Verto models – Engage (flagship) / Exclusive /
+			// Contingent / Contract. 2x2 on tablet, 4-up on desktop via the
+			// zigzag grid. No fees or percentages on the site (CLIENT-NEEDS.md).
 			self::section( [ self::widget( 'verto-process-rail', [
-				'layout'    => 'cards3',
+				'layout'    => 'zigzag',
 				'bg'        => 'muted',
 				'eyebrow'   => 'Hiring solutions',
-				'heading'   => "Sized to the project.\nBuilt for the market.",
-				'side_text' => "We construct a tailored hiring plan to meet your requirements – whether you're filling one role or building an entire commercial team.",
+				'heading'   => "Four ways to work with us.\nOne standard.",
+				'side_text' => "From a fully managed partnership to flexible contract cover – we build the hiring plan around your requirement, whether you're filling one role or an entire team.",
 				'items'     => [
-					[ '_id' => self::eid(), 'title' => 'Engaged Search', 'kicker' => 'Our flagship model',
-					  'body' => 'A committed partnership with a structured process – market mapping, verified shortlists, offer management. Built to remove the chance of failure and get it right first time. 100% success rate on the Engage model.',
-					  'bullets' => "Exclusive partnership\nStructured milestones\nFrequent read-outs" ],
-					[ '_id' => self::eid(), 'title' => 'Retained Executive Search', 'kicker' => 'Director and C-suite mandates',
-					  'body' => "Discreet, confidential search for VP, MD, director and C-suite appointments. Off-market approaches, NDA-protected mandates and full lifecycle stakeholder management for the roles that can't be advertised.",
-					  'bullets' => "Retained, fully confidential\nNDA-protected searches\nStakeholder & offer management" ],
-					[ '_id' => self::eid(), 'title' => 'Team Builds', 'kicker' => 'Partnerships, not placements',
-					  'body' => 'When a new plant, project or region needs staffing from the ground up – we build the whole team. Proactively, against your timeline, reducing time-to-hire and the cost of the empty seat.',
-					  'bullets' => "Land-and-expand\nContract and permanent\nAgainst your project timeline" ],
+					[ '_id' => self::eid(), 'title' => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
+					  'body' => 'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement.',
+					  'bullets' => "Maximum visibility\nBetter fill rates\nFewer offer rejections" ],
+					[ '_id' => self::eid(), 'title' => 'Exclusive', 'kicker' => 'One search, one partner',
+					  'body' => 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.',
+					  'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage" ],
+					[ '_id' => self::eid(), 'title' => 'Contingent', 'kicker' => 'The classic model',
+					  'body' => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
+					  'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on" ],
+					[ '_id' => self::eid(), 'title' => 'Contract', 'kicker' => 'Interim & project specialists',
+					  'body' => 'Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.',
+					  'bullets' => "Compliantly engaged\nReady fast\nProjects, cover and peaks" ],
 				],
 			] ) ], 'verto-bs' ),
 		];

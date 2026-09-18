@@ -7,7 +7,9 @@
  *  1. Featured story – newest post rendered large (image left ~60%,
  *     category chip + display-2 title + excerpt + date/read time right).
  *  2. Card grid of the remaining posts with category chips.
- *  3. Verto only: "Stories" video slot placeholders (client videos to come).
+ *  3. Verto only: "Recent events" – a compact rail of the client's event
+ *     films (summit / Ibiza / charity night / the promotion films),
+ *     poster tiles with play badges, click-to-play inline.
  *  4. Verto only: the Instagram socials section.
  */
 $verto_brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
@@ -104,54 +106,51 @@ get_header();
 	<?php endif; ?>
 
 	<?php if ( 'verto' === $verto_brand ) : ?>
-		<!-- STORIES – the client's people-story films (Aug-2026 media drop).
-		     Each slot renders its real video (poster + controls, preload="none");
-		     a slot whose media hasn't been imported falls back to the dashed
-		     placeholder, so the band degrades gracefully pre-build. -->
+		<!-- RECENT EVENTS – a compact rail of the client's event films
+		     (Sep-2026 drop: summit / Ibiza / charity night, plus the Milly and
+		     Sade promotion films). Poster tiles with play badges; the video
+		     only starts (and loads – preload="none") when the badge is
+		     pressed (verto-effects.js §12). Supersedes the old People's
+		     stories placeholder slots – these are the real films. A tile
+		     whose media hasn't been imported yet is skipped, and a pending
+		     note tells the admin to run the build. -->
 		<?php
-		$verto_media   = get_option( 'verto_installer_media', [] );
-		$verto_stories = [
-			[ 'title' => 'A promotion, announced', 'note' => 'Confetti, applause &mdash; the office turns out', 'video' => 'celebration_video', 'poster' => 'celebration_poster' ],
-			[ 'title' => 'The moment it lands',    'note' => 'Sade&rsquo;s promotion, on camera',               'video' => 'sade_celebration_video', 'poster' => 'sade_celebration_poster' ],
-			[ 'title' => 'Owning a piece of it',   'note' => 'What the share scheme means to the team',         'video' => 'share_video', 'poster' => 'share_poster' ],
+		$verto_media  = get_option( 'verto_installer_media', [] );
+		$verto_events = [
+			[ 'title' => 'Summer summit',        'note' => 'The whole group, one castle',            'video' => 'summit_film',     'poster' => 'summit_film_poster' ],
+			[ 'title' => 'Ibiza incentive trip', 'note' => 'The winners board the plane',            'video' => 'ibiza_trip_film', 'poster' => 'ibiza_trip_poster' ],
+			[ 'title' => 'Charity night',        'note' => 'The gala for Maeve&rsquo;s Mission',     'video' => 'charity_film',    'poster' => 'charity_film_poster' ],
+			[ 'title' => 'Milly&rsquo;s promotion', 'note' => 'Confetti in the Edison Lux corner',   'video' => 'milly_video',     'poster' => 'milly_poster' ],
+			[ 'title' => 'Sade&rsquo;s promotion',  'note' => 'The moment it landed',                'video' => 'sade_video',      'poster' => 'sade_poster' ],
 		];
 		$verto_missing = 0;
-		foreach ( $verto_stories as $verto_s ) { if ( empty( $verto_media[ $verto_s['video'] ]['url'] ) ) $verto_missing++; }
+		foreach ( $verto_events as $verto_s ) { if ( empty( $verto_media[ $verto_s['video'] ]['url'] ) ) $verto_missing++; }
 		?>
-		<section class="verto-stories">
-			<div class="verto-stories__head">
-				<div class="verto-stories__intro">
-					<span class="verto-eyebrow">Stories</span>
-					<h2 class="verto-display-3" style="margin-top:1.25rem;">People&rsquo;s stories.</h2>
-					<p class="verto-stories__body">The team, on camera &mdash; promotions landing in a storm of confetti, and what owning a piece of Verto actually means. Press play.</p>
+		<section class="verto-events">
+			<div class="verto-events__head">
+				<div class="verto-events__intro">
+					<span class="verto-eyebrow">Recent events</span>
+					<h2 class="verto-display-3" style="margin-top:1.25rem;">The last few months, on film.</h2>
+					<p class="verto-events__body">The summit, the Ibiza trip, the charity night and two promotions landing &ndash; press play.</p>
 				</div>
 				<?php if ( $verto_missing ) : ?>
-					<span class="verto-stories__note">&#9888; <?php echo (int) $verto_missing; ?> video slot<?php echo 1 === $verto_missing ? '' : 's'; ?> pending &mdash; run Verto Setup &rarr; Build to import the films</span>
+					<span class="verto-events__note">&#9888; <?php echo (int) $verto_missing; ?> film<?php echo 1 === $verto_missing ? '' : 's'; ?> pending &ndash; run Verto Setup &rarr; Rebuild to import the videos</span>
 				<?php endif; ?>
 			</div>
-			<div class="verto-stories__grid">
-				<?php foreach ( $verto_stories as $verto_i => $verto_s ) : ?>
-					<?php if ( ! empty( $verto_media[ $verto_s['video'] ]['url'] ) ) : ?>
-						<figure class="verto-stories__video">
-							<video controls preload="none" playsinline
+			<div class="verto-events__rail">
+				<?php foreach ( $verto_events as $verto_s ) : ?>
+					<?php if ( empty( $verto_media[ $verto_s['video'] ]['url'] ) ) continue; ?>
+					<figure class="verto-events__tile">
+						<div class="verto-events__media">
+							<video preload="none" playsinline
 								<?php if ( ! empty( $verto_media[ $verto_s['poster'] ]['url'] ) ) : ?>poster="<?php echo esc_url( $verto_media[ $verto_s['poster'] ]['url'] ); ?>"<?php endif; ?>
 								src="<?php echo esc_url( $verto_media[ $verto_s['video'] ]['url'] ); ?>"></video>
-							<figcaption>
-								<span class="verto-stories__slottitle"><?php echo wp_kses_post( $verto_s['title'] ); ?></span>
-								<span class="verto-stories__slotnote"><?php echo wp_kses_post( $verto_s['note'] ); ?></span>
-							</figcaption>
-							<span class="verto-stories__num">0<?php echo (int) $verto_i + 1; ?></span>
-						</figure>
-					<?php else : ?>
-						<div class="verto-stories__slot">
-							<span class="verto-stories__play" aria-hidden="true"><?php echo function_exists( 'verto_icon' ) ? verto_icon( 'play' ) : '&#9654;'; ?></span>
-							<div>
-								<div class="verto-stories__slottitle"><?php echo wp_kses_post( $verto_s['title'] ); ?></div>
-								<div class="verto-stories__slotnote">People&rsquo;s stories &mdash; video coming soon</div>
-							</div>
-							<span class="verto-stories__num">0<?php echo (int) $verto_i + 1; ?></span>
+							<button type="button" class="verto-events__play" aria-label="Play &ndash; <?php echo esc_attr( wp_strip_all_tags( html_entity_decode( $verto_s['title'] ) ) ); ?>">
+								<span class="verto-post-card__play" aria-hidden="true"></span>
+							</button>
 						</div>
-					<?php endif; ?>
+						<figcaption class="verto-events__caption"><?php echo wp_kses_post( $verto_s['title'] ); ?> &ndash; <?php echo wp_kses_post( $verto_s['note'] ); ?></figcaption>
+					</figure>
 				<?php endforeach; ?>
 			</div>
 		</section>

@@ -54,7 +54,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 				// Round 4, item 13: new ModulR positioning + trimmed sector list
 				// (Interior Design & Fit-out dropped pending client decision).
 				// Round 6, item 1: brighter royal-blue glows in the tile face.
-				[ 'name' => 'MODULR', 'focus' => 'Architecture & Data Centres', 'color' => '#0464FA', 'bg' => '#000724',
+				[ 'name' => 'MODULR', 'focus' => 'Architecture, Data Centres & Built Environment', 'color' => '#0464FA', 'bg' => '#000724',
 				  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(4,100,250,0.5), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(4,100,250,0.32), transparent 65%), #000724',
 				  'sectors' => "Architecture\nData Centres\nMEP Engineering",
 				  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.' ],

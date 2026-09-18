@@ -295,6 +295,9 @@ h1, h2, h3 {
 .verto-quotes:hover .verto-quotes__track { animation-play-state: paused; }
 @keyframes verto-quotes-scroll { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
 .verto-quote { display: flex; flex-direction: column; flex: 0 0 auto; width: 360px; padding: 2rem; border: 1px solid color-mix(in oklab, var(--ink-foreground) 10%, transparent); background: color-mix(in oklab, var(--ink-foreground) 3%, transparent); }
+/* Long quotes get a wider card so no single card towers; the track's
+   align-items:stretch keeps the row equal height (round 6). No clamping. */
+.verto-quote--wide { width: min(560px, 88vw); }
 .verto-quote__mark { font-family: var(--font-display); font-size: 3rem; line-height: 1; color: var(--accent); }
 .verto-quote__text { margin-top: 0.5rem; flex: 1; font-size: 1rem; line-height: 1.6; opacity: 0.9; }
 .verto-quote__who { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid color-mix(in oklab, var(--ink-foreground) 12%, transparent); font-size: 0.875rem; font-weight: 600; }
@@ -908,6 +911,17 @@ figure.verto-quote { margin: 0; }
   transform-origin: left; transform: scaleX(0); transition: transform 0.5s;
 }
 .vbs-card:hover .vbs-card__bar, .vbs-card:focus-within .vbs-card__bar { transform: scaleX(1); }
+/* Flagship solution card (Verto Engage): brand hairline ring, bar always
+   shown, "Our flagship" pill in the brand accent. */
+.vbs-card--lead { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand) 45%, transparent); }
+.vbs-card--lead .vbs-card__bar { transform: scaleX(1); }
+.vbs-card__badge {
+  align-self: flex-start; margin-bottom: 0.75rem; padding: 0.25rem 0.625rem;
+  border-radius: 999px; font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.18em; color: var(--brand);
+  background: color-mix(in oklab, var(--brand) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand) 45%, transparent);
+}
 .vbs-spec__icon { width: 2.25rem; height: 2.25rem; }
 .vbs-spec__num { margin-top: 1rem; font-size: 0.875rem; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.6; }
 .vbs-spec__title { margin-top: 0.5rem; font-size: 1.5rem; line-height: 2rem; }
@@ -1237,42 +1251,36 @@ body.verto-brand-edison-lux .vbs-statcard__value {
 .verto-cat-chip--dark { background: color-mix(in oklab, var(--accent) 22%, transparent); }
 .verto-post-card__media .verto-cat-chip { position: absolute; bottom: 0.75rem; left: 0.75rem; }
 
-/* ── Stories — video slot placeholders (client videos to come) ── */
-.verto-stories {
+/* ── Recent events – compact rail of the client's event films on the WGO
+      hub (supersedes the People's-stories slots: real films now). Poster
+      tiles with play badges; click-to-play inline via verto-effects.js §12
+      (preload="none" so nothing loads before the press). ── */
+.verto-events {
   border-radius: 1.5rem; padding: 2.5rem; margin: 3rem 0 0;
   background: var(--ink); color: var(--ink-foreground);
 }
-@media (min-width: 1024px) { .verto-stories { padding: 3.5rem; } }
-.verto-stories__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
-.verto-stories__intro { max-width: 36rem; }
-.verto-stories__body { margin-top: 1.5rem; line-height: 1.65; color: color-mix(in oklab, var(--ink-foreground) 80%, transparent); }
-.verto-stories__note { font-size: 10px; text-transform: uppercase; letter-spacing: 0.24em; opacity: 0.5; }
-.verto-stories__grid { margin-top: 2.5rem; display: grid; gap: 1.25rem; }
-@media (min-width: 768px) { .verto-stories__grid { grid-template-columns: repeat(3, 1fr); } }
-.verto-stories__slot {
-  position: relative; aspect-ratio: 16 / 9; border-radius: 1rem;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 1rem; text-align: center; padding: 1.5rem;
-  border: 1px dashed color-mix(in oklab, var(--ink-foreground) 30%, transparent);
-  background: color-mix(in oklab, var(--ink-foreground) 4%, transparent);
+@media (min-width: 1024px) { .verto-events { padding: 3.5rem; } }
+.verto-events__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
+.verto-events__intro { max-width: 36rem; }
+.verto-events__body { margin-top: 1.5rem; line-height: 1.65; color: color-mix(in oklab, var(--ink-foreground) 80%, transparent); }
+.verto-events__note { font-size: 10px; text-transform: uppercase; letter-spacing: 0.24em; opacity: 0.5; }
+.verto-events__rail {
+  margin-top: 2.5rem; display: grid; gap: 1rem;
+  grid-auto-flow: column; grid-auto-columns: min(62vw, 15rem);
+  overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 0.5rem;
+  scrollbar-width: thin;
 }
-.verto-stories__play {
-  display: flex; align-items: center; justify-content: center;
-  width: 3.5rem; height: 3.5rem; border-radius: 50%;
-  background: color-mix(in oklab, var(--accent) 22%, transparent); color: var(--accent);
+@media (min-width: 1024px) { .verto-events__rail { grid-auto-flow: row; grid-auto-columns: unset; grid-template-columns: repeat(5, 1fr); overflow: visible; } }
+.verto-events__tile { margin: 0; display: flex; flex-direction: column; gap: 0.75rem; scroll-snap-align: start; }
+.verto-events__media { position: relative; border-radius: 1rem; overflow: hidden; background: #000; }
+.verto-events__media video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; background: #000; }
+.verto-events__play {
+  position: absolute; inset: 0; display: block; width: 100%;
+  border: 0; padding: 0; background: transparent; cursor: pointer;
 }
-.verto-stories__play svg { width: 1.5rem; height: 1.5rem; transform: translateX(2px); }
-.verto-stories__slottitle { font-family: var(--font-display); font-size: 1.125rem; line-height: 1.35; letter-spacing: -0.01em; }
-.verto-stories__slotnote { margin-top: 0.5rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; }
-.verto-stories__num { position: absolute; top: 1rem; right: 1rem; font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.4; }
-/* Real story films (Aug-2026 media drop) — portrait 9:16 cards */
-.verto-stories__video { position: relative; margin: 0; display: flex; flex-direction: column; gap: 0.875rem; }
-.verto-stories__video video {
-  width: 100%; aspect-ratio: 9 / 16; max-height: 480px; object-fit: cover;
-  border-radius: 1rem; background: #000; display: block;
-}
-.verto-stories__video figcaption { display: flex; flex-direction: column; }
-.verto-stories__video .verto-stories__num { top: auto; bottom: 0.75rem; }
+.verto-events__play:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 1rem; }
+.verto-events__media.is-playing .verto-events__play { display: none; }
+.verto-events__caption { font-size: 10px; line-height: 1.5; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.7; }
 /* Portrait video embed (careers share-scheme film) */
 .verto-video-story { margin: 0; }
 .verto-video-story video {
@@ -1288,6 +1296,38 @@ body.verto-brand-edison-lux .vbs-statcard__value {
   max-width: 380px; margin: 0 auto; border-radius: 1.25rem;
   border: 1px dashed color-mix(in oklab, var(--ink-foreground, #fff) 30%, transparent);
 }
+/* Careers incentives pairing – the share-scheme film beside the Ibiza trip
+   film, two compact labelled portrait films. */
+.verto-films-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 480px; margin: 0 auto; }
+.verto-films-duo .verto-video-story--compact video { max-width: none; border-radius: 1rem; }
+.verto-films-duo .verto-video-story--compact figcaption { margin-top: 0.75rem; letter-spacing: 0.18em; }
+/* Sales-days mosaic (careers) – ten compact portrait film tiles in one
+   dense hover-to-play grid: 5-up desktop, 3-up tablet, 2-up mobile. The
+   poster img sits underneath; the video fades in over it while playing. */
+.verto-salesdays__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+@media (min-width: 768px) { .verto-salesdays__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .verto-salesdays__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem; } }
+.verto-salesdays__tile {
+  position: relative; margin: 0; aspect-ratio: 9 / 16; border-radius: 0.75rem;
+  overflow: hidden; background: #000; cursor: pointer;
+}
+.verto-salesdays__tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.verto-salesdays__poster,
+.verto-salesdays__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.verto-salesdays__video { opacity: 0; transition: opacity 0.35s ease; pointer-events: none; }
+.verto-salesdays__tile.is-playing .verto-salesdays__video { opacity: 1; }
+.verto-salesdays__hint {
+  position: absolute; left: 50%; bottom: 0.75rem; transform: translateX(-50%);
+  padding: 0.35rem 0.8rem; border-radius: 999px; white-space: nowrap;
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; color: #fff;
+  background: rgba(10, 10, 12, 0.55); backdrop-filter: blur(4px); pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) { .verto-salesdays__video { transition: none; } }
+/* About community cards – the charity card carries the charity-gala film
+   (click-to-play, native controls); slightly taller media so the film's
+   title frame survives the crop. */
+.verto-community__media--video { aspect-ratio: 16 / 10; background: #000; }
+.verto-community__media--video video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .verto-hub-socials { padding: 5rem 0 6rem; margin-top: 4rem; border-top: 1px solid var(--border); }
 
 /* ── About photo collage (verto-collage widget) ── */
@@ -1734,14 +1774,15 @@ body.verto-modal-open { overflow: hidden; }
 @media (min-width: 768px) { .vbs-desks .verto-intro { padding-inline: 2.5rem; } }
 .vbs-desks .vbs-aud { padding-block: 3.5rem 6rem; }
 
-/* ── Item 5: compact services band (three engagement models → /clients) ── */
+/* ── Item 5: compact services band (the four Verto models → /clients) ── */
 .verto-services { padding-block: 4rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--background); }
 @media (min-width: 1024px) { .verto-services { padding-block: 4.5rem; } }
 .verto-services__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
 .verto-services__link { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; text-decoration: none; white-space: nowrap; }
 .verto-services__link:hover { text-decoration: underline; }
 .verto-services__grid { display: grid; gap: 1rem; }
-@media (min-width: 768px) { .verto-services__grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 768px)  { .verto-services__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .verto-services__grid { grid-template-columns: repeat(4, 1fr); } }
 .verto-services__card {
   position: relative; overflow: hidden; display: flex; flex-direction: column;
   padding: 1.5rem 1.5rem 1.625rem; text-decoration: none; color: var(--foreground);
@@ -1751,6 +1792,17 @@ body.verto-modal-open { overflow: hidden; }
 .verto-services__card:hover { background: color-mix(in oklab, var(--foreground) 9%, var(--background)); }
 .verto-services__bar { position: absolute; top: 0; left: 0; height: 3px; width: 100%; transform-origin: left; transform: scaleX(0); transition: transform 0.5s; }
 .verto-services__card:hover .verto-services__bar { transform: scaleX(1); }
+/* Flagship (Verto Engage) card leads the band: brand hairline ring, the
+   top bar always shown, and an "Our flagship" pill in the brand accent. */
+.verto-services__card--lead { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand) 45%, transparent); }
+.verto-services__card--lead .verto-services__bar { transform: scaleX(1); }
+.verto-services__badge {
+  align-self: flex-start; margin-bottom: 0.625rem; padding: 0.25rem 0.625rem;
+  border-radius: 999px; font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.18em; color: var(--brand);
+  background: color-mix(in oklab, var(--brand) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand) 45%, transparent);
+}
 .verto-services__kicker { font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.6; }
 .verto-services__title { margin-top: 0.5rem; font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -0.01em; }
 .verto-services__body { margin-top: 0.5rem; font-size: 0.875rem; line-height: 1.55; opacity: 0.75; }

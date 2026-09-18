@@ -39,7 +39,7 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 		$this->add_control( 'cta2_link', [ 'label' => 'Secondary CTA link', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/brands' ] ] );
 		$this->add_control( 'pillars', [
 			'label' => 'Pillars line (separated with |)', 'type' => \Elementor\Controls_Manager::TEXT,
-			'default' => 'US Energy|Technical Sales & Engineering|Architecture & Data Centres',
+			'default' => 'US Energy|Technical Sales & Engineering|Architecture, Data Centres & Built Environment',
 		] );
 		$this->end_controls_section();
 

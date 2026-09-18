@@ -3,32 +3,35 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.17.1
+ * Version: 0.20.0
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.17.1' );
+define( 'VERTO_WIDGETS_VERSION', '0.20.0' );
 
 /**
- * Round 5, item 5 – compact services band for the brand sites: the three
- * engagement models from the Clients page, one line each, linking through
+ * Compact services band for the brand sites: the FOUR Verto engagement
+ * models (Engage / Exclusive / Contingent / Contract), linking through
  * to /clients. Shared by the installer (Home / About / Candidates pages,
  * via the HTML widget) and the theme's brand Insights template (home.php).
  * The Clients page IS the services page, so the band is skipped there.
+ * No fees or percentages on the site (see CLIENT-NEEDS.md).
  */
 function verto_services_band_html(): string {
 	$models = [
-		[ 'Engaged Search',            'Our flagship model',            'A committed partnership with a structured process – market mapping, verified shortlists, offer management. 100% success rate.' ],
-		[ 'Retained Executive Search', 'Director & C-suite mandates',   "Discreet, confidential search for the roles that can't be advertised – off-market approaches, NDA-protected mandates." ],
-		[ 'Team Builds',               'Partnerships, not placements',  'A new plant, project or region staffed from the ground up – proactively, against your timeline.' ],
+		[ 'Verto Engage', 'A true partnership',           'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement. Maximum visibility, better fill rates, fewer offer rejections.', 'Our flagship' ],
+		[ 'Exclusive',    'One search, one partner',      'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.', '' ],
+		[ 'Contingent',   'The classic model',            'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.', '' ],
+		[ 'Contract',     'Interim & project specialists','Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.', '' ],
 	];
 	$cards = '';
-	foreach ( $models as $i => [ $title, $kicker, $body ] ) {
-		$cards .= '<a class="verto-services__card" href="/clients">'
+	foreach ( $models as $i => [ $title, $kicker, $body, $badge ] ) {
+		$cards .= '<a class="verto-services__card' . ( $badge ? ' verto-services__card--lead' : '' ) . '" href="/clients">'
 			. '<span class="verto-services__bar" style="background:var(--brand);"></span>'
+			. ( $badge ? '<span class="verto-services__badge">' . esc_html( $badge ) . '</span>' : '' )
 			. '<span class="verto-services__kicker">' . esc_html( $kicker ) . '</span>'
 			. '<span class="verto-services__title">' . esc_html( $title ) . '</span>'
 			. '<span class="verto-services__body">' . esc_html( $body ) . '</span>'
@@ -80,6 +83,7 @@ add_action( 'elementor/widgets/register', function ( $widgets_manager ) {
 	require_once __DIR__ . '/widgets/cta-band.php';
 	require_once __DIR__ . '/widgets/collage.php';
 	require_once __DIR__ . '/widgets/values-accordion.php';
+	require_once __DIR__ . '/widgets/salesdays-mosaic.php';
 
 	$widgets_manager->register( new \Verto_Widget_Title_Reveal() );
 	$widgets_manager->register( new \Verto_Widget_V_Mask_Media() );
@@ -111,6 +115,7 @@ add_action( 'elementor/widgets/register', function ( $widgets_manager ) {
 	$widgets_manager->register( new \Verto_Widget_Cta_Band() );
 	$widgets_manager->register( new \Verto_Widget_Collage() );
 	$widgets_manager->register( new \Verto_Widget_Values_Accordion() );
+	$widgets_manager->register( new \Verto_Widget_Salesdays_Mosaic() );
 } );
 
 /** Widget category so they group together in the Elementor panel. */
