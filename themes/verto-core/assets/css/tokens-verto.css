@@ -6,17 +6,20 @@
   --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --background: oklch(0.985 0.005 85);
+  /* Round 9, item 8 – TRIAL: fresher light-grey ground (Metric-style
+     crispness) replacing the goldy ivory. INSTANT REVERT: swap each value
+     back to the ivory noted beside it. */
+  --background: #F4F5F6;              /* was oklch(0.985 0.005 85) ivory */
   --foreground: oklch(0.18 0.025 260);
-  --surface: oklch(1 0 0);
+  --surface: #ffffff;                 /* was oklch(1 0 0) – unchanged white */
   --surface-foreground: oklch(0.18 0.025 260);
-  --muted: oklch(0.95 0.008 85);
-  --muted-foreground: oklch(0.45 0.015 260);
+  --muted: #E9EBED;                   /* was oklch(0.95 0.008 85) warm ivory-grey */
+  --muted-foreground: oklch(0.44 0.012 260);  /* was oklch(0.45 0.015 260) */
   --accent: #d19f2f;
   --accent-foreground: #1F2A44; /* dark text on gold — white fails contrast */
   --brand: #d19f2f;
   --brand-foreground: #1F2A44;
   --ink: #1F2A44; /* round 4, item 1 — richer deep navy (was #283347) */
   --ink-foreground: oklch(0.97 0.01 85);
-  --border: oklch(0.9 0.012 85);
+  --border: oklch(0.89 0.004 260); /* round 9, item 8 trial – was oklch(0.9 0.012 85) warm ivory */
 }

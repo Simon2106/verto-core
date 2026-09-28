@@ -22,7 +22,9 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 		$this->start_controls_section( 'content', [ 'label' => 'Process' ] );
 		$this->add_control( 'layout', [
 			'label' => 'Layout', 'type' => \Elementor\Controls_Manager::SELECT,
-			'options' => [ 'cards3' => '3-up staggered cards', 'zigzag' => '4-up zigzag cards', 'line' => 'Horizontal rail' ],
+			// Round 9, item 17: "row4" – one flat 4-up row, equal height, no
+			// stagger, accent bars in var(--brand-gradient, var(--brand)).
+			'options' => [ 'cards3' => '3-up staggered cards', 'zigzag' => '4-up zigzag cards', 'row4' => '4-up flat row (equal height, gradient accents)', 'line' => 'Horizontal rail' ],
 			'default' => 'cards3',
 		] );
 		$this->add_control( 'line_style', [
@@ -114,15 +116,17 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 						</div>
 					</div>
 				<?php else :
-					$is3 = 'cards3' === $layout;
+					$is3  = 'cards3' === $layout;
+					$row4 = 'row4' === $layout; // round 9, item 17: flat equal-height row
 					?>
-					<div class="<?php echo $is3 ? 'vbs-rail__grid3' : 'vbs-rail__grid4'; ?>">
+					<div class="<?php echo $is3 ? 'vbs-rail__grid3' : 'vbs-rail__grid4'; ?><?php echo $row4 ? ' vbs-rail__grid4--flat' : ''; ?>">
 						<?php foreach ( $s['items'] as $i => $it ) :
-							$stagger = $is3 ? ( 1 === $i ) : ( 1 === $i % 2 );
+							$stagger = $row4 ? false : ( $is3 ? ( 1 === $i ) : ( 1 === $i % 2 ) );
 							$badge   = trim( (string) ( $it['badge'] ?? '' ) );
+							$bar_bg  = $row4 ? 'var(--brand-gradient, var(--brand))' : 'var(--brand)';
 							?>
 							<div class="vbs-card<?php echo $is3 ? ' vbs-card--p8' : ' vbs-card--p7'; ?><?php echo $stagger ? ' vbs-card--drop' : ''; ?><?php echo $badge ? ' vbs-card--lead' : ''; ?>" style="background:color-mix(in oklab, var(--foreground) 6%, var(--background));">
-								<span class="vbs-card__bar" style="background:var(--brand);"></span>
+								<span class="vbs-card__bar" style="background:<?php echo esc_attr( $bar_bg ); ?>;"></span>
 								<?php if ( $badge ) : ?><span class="vbs-card__badge"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
 								<?php if ( $is3 && $it['kicker'] ) : ?>
 									<div class="vbs-rail__numrow">

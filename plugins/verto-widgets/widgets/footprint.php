@@ -16,6 +16,9 @@ class Verto_Widget_Footprint extends \Elementor\Widget_Base {
 		$rep->add_control( 'line1', [ 'label' => 'Line 1 (address)', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'line2', [ 'label' => 'Line 2 (desks)', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'image', [ 'label' => 'Image', 'type' => \Elementor\Controls_Manager::MEDIA ] );
+		// Round 9, item 25: optional link – the whole tile becomes a link
+		// (About footprint tiles link to the careers locations section).
+		$rep->add_control( 'link', [ 'label' => 'Link (optional)', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->add_control( 'items', [
 			'label' => 'Locations', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ name }}}',
@@ -32,13 +35,21 @@ class Verto_Widget_Footprint extends \Elementor\Widget_Base {
 		$s = $this->get_settings_for_display();
 		echo '<div class="verto-footprint">';
 		foreach ( $s['items'] as $l ) {
-			echo '<div class="verto-footprint__card">';
+			// Round 9, item 25: a tile with a link renders as <a> (same
+			// classes, hover affordance in verto-ui.css).
+			$href = (string) ( $l['link']['url'] ?? '' );
+			$tag  = '' !== $href ? 'a' : 'div';
+			printf( '<%s class="verto-footprint__card%s"%s>', $tag, '' !== $href ? ' verto-footprint__card--link' : '', '' !== $href ? ' href="' . esc_url( $href ) . '"' : '' );
 			if ( ! empty( $l['image']['url'] ) ) {
 				printf( '<img src="%s" alt="" aria-hidden="true" loading="lazy" />', esc_url( $l['image']['url'] ) );
 			}
 			echo '<div class="verto-footprint__scrim"></div><div class="verto-footprint__body">';
 			printf( '<div class="verto-footprint__note">%s</div><div class="verto-footprint__name">%s</div><div class="verto-footprint__line">%s</div><div class="verto-footprint__line" style="opacity:.7">%s</div>', esc_html( $l['note'] ), esc_html( $l['name'] ), esc_html( $l['line1'] ), esc_html( $l['line2'] ) );
-			echo '</div></div>';
+			if ( '' !== $href ) {
+				echo '<div class="verto-footprint__go">Explore this location →</div>';
+			}
+			echo '</div>';
+			printf( '</%s>', $tag );
 		}
 		echo '</div>';
 	}

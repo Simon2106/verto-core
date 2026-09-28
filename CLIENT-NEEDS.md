@@ -17,6 +17,10 @@ a clearly-marked interim in the build; swap in the real material and run
   carry interim images (crops of the existing licensed pylon / plant / EPC
   assets). Real shots wanted per sector: critical power, CCGT & gas,
   renewables, biomass/EFW, nuclear, EPC construction.
+- **Renewables imagery (round 9, item 19)** – the Specialisms "Renewables &
+  Energy Transition" card has no licensed renewables photo (no solar/wind in
+  the current set). Chase the Shutterstock batch (incl. solar/wind) alongside
+  the CCGT licences above.
 
 ## All brand sites
 
@@ -38,5 +42,19 @@ a clearly-marked interim in the build; swap in the real material and run
   (currently "Manager").
 - **Headshots** for the team members flagged in Verto Setup (initials
   placeholders render meanwhile).
-- **Havant/Solent skyline** – client sourcing a real photo (Spinnaker Tower
-  interim) – awaiting file.
+- **Havant/Solent skyline (repeatedly requested)** – client sourcing a real
+  Spinnaker/Havant photo – still awaited. Round 9 interim: the Solent
+  footprint/collage tiles use real office photography (the London skyline was
+  wrong and is gone).
+- **Names for the unlabelled treated photos (round 9)** – the "new website
+  pics" zip 3 contains several treated profile photos exported under other
+  people's filenames ("jake vertek 1 (5)-(9) and (11)", "Martin webs (3)-(5)
+  and unnumbered", "tash modulr (2)") that could not be matched to the roster
+  with confidence. Client to confirm who is who; they then join the photo
+  migration. Saman Akbari's photo is deliberately NOT applied ("Leave Saman
+  off cos he's not in that brand").
+- **DE&I video** – the Dropbox link shared was on Alex's account; Simon to
+  drop the file into the Verto resources folder.
+- **Office identity photography (round 9, item 25)** – full per-office photo
+  sets coming from the client later; the Austin gallery meanwhile carries the
+  client's real skyline (daytime river/kayaks) and rooftop team photo.

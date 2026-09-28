@@ -41,9 +41,12 @@ class Verto_Widget_Quotes extends \Elementor\Widget_Base {
 		foreach ( $loop as $q ) {
 			// Long quotes take a wider card so the row doesn't tower; the
 			// track's align-items:stretch keeps every card equal height.
+			// Round 9, item 5: the big quotation-mark glyph is gone – the
+			// cards are smaller and differentiate via alternating surfaces
+			// (see .verto-quote nth-child rules in verto-ui.css).
 			$wide = mb_strlen( (string) $q['quote'] ) > 380 ? ' verto-quote--wide' : '';
 			printf(
-				'<figure class="verto-quote%s"><span class="verto-quote__mark" aria-hidden="true">&ldquo;</span><blockquote class="verto-quote__text">%s</blockquote><figcaption><div class="verto-quote__who">%s</div></figcaption></figure>',
+				'<figure class="verto-quote%s"><blockquote class="verto-quote__text">%s</blockquote><figcaption><div class="verto-quote__who">%s</div></figcaption></figure>',
 				esc_attr( $wide ),
 				esc_html( $q['quote'] ),
 				esc_html( $q['who'] )

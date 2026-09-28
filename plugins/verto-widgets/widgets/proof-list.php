@@ -41,9 +41,11 @@ class Verto_Widget_Proof_List extends \Elementor\Widget_Base {
 					<span class="eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></span>
 					<h2 class="display-3 vbs-mt5"><?php echo esc_html( $s['heading'] ); ?></h2>
 				</div>
+				<?php // Round 9, item 14: clean 2-col grid – the alternating
+				// 2rem drop is gone so the 01-04 numbers sit on one line. ?>
 				<ul class="vbs-proof__grid">
 					<?php foreach ( $s['items'] as $i => $it ) : ?>
-						<li class="vbs-proof__item<?php echo 1 === $i % 2 ? ' vbs-proof__item--drop' : ''; ?>">
+						<li class="vbs-proof__item">
 							<div class="vbs-proof__num" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
 							<p class="vbs-proof__text"><?php echo esc_html( $it['text'] ); ?></p>
 						</li>

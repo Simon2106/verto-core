@@ -71,6 +71,10 @@ class Verto_Installer {
 			$media = self::import_media();
 			self::seed_team();
 			self::migrate_team_photos();
+			// Round 9, item 1: brand installs seed THEIR OWN standing
+			// vacancies (the group matrix filtered to this brand), so the
+			// brand vacancies sections always have live rows + detail pages.
+			self::seed_internal_jobs( $brand );
 			self::seed_brand_posts( $brand, $media );
 			self::create_brand_site_pages( $brand, $media );
 			self::setup_brand_menu( $brand );
@@ -223,6 +227,13 @@ class Verto_Installer {
 			unset( $map['skyline_us'] );
 			update_option( 'verto_media_skyline_v2', 1 );
 		}
+		// v0.21.0 (round 9, item 24): the client's favourite Austin skyline
+		// (daytime river/kayaks shot) ships as austin-skyline.jpg and takes
+		// over every skyline_us usage – force a one-time re-import.
+		if ( ! get_option( 'verto_media_skyline_v3' ) ) {
+			unset( $map['skyline_us'] );
+			update_option( 'verto_media_skyline_v3', 1 );
+		}
 		$dir   = dirname( __DIR__ ) . '/assets/import/';
 		$files = [
 			'summit_video'  => 'summit-video.mp4',
@@ -238,8 +249,13 @@ class Verto_Installer {
 			'award_bptw'    => 'BPTW_2026_SMALL_ORGANISATION_WHITE.png',
 			'award_recruiter' => 'weve-been-shortlisted.png',
 			'skyline_uk'    => 'skyline-uk.jpg',
-			'skyline_us'    => 'skyline-us.jpg',
+			// Round 9, item 24: the client's favourite real Austin skyline
+			// (daytime, river + kayaks) – supersedes skyline-us.jpg.
+			'skyline_us'    => 'austin-skyline.jpg',
 			'skyline_eu'    => 'skyline-eu.jpg',
+			// Round 9, item 24: rooftop drinks team photo for the Austin
+			// office gallery.
+			'austin_rooftop' => 'austin-rooftop.jpg',
 			// Brand-site media (ModulR)
 			'modulr_hero'       => 'modulr-hero.png',
 			'modulr_datacentre' => 'modulr-datacentre.webp',
@@ -445,51 +461,57 @@ class Verto_Installer {
 	 */
 	private static function team_map(): array {
 		return [
-			/* ── Leadership (group-wide; Alex + Robbie also on the Vertek site, Martin on ModulR) ── */
-			'Alex Hatfield'   => [ 'brands' => [ 'verto', 'vertek' ], 'tier' => 'leadership', 'role' => 'President', 'photo' => 'alex-hatfield.webp', 'leader' => true ],
-			'Martin Doig'     => [ 'brands' => [ 'verto', 'modulr' ], 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig.jpg', 'leader' => true ],
+			/* ── Leadership (group-wide; Alex + Robbie also on the Vertek site, Martin on ModulR) ──
+			   Round 9, item 22: treated brand-profile photos from the client's
+			   Sep-2026 zip drop (-v3 files; brand glow + logo treatment). */
+			'Alex Hatfield'   => [ 'brands' => [ 'verto', 'vertek' ], 'tier' => 'leadership', 'role' => 'President', 'photo' => 'alex-hatfield-v3.png', 'leader' => true ],
+			'Martin Doig'     => [ 'brands' => [ 'verto', 'modulr' ], 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig-v3.png', 'leader' => true ],
 			'Robbie Sturgess' => [ 'brands' => [ 'verto', 'vertek' ], 'tier' => 'leadership', 'role' => 'President', 'photo' => 'robbie-sturgess.webp', 'leader' => true ],
 			/* ── Management (⚠ "Manager" = placeholder title – exact titles for
 			      George East / Ben Cranston / Sade Kendall awaited from client) ── */
-			'Dan Bisset'   => [ 'brands' => [ 'edison-lux' ], 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'vertek-dan-bisset.jpg' ],
-			'George East'  => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'vertek-george-east.jpg' ],
-			'Ben Tiffin'   => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin.jpg' ],
-			'Gary Hunt'    => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Head of Sales Recruitment', 'photo' => 'vertek-gary-hunt-v2.png' ],
+			'Dan Bisset'   => [ 'brands' => [ 'edison-lux' ], 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'edison-dan-bisset-v3.png' ],
+			'George East'  => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'vertek-george-east-v3.png' ],
+			'Ben Tiffin'   => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin-v3.png' ],
+			'Gary Hunt'    => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Head of Sales Recruitment', 'photo' => 'vertek-gary-hunt-v3.png' ],
 			'Ben Cranston' => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => null ],
-			'Sade Kendall' => [ 'brands' => [ 'modulr' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'modulr-sade-kendall-v2.png' ],
+			'Sade Kendall' => [ 'brands' => [ 'modulr' ], 'tier' => 'management', 'role' => 'Manager', 'photo' => 'modulr-sade-kendall-v3.png' ],
 			/* ── Ops (Verto group pages only – fold into "The team" section) ── */
-			'Karabo Mothopeng' => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => null ],
-			'Angel Ndlovu'     => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => null ],
+			'Karabo Mothopeng' => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-karabo-mothopeng.png' ],
+			'Angel Ndlovu'     => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-angel-ndlovu.png' ],
 			'Alice Fryer'      => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Operations & Executive Assistant', 'photo' => null ],
 			'Megan Grant'      => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Senior Marketing Executive', 'photo' => null ],
 			'Alfie Gray'       => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => null ],
-			/* ── Consultants – Vertek ── */
-			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-olivia-pinhorne.jpg' ],
-			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-rex-reavley.jpg' ],
-			'Jake Massingham'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-jake-massingham.jpg' ],
+			/* ── Consultants – Vertek ──
+			   Round 9, item 22: -v3 treated photos where the zip drop could be
+			   matched to the roster with confidence. Saman Akbari stays photo-
+			   less BY CLIENT INSTRUCTION ("Leave Saman off cos he's not in that
+			   brand" – do not apply his supplied photo). */
+			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-olivia-pinhorne-v3.png' ],
+			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-rex-reavley-v3.png' ],
+			'Jake Massingham'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-jake-massingham-v3.png' ],
 			'Sam Parnell'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-sam-parnell.jpg' ],
 			'Saman Akbari'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
 			'Harvey Earl'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-harvey-earl.jpg' ],
-			'Lewis Sullivan'   => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lewis-sullivan.jpg' ],
+			'Lewis Sullivan'   => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lewis-sullivan-v3.png' ],
 			'Frank Warner'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-frank-warner.jpg' ],
-			'Alex Wright'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-alex-wright.jpg' ],
-			'Lethu Zwane'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lethu-zwane.jpg' ],
+			'Alex Wright'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-alex-wright-v3.png' ],
+			'Lethu Zwane'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lethu-zwane-v3.png' ],
 			'Lewis Mason'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lewis-mason.webp' ],
 			"Harley O'Connell" => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-harley-oconnell.jpg' ],
-			'Alice Schofield'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-alice-schofield.jpg' ],
+			'Alice Schofield'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-alice-schofield-v3.png' ],
 			/* ── Consultants – Verto Life Sciences (sits with the group) ── */
 			'Martyn Jamieson'  => [ 'brands' => [ 'verto' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
 			/* ── Consultants – ModulR ── */
-			'Lewis Wright'      => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-lewis-wright.jpg' ],
+			'Lewis Wright'      => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-lewis-wright-v3.png' ],
 			'Monira Akter'      => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-monira-aktar.jpg' ],
-			'Charlotte Northam' => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-charlotte-northam.jpg' ],
+			'Charlotte Northam' => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-charlotte-northam-v3.png' ],
 			'Forough Rezaei'    => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
-			'Natasha Sykes'     => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-natasha-sykes.jpg' ],
+			'Natasha Sykes'     => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-natasha-sykes-v3.png' ],
 			/* ── Consultants – Edison Lux ── */
-			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-joe-williams.jpg' ],
+			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-joe-williams-v3.png' ],
 			'Matthew Pearce'     => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-matthew-pearce.jpg' ],
-			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-lewis-dominy.jpg' ],
-			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-noah-ward.jpg' ],
+			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-lewis-dominy-v3.png' ],
+			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-noah-ward-v3.png' ],
 			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-oliver-hesmondhalgh.jpg' ],
 			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-milly-compton-v2.png' ],
 		];
@@ -582,12 +604,17 @@ class Verto_Installer {
 
 	/** Team-photo batch version – bump when the client sends new treated
 	 *  headshots so existing installs swap them in on their next Rebuild. */
-	const TEAM_PHOTOS = 'photos-0.19.0';
+	const TEAM_PHOTOS = 'photos-0.21.0';
 
 	/**
-	 * Versioned team-photo migration (Sep-2026 drop): the client's treated
-	 * headshots for Milly Compton (Edison Lux), Gary Hunt (Vertek) and Sade
-	 * Kendall (ModulR – identified against the existing roster headshot).
+	 * Versioned team-photo migration. Round 9, item 22 (photos-0.21.0): the
+	 * client's four "new website pics" zips – treated brand-profile photos
+	 * (grayscale subject, brand glow + logo). Every file below was matched to
+	 * the roster against the existing headshots; Saman Akbari is deliberately
+	 * excluded ("Leave Saman off cos he's not in that brand"), and Milly
+	 * Compton keeps her verified v2 (round 9, item 23). Six zip-3 files
+	 * arrived with someone else's filename and no identifiable match – they
+	 * are NOT applied (see CLIENT-NEEDS.md: photo naming needed).
 	 * seed_team() skips people who already have a thumbnail, so EXISTING
 	 * installs need this pass to replace the old photos in place. Runs once
 	 * per TEAM_PHOTOS version; skips anyone whose thumbnail already points
@@ -601,9 +628,31 @@ class Verto_Installer {
 
 		$dir     = dirname( __DIR__ ) . '/assets/import/';
 		$updates = [
-			'Milly Compton' => 'edison-milly-compton-v2.png',
-			'Gary Hunt'     => 'vertek-gary-hunt-v2.png',
-			'Sade Kendall'  => 'modulr-sade-kendall-v2.png',
+			// photos-0.19.0 batch (kept so installs that skipped 0.19 catch up)
+			'Milly Compton'     => 'edison-milly-compton-v2.png',
+			// photos-0.21.0 batch – round 9, item 22
+			'Alex Hatfield'     => 'alex-hatfield-v3.png',
+			'Martin Doig'       => 'martin-doig-v3.png',
+			'Dan Bisset'        => 'edison-dan-bisset-v3.png',
+			'Joe Williams'      => 'edison-joe-williams-v3.png',
+			'Lewis Dominy'      => 'edison-lewis-dominy-v3.png',
+			'Noah Ward'         => 'edison-noah-ward-v3.png',
+			'George East'       => 'vertek-george-east-v3.png',
+			'Ben Tiffin'        => 'vertek-ben-tiffin-v3.png',
+			'Gary Hunt'         => 'vertek-gary-hunt-v3.png',
+			'Lethu Zwane'       => 'vertek-lethu-zwane-v3.png',
+			'Olivia Pinhorne'   => 'vertek-olivia-pinhorne-v3.png',
+			'Alice Schofield'   => 'vertek-alice-schofield-v3.png',
+			'Rex Reavley'       => 'vertek-rex-reavley-v3.png',
+			'Lewis Sullivan'    => 'vertek-lewis-sullivan-v3.png',
+			'Jake Massingham'   => 'vertek-jake-massingham-v3.png',
+			'Alex Wright'       => 'vertek-alex-wright-v3.png',
+			'Charlotte Northam' => 'modulr-charlotte-northam-v3.png',
+			'Sade Kendall'      => 'modulr-sade-kendall-v3.png',
+			'Natasha Sykes'     => 'modulr-natasha-sykes-v3.png',
+			'Lewis Wright'      => 'modulr-lewis-wright-v3.png',
+			'Karabo Mothopeng'  => 'verto-karabo-mothopeng.png',
+			'Angel Ndlovu'      => 'verto-angel-ndlovu.png',
 		];
 		foreach ( $updates as $name => $file ) {
 			if ( ! file_exists( $dir . $file ) ) continue;
@@ -642,16 +691,22 @@ class Verto_Installer {
 			'solent' => [
 				'name'    => 'Solent, UK',
 				'address' => 'Arena Business Centre, Whiteley – Solent',
-				'skyline' => 'skyline_uk',
-				'photos'  => [ 'verto_05', 'verto_03', 'summit_05', 'verto_04' ],
+				// Round 9, item 11: skyline-uk.jpg is a London skyline – wrong
+				// for the Solent. Interim: lead with real office/team photography
+				// until the client supplies the Spinnaker/Havant photo
+				// (CLIENT-NEEDS.md).
+				'skyline' => 'verto_04',
+				'photos'  => [ 'verto_05', 'verto_03', 'summit_05', 'gala_02' ],
 				'blurb'   => 'The Arena Business Centre on the Solent is where Verto started in 2020 – a lockdown launch that grew into the group\'s home. It\'s still the biggest office: every UK desk sits here, the sales days are loudest here, and the summer summit is a short walk down the coast at Southsea Castle.',
 				'note'    => '',
 			],
 			'austin' => [
 				'name'    => 'Austin, TX',
 				'address'  => '5900 Balcones Drive, Austin, TX – US headquarters',
+				// Round 9, item 24: the client's favourite daytime river/kayaks
+				// skyline leads; the rooftop drinks team photo joins the gallery.
 				'skyline' => 'skyline_us',
-				'photos'  => [ 'summit_04', 'barcelona_03', 'verto_05' ],
+				'photos'  => [ 'austin_rooftop', 'summit_04', 'barcelona_03' ],
 				'blurb'   => '5900 Balcones Drive is Verto\'s US headquarters and the launch pad for the American build-out. It runs on the same playbook as the Solent office – same values, same incentives, same trips – with the US energy and industrial markets on the other end of the phone.',
 				'note'    => '',
 			],
@@ -865,14 +920,25 @@ class Verto_Installer {
 	 * jobs dropped from the matrix in a later version are drafted (never
 	 * deleted). Manual jobs carry _manual=1 and NO _vincere_id, which keeps
 	 * them invisible to the Vincere sync's deactivation pass.
+	 *
+	 * Round 9, item 1: brand installs pass their brand slug and get ONLY that
+	 * brand's rows from the matrix, tracked in per-brand options – so an
+	 * Edison Lux install seeds the two Edison desks, never the whole group
+	 * board. The group site keeps its original options and full matrix.
 	 */
-	private static function seed_internal_jobs(): void {
-		if ( self::JOBS_STRUCTURE === get_option( 'verto_installer_jobs' ) ) return;
+	private static function seed_internal_jobs( string $brand = 'verto' ): void {
+		$scoped     = 'verto' !== $brand;
+		$opt_ver    = $scoped ? 'verto_installer_jobs_' . $brand : 'verto_installer_jobs';
+		$opt_ids    = $scoped ? 'verto_installer_jobs_ids_' . $brand : 'verto_installer_jobs_ids';
+		if ( self::JOBS_STRUCTURE === get_option( $opt_ver ) ) return;
 		if ( ! post_type_exists( 'verto_job' ) ) return; // verto-widgets vincere module not loaded
 
-		$ids = get_option( 'verto_installer_jobs_ids', [] );
+		$ids = get_option( $opt_ids, [] );
 		if ( ! is_array( $ids ) ) $ids = [];
 		$map = self::jobs_map();
+		if ( $scoped ) {
+			$map = array_filter( $map, fn( $job ) => $brand === $job['brand'] );
+		}
 
 		foreach ( $map as $key => $job ) {
 			$id = isset( $ids[ $key ] ) ? (int) $ids[ $key ] : 0;
@@ -917,8 +983,8 @@ class Verto_Installer {
 			}
 		}
 
-		update_option( 'verto_installer_jobs_ids', $ids );
-		update_option( 'verto_installer_jobs', self::JOBS_STRUCTURE );
+		update_option( $opt_ids, $ids );
+		update_option( $opt_ver, self::JOBS_STRUCTURE );
 	}
 
 	/** Seed the "What's going on" posts (idempotent, batch-versioned).
@@ -1182,7 +1248,16 @@ class Verto_Installer {
 				] ),
 				self::widget( 'verto-posts-grid' ),
 			], 'verto-container-pad' ),
-			self::section2( [
+			// Round 9, item 4: the awards band moves ABOVE the employee
+			// voices, and the voices section goes full-width – the V-mask
+			// photo media column is gone ("not keen" – Alex).
+			self::section( [
+				self::widget( 'verto-awards-strip', [
+					'badge'  => self::media_setting( $media, 'award_bptw' ),
+					'badge2' => self::media_setting( $media, 'award_recruiter' ),
+				] ),
+			], 'verto-ink verto-awards-lead' ),
+			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'What employees say about us',
 					'size'    => 'verto-display-1',
@@ -1192,27 +1267,10 @@ class Verto_Installer {
 					],
 					'body' => 'Straight from the team – what working here is actually like.',
 				] ),
-			], [
-				// Round 6, item 7: the media column is a composed stack – the
-				// V-mask team image with the share-certificates photo tucked
-				// beneath it (rounded, slight offset).
-				self::widget( 'verto-v-mask-media', [
-					'media_type'      => 'image',
-					'image'           => self::media_setting( $media, 'ibiza8' ),
-					'height'          => [ 'size' => 280, 'unit' => 'px' ],
-					'overlay_opacity' => [ 'size' => 15 ],
-				] ),
-				self::widget( 'html', [ 'html' => self::voices_photo_figure( $media ) ] ),
-			], 'verto-ink verto-container-pad', 66 ),
+			], 'verto-ink verto-container-pad' ),
 			self::section( [
 				self::widget( 'verto-quotes' ),
 			], 'verto-ink verto-quotes-strip' ),
-			self::section( [
-				self::widget( 'verto-awards-strip', [
-					'badge'  => self::media_setting( $media, 'award_bptw' ),
-					'badge2' => self::media_setting( $media, 'award_recruiter' ),
-				] ),
-			], 'verto-ink verto-awards-pad' ),
 			// Values moved below the voices/awards block (round 3, item 3 swap
 			// with What's Going On, which now sits directly under the jobs board).
 			// Round 4, items 1+8: Values goes LIGHT (ivory, gold numerals) so it
@@ -1258,6 +1316,21 @@ class Verto_Installer {
 			], 'verto-container-pad' ),
 			// Round 4, item 5: heading carries no word "roles" (widget default).
 			self::section( [ self::widget( 'verto-jobs-board' ) ], 'verto-ink verto-container-pad' ),
+			// Sales days – client (Sep 2026): "Sales days are massive for us
+			// and something we've been leading in the local area. Don't want
+			// massive video windows but if we could show these somehow all on
+			// one section and hover over to play." Ten compact muted films in
+			// one dense mosaic; posters only on load, hover (or tap) to play.
+			// Round 7, item 2: moved up to sit between the jobs board and the
+			// package, per client.
+			self::section( [
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => 'Sales days',
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'One day a month, all in.' ] ],
+					'body'    => "A company favourite: a full day of competition, prizes and noise, every month – and something we've been leading in the local area.",
+				] ),
+				self::widget( 'verto-salesdays-mosaic', [ 'items' => self::salesdays_items( $media ) ] ),
+			], 'verto-muted verto-container-pad' ),
 			// Round 4, item 11: the four-card "Why Verto" becomes the full
 			// 14-perk "What we offer" notched card grid.
 			self::section( [
@@ -1284,43 +1357,31 @@ class Verto_Installer {
 			// Incentives + share scheme – the client's share-scheme interview film
 			// paired with the Ibiza incentive-trip film (Sep-2026 drop). Both are
 			// click-to-play: poster + controls, nothing loads until pressed.
-			self::section2( [
+			// Round 7, item 4: rebalanced – full-width intro on top, then one
+			// 3-up media row (awards-night photo + the two films) beneath.
+			self::section( [
 				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'Incentives & ownership',
+					'eyebrow' => 'Incentives',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Hit target. Board the plane.' ] ],
 					'body'    => "Two international incentive trips a year, winners' lunches, sales days and personal training sessions. Barcelona 2025, Prague in January, Ibiza this summer – and a share scheme that includes every person in the business. Press play to hear what owning a piece of Verto actually means to the team, and to see where hitting target took the winners this summer.",
 				] ),
-				// Round 5, item 10: the share-scheme awards-night photo sits
-				// beside the incentive films (was the Barcelona group shot).
-				self::widget( 'html', [ 'html' => self::share_certs_figure( $media ) ] ),
-			], [
-				self::widget( 'html', [ 'html' => self::incentive_films_html( $media ) ] ),
-			], 'verto-ink verto-container-pad', 50 ),
-			// Sales days – client (Sep 2026): "Sales days are massive for us
-			// and something we've been leading in the local area. Don't want
-			// massive video windows but if we could show these somehow all on
-			// one section and hover over to play." Ten compact muted films in
-			// one dense mosaic; posters only on load, hover (or tap) to play.
-			self::section( [
-				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'Sales days',
-					'lines'   => [ [ '_id' => self::eid(), 'line' => 'One day a month, all in.' ] ],
-					'body'    => "A company favourite: a full day of competition, prizes and noise, every month – and something we've been leading in the local area.",
-				] ),
-				self::widget( 'verto-salesdays-mosaic', [ 'items' => self::salesdays_items( $media ) ] ),
-			], 'verto-muted verto-container-pad' ),
-			self::section( [ self::widget( 'verto-socials' ) ], 'verto-container-pad' ),
+				self::widget( 'html', [ 'html' => self::incentive_media_row_html( $media ) ] ),
+			], 'verto-ink verto-container-pad' ),
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Our locations',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Three places to build from.' ] ],
 				] ),
+				// Round 9, item 11: Solent tile – real office photography until
+				// the Spinnaker photo arrives (the London skyline was wrong).
 				self::widget( 'verto-footprint', [ 'items' => [
-					[ '_id' => self::eid(), 'note' => 'Founding office', 'name' => 'Solent, UK', 'line1' => 'Where Verto started in 2020. Our largest office.', 'line2' => 'Vertek · ModulR · Life Sciences', 'image' => self::media_setting( $media, 'skyline_uk' ) ],
+					[ '_id' => self::eid(), 'note' => 'Founding office', 'name' => 'Solent, UK', 'line1' => 'Where Verto started in 2020. Our largest office.', 'line2' => 'Vertek · ModulR · Life Sciences', 'image' => self::media_setting( $media, 'verto_03' ) ],
 					[ '_id' => self::eid(), 'note' => 'US headquarters', 'name' => 'Austin, TX', 'line1' => 'Edison Lux and the Vertek US build-out.', 'line2' => 'The fastest-growing part of the group', 'image' => self::media_setting( $media, 'skyline_us' ) ],
 					[ '_id' => self::eid(), 'note' => 'Coming soon', 'name' => 'Miami, FL', 'line1' => "ModulR's US practice and founding desks.", 'line2' => 'Ground-floor opportunity', 'image' => self::media_setting( $media, 'skyline_eu' ) ],
 				] ] ),
-			], 'verto-ink verto-container-pad' ),
+				// Round 9, item 25: #locations anchor – the About footprint
+				// tiles link here.
+			], 'verto-ink verto-container-pad', [ '_element_id' => 'locations' ] ),
 		];
 		self::upsert_page( 'careers', 'Careers', $careers );
 
@@ -1329,7 +1390,9 @@ class Verto_Installer {
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'About the Verto Group',
-					'size'    => 'verto-display-1',
+					// Round 9, item 7: page title steps down a size so the
+					// collage fits the first view.
+					'size'    => 'verto-display-2',
 					'tag'     => 'h1',
 					'lines'   => [
 						[ '_id' => self::eid(), 'line' => 'Made in 2020.' ],
@@ -1337,17 +1400,21 @@ class Verto_Installer {
 					],
 					'body' => 'We opened our doors in February 2020 – and you know what happened next. Powered by determination and a lack of other options, Verto took its first steps as many others shut down. Today that lockdown business is all grown up: three specialist brands, a life sciences desk, and teams across the UK and US.',
 				] ),
-				// Photo collage replaces the single Ibiza hero image (approved design).
-				// Aug-2026 media drop: real Ibiza sea shot leads (the old big tile
-				// re-used the summit rooftop photo), plus the summit letters and a
-				// Barcelona group shot from the client's event photography.
+				// Round 9, item 7: tighter collage – smaller tiles (see the
+				// .verto-collage row-height step-down in verto-ui.css), an
+				// exact 4x3 fill so every photo is in view at 100%, and more
+				// real photography from the barcelona-/verto-/summit- pool.
+				// Item 11: the Solent tile drops the (wrong, London) skyline
+				// for real office photography until the Spinnaker photo lands.
 				self::widget( 'verto-collage', [ 'items' => [
 					[ '_id' => self::eid(), 'size' => 'big',  'image' => self::media_setting( $media, 'ibiza_11' ),      'alt' => 'The Verto team in the sea in Ibiza', 'caption' => 'Ibiza – the 2026 summer incentive' ],
-					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_02' ),     'alt' => 'The Verto summer summit',            'caption' => 'The summer summit' ],
-					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'barcelona_01' ),  'alt' => 'The team outside the W Barcelona',   'caption' => '' ],
-					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'about_image' ),   'alt' => 'The team at work',                   'caption' => '' ],
-					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'skyline_uk' ),    'alt' => 'Solent, UK – where it started',      'caption' => 'Solent, UK' ],
-					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'skyline_us' ),    'alt' => 'Austin, TX – the US build-out',      'caption' => 'Austin, TX' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'summit_02' ),     'alt' => 'The Verto summer summit',            'caption' => 'The summit' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'barcelona_01' ),  'alt' => 'The team outside the W Barcelona',   'caption' => 'Barcelona' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'verto_03' ),      'alt' => "Verto's 6th birthday in the Solent office", 'caption' => 'Solent, UK' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'skyline_us' ),    'alt' => 'Austin, TX – the US build-out',      'caption' => 'Austin, TX' ],
+					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_05' ),     'alt' => 'The team on the ramparts at Southsea Castle', 'caption' => '' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'verto_04' ),      'alt' => 'An office party at Verto',           'caption' => '' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'barcelona_03' ),  'alt' => 'The team on the street in Barcelona', 'caption' => '' ],
 				] ] ),
 			], 'verto-container-pad' ),
 			self::section2( [
@@ -1400,10 +1467,14 @@ class Verto_Installer {
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Solent. Austin. Soon, Miami.' ] ],
 					'body'    => "Where it started, where it's grown, and where it's going next. Every location runs on the same platform, so a US brief with UK candidates – or the reverse – moves through one team.",
 				] ),
+				// Round 9, items 11 + 25: Solent tile swaps the wrong London
+				// skyline for real office photography (Spinnaker photo still
+				// awaited – CLIENT-NEEDS.md); every tile links through to the
+				// careers locations section.
 				self::widget( 'verto-footprint', [ 'items' => [
-					[ '_id' => self::eid(), 'note' => 'Where it started – Feb 2020', 'name' => 'Solent, UK', 'line1' => 'Arena Business Centre, Havant, Portsmouth', 'line2' => 'Vertek · ModulR · Verto Life Sciences', 'image' => self::media_setting( $media, 'skyline_uk' ) ],
-					[ '_id' => self::eid(), 'note' => 'US HQ', 'name' => 'Austin, TX', 'line1' => '5900 Balcones Drive, Austin', 'line2' => 'Edison Lux · Vertek US', 'image' => self::media_setting( $media, 'skyline_us' ) ],
-					[ '_id' => self::eid(), 'note' => 'Coming soon', 'name' => 'Miami, FL', 'line1' => 'Opening soon', 'line2' => 'ModulR US', 'image' => self::media_setting( $media, 'skyline_eu' ) ],
+					[ '_id' => self::eid(), 'note' => 'Where it started – Feb 2020', 'name' => 'Solent, UK', 'line1' => 'Arena Business Centre, Havant, Portsmouth', 'line2' => 'Vertek · ModulR · Verto Life Sciences', 'image' => self::media_setting( $media, 'verto_03' ), 'link' => [ 'url' => '/careers#locations' ] ],
+					[ '_id' => self::eid(), 'note' => 'US HQ', 'name' => 'Austin, TX', 'line1' => '5900 Balcones Drive, Austin', 'line2' => 'Edison Lux · Vertek US', 'image' => self::media_setting( $media, 'skyline_us' ), 'link' => [ 'url' => '/careers#locations' ] ],
+					[ '_id' => self::eid(), 'note' => 'Coming soon', 'name' => 'Miami, FL', 'line1' => 'Opening soon', 'line2' => 'ModulR US', 'image' => self::media_setting( $media, 'skyline_eu' ), 'link' => [ 'url' => '/careers#locations' ] ],
 				] ] ),
 			], 'verto-ink verto-container-pad' ),
 			self::section( [
@@ -1440,7 +1511,8 @@ class Verto_Installer {
 				] ),
 				self::widget( 'text-editor', [ 'editor' => self::community_cards_html( $media ) ] ),
 			], 'verto-container-pad' ),
-			self::section( [ self::widget( 'verto-socials', [ 'eyebrow' => 'Behind the scenes', 'heading' => 'Us, off the phones.' ] ) ], 'verto-container-pad' ),
+			// Round 9, item 10: the socials/Instagram section is gone from the
+			// group About page (it stays on Home and the WGO hub).
 		];
 		self::upsert_page( 'about', 'About', $about );
 
@@ -1550,24 +1622,32 @@ class Verto_Installer {
 			. '</figure>';
 	}
 
-	/** Careers incentives pairing – the share-scheme interview film beside
-	 *  the Ibiza incentive-trip film (Sep-2026 drop), two compact portrait
-	 *  films, each click-to-play (poster + native controls, preload="none").
-	 *  Falls back to the single share-scheme film until the Ibiza film has
-	 *  been imported. */
-	private static function incentive_films_html( array $media ): string {
+	/** Round 7, item 4 – the careers incentives media row: the awards-night
+	 *  photo beside the share-scheme interview film and the Ibiza
+	 *  incentive-trip film (Sep-2026 drop), three equal-height cards under
+	 *  the full-width intro. Films are click-to-play (poster + native
+	 *  controls, preload="none"); pieces that have not been imported yet
+	 *  are simply skipped. Falls back to the single share-scheme film
+	 *  until the Ibiza film has been imported. */
+	private static function incentive_media_row_html( array $media ): string {
 		if ( empty( $media['ibiza_trip_film']['url'] ) ) {
 			return self::share_scheme_video_html( $media );
+		}
+		$html = '<div class="verto-incentive-row">';
+		if ( ! empty( $media['share_certs']['url'] ) ) {
+			$html .= '<figure class="verto-incentive-row__card verto-incentive-row__photo">'
+				. '<img src="' . esc_url( $media['share_certs']['url'] ) . '" alt="The Verto team holding their share-scheme award certificates at the awards night" loading="lazy" />'
+				. '<figcaption>Share scheme awards &ndash; everyone owns a piece</figcaption>'
+				. '</figure>';
 		}
 		$films = [
 			[ 'share_video', 'share_poster', 'The share scheme', 'Still from the Verto share-scheme interviews' ],
 			[ 'ibiza_trip_film', 'ibiza_trip_poster', 'The Ibiza trip', "The winners' incentive trip to Ibiza, summer 2026" ],
 		];
-		$html = '<div class="verto-films-duo">';
 		foreach ( $films as [ $vkey, $pkey, $label, $aria ] ) {
 			if ( empty( $media[ $vkey ]['url'] ) ) continue;
 			$poster = empty( $media[ $pkey ]['url'] ) ? '' : ' poster="' . esc_url( $media[ $pkey ]['url'] ) . '"';
-			$html  .= '<figure class="verto-video-story verto-video-story--compact">'
+			$html  .= '<figure class="verto-incentive-row__card">'
 				. '<video controls preload="none" playsinline' . $poster . ' src="' . esc_url( $media[ $vkey ]['url'] ) . '" aria-label="' . esc_attr( $aria ) . '"></video>'
 				. '<figcaption>' . esc_html( $label ) . '</figcaption>'
 				. '</figure>';
@@ -2050,6 +2130,38 @@ class Verto_Installer {
 		if ( ! $c ) return;
 
 		$name       = $c['name'];
+		// Round 9, item 1: compact vacancies board – rows only (no filter
+		// rail), scoped to this brand's seeded verto_job posts, rows linking
+		// to the job detail pages with a working Apply pill. Rendered on HOME
+		// (after the testimonials) and CANDIDATES (after the hero/split).
+		$vacancies = self::section( [ self::widget( 'verto-jobs-board', [
+			'layout'  => 'compact',
+			'brand'   => $brand,
+			'heading' => "Open roles at $name.",
+			'intro'   => "Seats on the $name desk itself – live now, with more to come as the team grows.",
+		] ) ], 'verto-bs vbs-vacancies' );
+		// Round 9, item 2: candidate reviews – the brand testimonials
+		// carousel filtered to Candidate-tagged quotes (Edison carries a real
+		// one; Modulr / Vertek stay on clearly marked placeholders until the
+		// client's arrive).
+		$cand_quotes = array_values( array_filter( $c['home_testimonials'] ?? [], fn( $q ) => 'candidate' === ( $q['tag'] ?? '' ) ) );
+		$reviews     = ! $cand_quotes ? null : self::section( [ self::widget( 'verto-quote-band', [
+			'quotes_style'   => 'light',
+			'quotes_layout'  => 'carousel',
+			'pad'            => 'band',
+			'image'          => [],
+			'eyebrow'        => 'Candidate reviews',
+			'eyebrow_style'  => 'brand',
+			'heading_pre'    => "What candidates say about $name.",
+			'heading_accent' => '',
+			'heading_post'   => '',
+			'body'           => 'edison-lux' === $brand
+				? 'Real feedback from the people we place – gathered from every engagement.'
+				: 'Placeholder quote – real candidate testimonials are being collected and will replace this.',
+			'stat_value'     => '',
+			'stat_label'     => '',
+			'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $cand_quotes ),
+		] ) ], 'verto-bs' );
 		$logo_key   = [ 'modulr' => 'logo_modulr_png', 'vertek' => 'logo_vertek', 'edison-lux' => 'logo_edison' ][ $brand ] ?? '';
 		$stats      = array_map( fn( $st ) => [ '_id' => self::eid() ] + $st, $c['stats'] );
 		$team_strip = self::widget( 'verto-team-grid', [
@@ -2098,6 +2210,9 @@ class Verto_Installer {
 			] ) ], 'verto-bs' ),
 			// Round 5, item 2 (Edison): symmetric split + "Talk to us" CTA in
 			// the Edison gradient, straight to the clients contact form.
+			// Round 9, item 21 (Vertek): the home about split no longer
+			// repeats the hero's bridge image – the advanced-manufacturing
+			// asset breaks the run of dark sections instead.
 			self::section( [ self::widget( 'verto-about-split', array_merge( [
 				'variant'   => 'landing',
 				'eyebrow'   => "About $name",
@@ -2105,8 +2220,8 @@ class Verto_Installer {
 				'body'      => $c['about']['mission'],
 				'cta_text'  => 'Learn more about us',
 				'cta_link'  => [ 'url' => '/about' ],
-				'image'     => self::media_setting( $media, $c['about_image'] ),
-				'image_alt' => $c['about_image_alt'],
+				'image'     => self::media_setting( $media, 'vertek' === $brand ? 'insight_manufacturing' : $c['about_image'] ),
+				'image_alt' => 'vertek' === $brand ? 'Precision machinery on an advanced manufacturing line' : $c['about_image_alt'],
 				'stats'     => $stats,
 			], 'edison-lux' === $brand ? [
 				'cta_text'  => 'Talk to us',
@@ -2170,9 +2285,11 @@ class Verto_Installer {
 				'stat_label'     => '',
 				'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['home_testimonials'] ?? [] ),
 			] ) ], 'verto-bs' ),
-			// Round 6: the compact services band (three engagement models →
-			// /clients) joins the brand HOME pages too – directly after the
+			// Round 9, item 1: brand vacancies – directly after the
 			// testimonials carousel.
+			$vacancies,
+			// Round 6: the compact services band (three engagement models →
+			// /clients) joins the brand HOME pages too.
 			self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' ),
 			self::section( [ self::widget( 'verto-audience-cards', [ 'items' => [
 				[ '_id' => self::eid(), 'style' => 'ink', 'kicker' => 'For companies',
@@ -2244,6 +2361,10 @@ class Verto_Installer {
 				'items' => array_map( fn( $v ) => [ '_id' => self::eid() ] + $v, $c['values'] ),
 			] ) ], 'verto-bs' );
 		}
+		// Round 9, item 13: Edison's "What we do today" drops the stock
+		// clouds/office photo for sector (plant) imagery from the licensed set.
+		$wwd_img = [ 'edison-lux' => 'spec_edison_02' ][ $brand ] ?? 'about_image';
+		$wwd_alt = 'edison-lux' === $brand ? 'A combined-cycle gas plant – the market Edison Lux staffs' : 'A specialist team at work';
 		$about_tail = [
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',
@@ -2251,8 +2372,8 @@ class Verto_Installer {
 				'eyebrow'   => 'What we do today',
 				'headline'  => $c['what_we_do']['headline'],
 				'body'      => $c['what_we_do']['paragraphs'],
-				'image'     => self::media_setting( $media, 'about_image' ),
-				'image_alt' => 'A specialist team at work',
+				'image'     => self::media_setting( $media, $wwd_img ),
+				'image_alt' => $wwd_alt,
 				'panel_bg'  => '#ffffff',
 				'stats'     => [],
 				'cta_text'  => '',
@@ -2335,13 +2456,15 @@ class Verto_Installer {
 				'stat_value'     => '',
 				'stat_label'     => '',
 			] ) ], 'verto-bs' ),
+			// Round 9, item 16: the split no longer duplicates the page hero
+			// image – each brand pulls a different licensed sector asset.
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',
 				'eyebrow'   => "About $name",
 				'headline'  => 'A partnership, not a placement.',
 				'body'      => "We exist to find you the best technical commercial talent on the market – and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
-				'image'     => self::media_setting( $media, $c['hero']['image'] ),
-				'image_alt' => $c['hero']['alt'],
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_01', 'vertek' => 'insight_fluidpower', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
+				'image_alt' => [ 'edison-lux' => 'A critical power facility at dusk', 'vertek' => 'Hydraulic componentry on a fluid power line', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
 				'grayscale' => 'yes',
 				'panel_bg'  => '#ffffff',
 				'stats'     => [
@@ -2353,13 +2476,15 @@ class Verto_Installer {
 				'cta_link'  => [ 'url' => '/about' ],
 			] ) ], 'verto-bs' ),
 			// The four Verto models – Engage (flagship) / Exclusive /
-			// Contingent / Contract. 2x2 on tablet, 4-up on desktop via the
-			// zigzag grid. No fees or percentages on the site (CLIENT-NEEDS.md).
+			// Contingent / Contract. Round 9, item 17: one flat row – equal
+			// height, no stagger, accent bars in the brand gradient (row4
+			// layout; --brand-gradient falls back to the flat brand colour).
+			// No fees or percentages on the site (CLIENT-NEEDS.md).
 			self::section( [ self::widget( 'verto-process-rail', [
-				'layout'    => 'zigzag',
+				'layout'    => 'row4',
 				'bg'        => 'muted',
 				'eyebrow'   => 'Hiring solutions',
-				'heading'   => "Four ways to work with us.\nOne standard.",
+				'heading'   => "Four ways to work with\u{00A0}us.\nOne standard.",
 				'side_text' => "From a fully managed partnership to flexible contract cover – we build the hiring plan around your requirement, whether you're filling one role or an entire team.",
 				'items'     => [
 					[ '_id' => self::eid(), 'title' => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
@@ -2468,8 +2593,10 @@ class Verto_Installer {
 				'eyebrow'   => 'Represented properly',
 				'headline'  => 'Sold on your merits.',
 				'body'      => "A job posted on LinkedIn gets hundreds of CVs. Working with $name means you and your experience are put front and centre – sold to the hiring manager before your first interview.\n\nWe only call when there's a role genuinely worth your time. Honest feedback, no fluff, no promises we can't deliver.",
-				'image'     => self::media_setting( $media, $c['hero']['image'] ),
-				'image_alt' => $c['hero']['alt'],
+				// Round 9, item 18: sector imagery (matching the What-we-cover
+				// cards) instead of the repeated hero image.
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_03', 'vertek' => 'insight_hvac', 'modulr' => 'insight_architecture' ][ $brand ] ?? $c['hero']['image'] ),
+				'image_alt' => [ 'edison-lux' => 'A renewables site – solar and storage under construction', 'vertek' => 'Rooftop HVAC plant', 'modulr' => 'An architecture studio at work' ][ $brand ] ?? $c['hero']['alt'],
 				'grayscale' => 'yes',
 				'panel_bg'  => '#ffffff',
 				'stats'     => [
@@ -2480,7 +2607,13 @@ class Verto_Installer {
 				'cta_text'  => "About $name",
 				'cta_link'  => [ 'url' => '/about' ],
 			] ) ], 'verto-bs' ),
+			// Round 9, item 1: brand vacancies – straight after the hero/split.
+			$vacancies,
 		];
+		// Round 9, item 2: candidate reviews carousel.
+		if ( $reviews ) {
+			$candidates[] = $reviews;
+		}
 		// Sectors served – dense chip grid (Vertek-only data).
 		if ( ! empty( $c['sectors_served'] ) ) {
 			$candidates[] = self::section( [ self::widget( 'verto-chip-grid', [

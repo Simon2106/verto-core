@@ -44,6 +44,18 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content', [ 'label' => 'Jobs' ] );
+		// Round 9, item 1: "compact" renders a lean rows-only board (no
+		// filter rail, no chips) for the brand-site HOME and CANDIDATES
+		// pages; "brand" scopes the rows to one brand's jobs.
+		$this->add_control( 'layout', [
+			'label' => 'Layout', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [ 'full' => 'Full board (list + filters)', 'compact' => 'Compact (rows only, brand sites)' ],
+			'default' => 'full',
+		] );
+		$this->add_control( 'brand', [
+			'label' => 'Brand filter (slug, optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '',
+			'description' => 'e.g. edison-lux – shows only that brand\'s jobs.',
+		] );
 		// Round 4, item 5: catchier heading, and no word "roles" in the section.
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Your next desk is here.' ] );
 		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks – not client vacancies. And if your desk isn't listed yet, we still want to hear from experienced consultants." ] );
@@ -86,11 +98,60 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		return $clean;
 	}
 
+	/** Round 9, item 1 – compact rows-only board for brand sites: each row
+	 *  links to the job's detail page, with an Apply pill jumping straight
+	 *  to the detail page's inline apply card (#apply). Token-driven, so it
+	 *  sits correctly on light (Edison) and dark (Vertek/ModulR) grounds. */
+	private function render_compact( array $s, array $jobs ): void {
+		if ( ! $jobs ) return; // nothing seeded yet – render nothing
+		?>
+		<div class="verto-jobs-compact">
+			<div class="container-wide">
+				<div class="verto-jobs-compact__head">
+					<span class="eyebrow"><?php echo esc_html( 'Join the team' ); ?></span>
+					<h2 class="display-3 vbs-mt5"><?php echo esc_html( $s['heading'] ); ?></h2>
+					<?php if ( ! empty( $s['intro'] ) ) : ?>
+						<p class="verto-jobs-compact__intro"><?php echo esc_html( $s['intro'] ); ?></p>
+					<?php endif; ?>
+				</div>
+				<div class="verto-jobs-compact__list">
+					<?php foreach ( $jobs as $job ) :
+						$permalink = (string) ( $job['permalink'] ?? '' );
+						$href      = '' !== $permalink ? $permalink : ( $job['url'] ?? ( $s['apply_url']['url'] ?? '/contact' ) );
+						?>
+						<div class="verto-jobs-compact__row">
+							<a class="verto-jobs-compact__main" href="<?php echo esc_url( $href ); ?>">
+								<span class="verto-jobs-compact__title"><?php echo esc_html( $job['title'] ); ?></span>
+								<span class="verto-jobs-compact__meta"><?php echo esc_html( $job['location'] ); ?> · <?php echo esc_html( $job['level'] ); ?> · <?php echo esc_html( $job['package'] ); ?></span>
+							</a>
+							<a class="verto-jobs-compact__apply" href="<?php echo esc_url( '' !== $permalink ? $permalink . '#apply' : $href ); ?>">Apply <span aria-hidden="true">↗</span></a>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
 	protected function render() {
 		$s     = $this->get_settings_for_display();
 		$apply = $s['apply_url']['url'] ?? '/contact';
 
-		$live      = $this->live_jobs();
+		$live  = $this->live_jobs();
+		// Round 9, item 1: optional brand scope (live rows and the
+		// placeholder fallback alike).
+		$brand_scope = sanitize_key( (string) ( $s['brand'] ?? '' ) );
+		if ( '' !== $brand_scope ) {
+			$scope = fn( $rows ) => array_values( array_filter( $rows, fn( $j ) => $brand_scope === ( $j['brand'] ?? '' ) ) );
+			$live  = $scope( $live );
+			if ( 'compact' === ( $s['layout'] ?? 'full' ) ) {
+				$this->render_compact( $s, $live ? $live : $scope( self::JOBS ) );
+				return;
+			}
+		} elseif ( 'compact' === ( $s['layout'] ?? 'full' ) ) {
+			$this->render_compact( $s, $live ? $live : self::JOBS );
+			return;
+		}
 		$jobs      = $live ? $live : self::JOBS;
 		$locations = $live ? array_values( array_unique( array_column( $live, 'location' ) ) ) : self::LOCATIONS;
 		$levels    = $live ? array_values( array_unique( array_column( $live, 'level' ) ) ) : self::LEVELS;

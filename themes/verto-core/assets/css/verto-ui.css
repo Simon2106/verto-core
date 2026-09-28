@@ -832,7 +832,10 @@ figure.verto-quote { margin: 0; }
 @media (min-width: 1024px) { .vbs-asplit__grid { grid-template-columns: repeat(2, 1fr); } }
 .vbs-asplit__copywrap { display: flex; align-items: center; padding: 4rem 1.5rem; }
 @media (min-width: 768px)  { .vbs-asplit__copywrap { padding-inline: 3rem; } }
-@media (min-width: 1024px) { .vbs-asplit__copywrap { padding: 6rem 5rem; } }
+/* Align the copy column's text edge with the global 80rem container so
+   stacked sections share one left edge (client: 'bring inline'). */
+@media (min-width: 1024px) { .vbs-asplit__copywrap { padding: 6rem 3rem 6rem max(3rem, calc((100vw - 80rem) / 2 + 2.5rem)); } }
+@media (min-width: 1024px) { .vbs-asplit--reverse .vbs-asplit__copywrap { padding-left: 3rem; padding-right: max(3rem, calc((100vw - 80rem) / 2 + 2.5rem)); } }
 .vbs-asplit__copy { max-width: 28rem; }
 .vbs-asplit__kick { display: flex; flex-direction: column; gap: 0.5rem; }
 .vbs-asplit__headline { margin-top: 1.25rem; font-size: 2.25rem; line-height: 1.05; letter-spacing: -0.025em; }
@@ -1296,11 +1299,26 @@ body.verto-brand-edison-lux .vbs-statcard__value {
   max-width: 380px; margin: 0 auto; border-radius: 1.25rem;
   border: 1px dashed color-mix(in oklab, var(--ink-foreground, #fff) 30%, transparent);
 }
-/* Careers incentives pairing – the share-scheme film beside the Ibiza trip
-   film, two compact labelled portrait films. */
-.verto-films-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 480px; margin: 0 auto; }
-.verto-films-duo .verto-video-story--compact video { max-width: none; border-radius: 1rem; }
-.verto-films-duo .verto-video-story--compact figcaption { margin-top: 0.75rem; letter-spacing: 0.18em; }
+/* Careers incentives media row (round 7, item 4) – the awards-night photo
+   beside the share-scheme film and the Ibiza trip film: three equal-height
+   labelled cards under the full-width intro. Mobile: the photo goes full
+   width, the two films sit 2-up beneath it. */
+.verto-incentive-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+.verto-incentive-row__card { margin: 0; }
+.verto-incentive-row__card img,
+.verto-incentive-row__card video {
+  width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block;
+  border-radius: 1rem; background: #000;
+}
+.verto-incentive-row__card figcaption {
+  margin-top: 0.75rem; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.18em; opacity: 0.6;
+}
+@media (max-width: 767px) {
+  .verto-incentive-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .verto-incentive-row__photo { grid-column: 1 / -1; }
+  .verto-incentive-row__photo img { aspect-ratio: 16 / 10; }
+}
 /* Sales-days mosaic (careers) – ten compact portrait film tiles in one
    dense hover-to-play grid: 5-up desktop, 3-up tablet, 2-up mobile. The
    poster img sits underneath; the video fades in over it while playing. */
@@ -1870,3 +1888,135 @@ body.verto-modal-open { overflow: hidden; }
   border: 1px solid; border-radius: 9999px;
   font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em;
 }
+
+/* ═════════ v0.21 – client feedback round 9 ═════════ */
+
+/* ── Item 3: hero above the fold – the headline steps down a size, vertical
+      rhythm tightens and the stat strip pulls up, so the hero AND all four
+      stat cards sit inside ~900px at a typical 1440x900 desktop. The V-mask
+      panel spans the hero's block size, so it scales down with the section
+      rather than shrinking disproportionately. ── */
+.verto-hero__inner { padding-block: 5.5rem 3.5rem; }
+@media (min-width: 1024px) { .verto-hero__inner { padding-block: 6.5rem 4rem; } }
+.verto-hero .verto-display-2 { font-size: clamp(2rem, 3.6vw, 2.75rem); }
+.verto-hero__body { margin-top: 1.5rem; font-size: 1rem; }
+.verto-hero__ctas { margin-top: 1.75rem; }
+.verto-hero__pillars { margin-top: 2.5rem; }
+@media (min-width: 1024px) { .verto-hero__pillars { margin-top: 3rem; } }
+.verto-stats { padding-block: 2.25rem 3.25rem; }
+.verto-stats__item { padding-block: 0.25rem; }
+.verto-stats__label { margin-top: 0.5rem; }
+
+/* ── Item 4: the awards band now LEADS the ink block (above the employee
+      voices) – top padding only, the voices intro section supplies the gap
+      beneath. ── */
+.verto-awards-lead { padding: 4.5rem 1.5rem 0 !important; }
+@media (min-width: 1024px) { .verto-awards-lead { padding: 5.5rem 2.5rem 0 !important; } }
+.verto-awards-lead > .elementor-container { max-width: 80rem; margin-inline: auto; }
+.verto-awards-lead .verto-awards { margin-bottom: -0.5rem; }
+
+/* ── Item 5: smaller quote cards, no giant quote glyph (markup change),
+      alternating surfaces – base tint / lighter navy / every third outlined
+      on transparent – so the strip stops reading as one blue slab. ── */
+.verto-quote { padding: 1.5rem; width: 340px; }
+.verto-quote__text { margin-top: 0; font-size: 0.9375rem; }
+.verto-quote__who { margin-top: 1.5rem; padding-top: 1rem; }
+.verto-quote:nth-child(odd) { background: color-mix(in oklab, var(--ink-foreground) 8%, var(--ink)); }
+.verto-quote:nth-child(3n) { background: transparent; border-color: color-mix(in oklab, var(--ink-foreground) 24%, transparent); }
+
+/* ── Item 6: nav items as individual buttons – padded hover pill (gold at
+      12%) plus a 2px gold underline growing from the left; the current page
+      keeps gold text + a standing underline. Shared by the group and brand
+      headers (brand tokens turn the accent into the brand colour). ── */
+.verto-header__menu { gap: 0.5rem; }
+.verto-header__menu a {
+  position: relative; display: inline-flex; align-items: center;
+  padding: 0.5rem 0.85rem; border-radius: 0.625rem;
+  transition: opacity 0.2s, color 0.2s, background-color 0.2s;
+}
+.verto-header__menu a::after {
+  content: ""; position: absolute; left: 0.85rem; right: 0.85rem; bottom: 0.3rem;
+  height: 2px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.verto-header__menu a:hover { opacity: 1; background: color-mix(in oklab, var(--accent) 12%, transparent); }
+.verto-header__menu a:hover::after,
+.verto-header__menu .current-menu-item a::after,
+.verto-header__menu .current_page_item a::after { transform: scaleX(1); }
+.verto-header__menu .current-menu-item a,
+.verto-header__menu .current_page_item a { color: var(--accent); }
+.verto-header__menu li.verto-nav-last-brand { gap: 0.75rem; }
+.verto-header--brand .verto-header__menu a::after { background: var(--brand); }
+.verto-header--brand .verto-header__menu a:hover { background: color-mix(in oklab, var(--brand) 12%, transparent); }
+
+/* ── Item 7: tighter About collage – smaller tiles so the full 4x3 set is
+      in view at 100% on desktop. ── */
+.verto-collage { grid-auto-rows: 120px; gap: 0.625rem; }
+@media (min-width: 768px)  { .verto-collage { grid-auto-rows: 140px; gap: 0.75rem; } }
+@media (min-width: 1024px) { .verto-collage { grid-auto-rows: 150px; gap: 0.75rem; } }
+
+/* ── Item 12: about-story side column top-aligns with the narrative copy
+      ("in line with the writing") – the old 5rem desktop drop is gone. ── */
+.vbs-story__side { padding-top: 0; }
+@media (min-width: 1024px) { .vbs-story__side { padding-top: 0.25rem; } }
+
+/* ── Item 14: proof points in a clean 2-col grid – no drop (markup change),
+      fixed number column so 01-04 share one text edge. ── */
+.vbs-proof__item--drop { transform: none; }
+.vbs-proof__num { min-width: 3.5rem; }
+
+/* ── Item 15: "Ready to talk?" band substantially smaller. ── */
+.vbs-ctaband { padding-block: 3.5rem; }
+.vbs-ctaband__card { padding: 2rem 2.5rem; }
+.vbs-ctaband__ctas { margin-top: 1.5rem; }
+
+/* ── Item 17: four-models flat row (process-rail layout=row4) – equal
+      height, no stagger, accent bars always on and in the brand gradient
+      (Edison green→blue; brands without a gradient fall back flat). ── */
+.vbs-rail__grid4--flat { align-items: stretch; }
+.vbs-rail__grid4--flat .vbs-card { height: 100%; transform: none; }
+.vbs-rail__grid4--flat .vbs-card__bar { transform: scaleX(1); }
+
+/* ── Item 21: Vertek home – alternate the run of near-black sections with
+      the muted graphite so the page stops reading as four identical slabs. ── */
+body.verto-brand-vertek .vbs-spec { background: var(--muted) !important; }
+body.verto-brand-vertek .vbs-team { background: var(--muted); }
+
+/* ── Item 1: compact brand vacancies board (jobs-board layout=compact) –
+      rows only, token-driven so it reads correctly on light (Edison) and
+      dark (Vertek / ModulR) grounds. Rows link to the job detail pages;
+      the Apply pill deep-links to the detail page's inline form. ── */
+.verto-jobs-compact { padding-block: 5rem; background: var(--muted); }
+.verto-jobs-compact__head { max-width: 44rem; }
+.verto-jobs-compact__intro { margin: 1rem 0 0; font-size: 1rem; line-height: 1.6; color: var(--muted-foreground); }
+.verto-jobs-compact__list { margin-top: 2.5rem; border-top: 1px solid var(--border); }
+.verto-jobs-compact__row {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: 1.25rem 0.75rem 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--border); border-left: 3px solid var(--brand);
+  transition: background 0.2s;
+}
+.verto-jobs-compact__row:hover { background: color-mix(in oklab, var(--foreground) 4%, transparent); }
+.verto-jobs-compact__main { display: block; flex: 1; min-width: 0; text-decoration: none; color: inherit; }
+.verto-jobs-compact__title { display: block; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; font-size: 1.25rem; }
+.verto-jobs-compact__meta { display: block; margin-top: 0.375rem; font-size: 0.8125rem; color: var(--muted-foreground); }
+.verto-jobs-compact__apply {
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 0.375rem;
+  padding: 0.45rem 1.1rem; border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--brand) 55%, transparent);
+  color: var(--brand); font-size: 0.8125rem; font-weight: 600; text-decoration: none;
+  transition: all 0.2s;
+}
+.verto-jobs-compact__apply:hover { background: var(--brand); color: var(--brand-foreground); }
+body.verto-brand-vertek .verto-jobs-compact__title { font-weight: 600; letter-spacing: 0.01em; text-transform: uppercase; }
+
+/* ── Item 25: footprint tiles as links (About → careers locations) ── */
+a.verto-footprint__card { text-decoration: none; color: inherit; }
+.verto-footprint__go {
+  margin-top: 0.875rem; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.22em; color: var(--accent);
+  opacity: 0; transform: translateY(4px); transition: opacity 0.25s, transform 0.25s;
+}
+.verto-footprint__card--link:hover .verto-footprint__go,
+.verto-footprint__card--link:focus-visible .verto-footprint__go { opacity: 1; transform: none; }

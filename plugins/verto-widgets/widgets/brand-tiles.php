@@ -45,8 +45,9 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ name }}}',
 			'default' => [
 				[ 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
-				  // Coloured gradient-mark logo → white face (round 3, item 2).
-				  'light_face' => 'yes',
+				  // Round 9, item 9: Edison tile runs on the brand navy with
+				  // Electric Blue accents (guidelines) – the white face is gone.
+				  'face_gradient' => 'radial-gradient(58% 52% at 88% 8%, rgba(60,199,55,0.38), transparent 66%), radial-gradient(62% 56% at 6% 94%, rgba(43,142,229,0.42), transparent 66%), #0B1A2B',
 				  // Round 4, item 4: wordmark text in the EL primary-lockup gradient.
 				  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 				  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
@@ -108,7 +109,9 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 					<div class="verto-tile__face verto-tile__face--back" style="background:<?php echo esc_attr( $bg ); ?>;">
 						<div class="verto-tile__stripe" style="background:<?php echo esc_attr( $color ); ?>;"></div>
 						<div class="verto-tile__kicker" style="color:<?php echo esc_attr( $color ); ?>;"><?php echo esc_html( $t['focus'] ); ?></div>
-						<?php if ( ! empty( $t['name_gradient'] ) ) : /* round 4, item 4 */ ?>
+						<?php if ( ! empty( $t['logo']['url'] ) ) : /* round 9, item 9 – the brand LOGO heads the hover face too */ ?>
+							<img class="verto-tile__namelogo<?php echo ( $t['invert_logo'] ?? '' ) === 'yes' ? ' verto-tile__logo--invert' : ''; ?>" src="<?php echo esc_url( $t['logo']['url'] ); ?>" alt="<?php echo esc_attr( $t['name'] ); ?>" loading="lazy" />
+						<?php elseif ( ! empty( $t['name_gradient'] ) ) : /* round 4, item 4 */ ?>
 							<div class="verto-tile__name verto-tile__name--gradient" style="--tile-name-gradient:<?php echo esc_attr( $t['name_gradient'] ); ?>;"><?php echo esc_html( $t['name'] ); ?></div>
 						<?php else : ?>
 							<div class="verto-tile__name"><?php echo esc_html( $t['name'] ); ?></div>
