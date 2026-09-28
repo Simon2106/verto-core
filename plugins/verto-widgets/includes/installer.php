@@ -234,6 +234,11 @@ class Verto_Installer {
 			unset( $map['skyline_us'] );
 			update_option( 'verto_media_skyline_v3', 1 );
 		}
+		// Spinnaker Tower photo replaces the (wrong) London skyline for Solent.
+		if ( ! get_option( 'verto_media_skyline_uk_v4' ) ) {
+			unset( $map['skyline_uk'] );
+			update_option( 'verto_media_skyline_uk_v4', 1 );
+		}
 		$dir   = dirname( __DIR__ ) . '/assets/import/';
 		$files = [
 			'summit_video'  => 'summit-video.mp4',
