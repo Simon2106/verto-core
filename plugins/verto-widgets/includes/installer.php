@@ -1884,6 +1884,10 @@ class Verto_Installer {
 					[ 'tag' => 'candidate', 'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => 'Sade took the time to get to know me and what I was looking for, and matched it with a strong fit for both sides.' ],
 					[ 'tag' => 'client',    'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => 'Sade has been fantastic to work with and has quickly established herself as a trusted recruitment partner. We have been particularly impressed with her responsiveness, market knowledge, and commitment to achieving the right outcomes.' ],
 					[ 'tag' => 'candidate', 'consultant' => 'Charlotte Northam', 'attribution' => '', 'quote' => 'I cannot speak highly enough of my experience with Charlotte. She went above and beyond to help me find my dream job. From the very beginning, Charlotte really understood me, my level of experience and what I was searching for.' ],
+				// Oct 2026 (Alex): the two remaining forwarded client quotes
+				// join the home rotation as well (already in client_quotes).
+				[ 'tag' => 'client',    'consultant' => 'Charlotte Northam', 'attribution' => '', 'quote' => "Charlotte is an incredible partner. She is professional, efficient and attentive. We've worked together on several opportunities at more than one firm, and I often recommend her to friends and colleagues." ],
+				[ 'tag' => 'client',    'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => "Sade is an absolute pleasure to work with. She's incredibly knowledgeable, approachable, and easy to talk to, which makes collaborating with her a genuinely enjoyable experience. I'd highly recommend Sade to anyone who wants to work with someone who combines professionalism with a truly warm and personable nature." ],
 					[ 'tag' => 'candidate', 'consultant' => 'Natasha Sykes', 'attribution' => '', 'quote' => 'Natasha has been very supportive throughout the application, which I have found to be lacking with other recruiters. The calls surrounding interviews are appreciated because they make candidates feel valued.' ],
 				],
 				// All five client quotes that exist (2 Sade, 3 Charlotte incl.
