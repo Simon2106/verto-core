@@ -239,6 +239,12 @@ class Verto_Installer {
 			unset( $map['skyline_uk'] );
 			update_option( 'verto_media_skyline_uk_v4', 1 );
 		}
+		// 4K masters + designed covers replace the Canva exports for the
+		// Harvey/Frank promotion films (Oct 2026).
+		if ( ! get_option( 'verto_media_promos_v2' ) ) {
+			unset( $map['harvey_video'], $map['harvey_poster'], $map['frank_video'], $map['frank_poster'] );
+			update_option( 'verto_media_promos_v2', 1 );
+		}
 		$dir   = dirname( __DIR__ ) . '/assets/import/';
 		$files = [
 			'summit_video'  => 'summit-video.mp4',
@@ -1486,7 +1492,9 @@ class Verto_Installer {
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'barcelona_01' ),  'alt' => 'The team outside the W Barcelona',   'caption' => 'Barcelona' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'skyline_uk' ),      'alt' => 'The Spinnaker Tower on the Solent', 'caption' => 'Solent, UK' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'skyline_us' ),    'alt' => 'Austin, TX – the US build-out',      'caption' => 'Austin, TX' ],
-					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_05' ),     'alt' => 'The team on the ramparts at Southsea Castle', 'caption' => '' ],
+					// Client (Oct 2026): keep the faces in frame – the portrait
+				// ramparts photo crops to its face band (40% down) in the wide tile.
+				[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_05' ),     'alt' => 'The team on the ramparts at Southsea Castle', 'caption' => '', 'focus' => '40%' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'verto_04' ),      'alt' => 'An office party at Verto',           'caption' => '' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'barcelona_03' ),  'alt' => 'The team on the street in Barcelona', 'caption' => '' ],
 				] ] ),
@@ -1758,7 +1766,7 @@ class Verto_Installer {
 			  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 			  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
 			  'logo' => self::media_setting( $media, 'logo_edison_white' ),
-			  'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
+			  'positioning' => 'Edison Lux delivers talent solutions for the US & Europe energy sector, from control room operators to Senior Leadership responsible for billion-dollar assets.',
 			  'link' => [ 'url' => verto_brand_url( 'edison-lux' ) ] ],
 			// Round 4, item 13: new ModulR positioning; sectors trimmed to three
 			// (Interior Design & Fit-out dropped pending client decision).
@@ -1944,7 +1952,9 @@ class Verto_Installer {
 				'hero'        => [
 					'line1'  => 'Powering progress.',
 					'line2'  => 'Together',
-					'sub'    => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators to the C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
+					// Edison Lux copy doc (Oct 2026): US & Europe, Senior
+					// Leadership phrasing, "One market. Done properly." dropped.
+					'sub'    => 'Edison Lux delivers talent solutions for the US & Europe energy sector, from control room operators to Senior Leadership responsible for billion-dollar assets.',
 					// Round 5, item 1: dam (hydro) removed – Edison does zero
 					// hydro. Pylons are the interim hero until the client's
 					// licensed CCGT/turbine photography arrives (CLIENT-NEEDS.md).
@@ -1953,35 +1963,42 @@ class Verto_Installer {
 					'scale'  => 1.18,
 					'offset' => 0,
 				],
+				// Edison Lux copy doc (Oct 2026), page 1: all four tiles reworded.
 				'features' => [
-					[ 'icon' => 'users',       'title' => "US Energy.\nNothing Else.",   'body' => "It's all we do – so no client brief sits outside our knowledge base." ],
-					[ 'icon' => 'star',        'title' => 'Basement To Boardroom',       'body' => 'Control room operators, shift supervisors, VPs, C-suite – the full talent hierarchy staffed.' ],
-					[ 'icon' => 'handshake',   'title' => "World-Class\nNPS",            'body' => 'Feedback captured from every candidate and client interaction – and it shows.' ],
-					[ 'icon' => 'trending-up', 'title' => "100% Engaged\nSuccess",       'body' => "Speed and accuracy together – because when a COD is at risk, you shouldn't have to choose." ],
+					[ 'icon' => 'users',       'title' => "US & EU\nEnergy",             'body' => "It's our speciality. No client brief sits outside our expertise." ],
+					[ 'icon' => 'star',        'title' => "Control Room To\nBoardroom",  'body' => 'From Operators, Engineers to all levels of Technical & Sales Leadership.' ],
+					[ 'icon' => 'handshake',   'title' => "World-Class\nNPS",            'body' => 'We capture feedback from every candidate and client interaction to hold ourselves to the highest standard.' ],
+					[ 'icon' => 'trending-up', 'title' => "100% Engaged\nSuccess",       'body' => 'We recognize speed and accuracy are critical. Our approach ensures you do not have to compromise one for the other.' ],
 				],
 				'about'        => [
 					'headline' => 'One market, known completely.',
-					'mission'  => 'Deliver talent solutions with the precision the industry demands – speed and accuracy together, so when a plant is short-staffed or a COD is at risk you never have to choose between them.',
-					'vision'   => "To be the staffing partner the US energy sector reaches out to first – the most knowledgeable and connected specialist in America's energy transition.",
-					'purpose'  => 'Named for the man who lit up the world, Edison Lux shines a light on the talent that powers everything – bridging the energy skills gap before it becomes a crisis.',
+					// landing_body = the home-page about split (copy doc page 2);
+					// mission/vision/purpose = the about-page compass (page 8).
+					'landing_body' => "Precision matters, and so does speed. When a plant is short-staffed or a deadline is near, we never sacrifice one for the other.\n\nWe deliver talent to US & European power projects, critical power organizations, and commercial teams supplying the industry.",
+					'mission'  => 'Deliver talent solutions with the precision the industry demands, combining speed and accuracy. When a plant is short-staffed, or a COD is at risk, you never have to choose between them.',
+					'vision'   => 'To be the staffing partner the US & European energy sector turns to first.',
+					'purpose'  => 'Named for the man who lit up the world, Edison Lux brings visibility to the talent that powers the industry, bridging the energy skills gap before it becomes a crisis.',
 				],
 				'about_image'     => 'edison_pylon',
 				'about_image_alt' => 'Silhouetted electricity transmission pylons at sunset with a substation on the horizon',
 				'stats' => [
-					[ 'value' => '100%',                 'label' => 'Success rate on engaged search' ],
-					[ 'value' => 'Basement → Boardroom', 'label' => 'Operator to C-suite coverage' ],
-					[ 'value' => 'US & EU',              'label' => 'Energy focus, both markets' ],
+					[ 'value' => '100%',                     'label' => 'Success rate on engaged search' ],
+					[ 'value' => 'Control room → Boardroom', 'label' => 'Operator to C-suite coverage' ],
+					[ 'value' => 'US & EU',                  'label' => 'Energy focus, both markets' ],
 				],
 				// Round 5, item 3: sector IMAGES on the cards (icons kept) –
 				// interim crops of existing licensed energy assets; the client's
 				// per-sector photography is on the CLIENT-NEEDS list.
+				// Edison Lux copy doc (Oct 2026), page 3: tile 1 becomes Power
+				// Generation (OEM/rental/service angle); all six descriptions
+				// replaced with the client's fuller wording.
 				'specialisms' => [
-					[ 'icon' => 'flame',     'image' => 'spec_edison_01', 'title' => 'Critical & Mission-Critical Power',   'description' => 'Control rooms, O&M and engineering leadership for facilities where uptime is non-negotiable.' ],
-					[ 'icon' => 'wind',      'image' => 'spec_edison_02', 'title' => 'Combined Cycle & Gas Generation',     'description' => 'Combined cycle, simple cycle, recips and gas compression – outages, upgrades and permanent operations.' ],
-					[ 'icon' => 'hard-hat',  'image' => 'spec_edison_03', 'title' => 'Renewables & Energy Transition',      'description' => 'Solar, wind, battery storage, hydrogen and RNG – construction, commissioning and operations.' ],
-					[ 'icon' => 'wrench',    'image' => 'spec_edison_04', 'title' => 'Biomass, EFW & Waste-to-Energy',      'description' => 'Biomass, EfW, coal and CHP – teams that know the fuel, the plant and the regulations.' ],
-					[ 'icon' => 'atom',      'image' => 'spec_edison_05', 'title' => 'Nuclear',                             'description' => 'New build, SMR, fusion, decommissioning and defence – engineering, operations and maintenance.' ],
-					[ 'icon' => 'briefcase', 'image' => 'spec_edison_06', 'title' => 'EPC – Construction & Commissioning',  'description' => "FEED, detailed design, construction, commissioning and project delivery." ],
+					[ 'icon' => 'flame',     'image' => 'spec_edison_01', 'title' => 'Power Generation',                    'description' => 'Generator OEMs, rental fleets and service providers, covering gensets, engines, turbines, switchgear and controls, from standard packages to custom builds.' ],
+					[ 'icon' => 'wind',      'image' => 'spec_edison_02', 'title' => 'Combined Cycle & Gas Generation',     'description' => 'Our experience spans combined cycle, simple cycle, reciprocating engines, and gas compression, supporting outages, upgrades, and ongoing operations.' ],
+					[ 'icon' => 'hard-hat',  'image' => 'spec_edison_03', 'title' => 'Renewables & Energy Transition',      'description' => 'Solar, wind, battery storage, hydrogen, and RNG, supporting construction, commissioning, and operational phases.' ],
+					[ 'icon' => 'wrench',    'image' => 'spec_edison_04', 'title' => 'Biomass, EFW & Waste-to-Energy',      'description' => 'Biomass, EFW and coal, our teams bring knowledge of the fuel, the plant, and the regulatory environment.' ],
+					[ 'icon' => 'atom',      'image' => 'spec_edison_05', 'title' => 'Nuclear',                             'description' => 'For new build, SMR, fusion and decommissioning. We provide expertise in engineering, operations, and maintenance.' ],
+					[ 'icon' => 'briefcase', 'image' => 'spec_edison_06', 'title' => 'EPC – Construction & Commissioning',  'description' => 'Our support covers FEED, construction, commissioning, and project delivery.' ],
 				],
 				/* ── Round 10: curated real feedback (client's Canva doc, Sep
 				      2026), lightly cleaned only (typos/spacing, meaning
@@ -2015,31 +2032,80 @@ class Verto_Installer {
 					[ 'tag' => 'candidate', 'consultant' => 'Milly Compton', 'attribution' => '', 'quote' => 'I dealt with Milly and she was great throughout the whole process. She kept me informed, understood my reasons for wanting a specific role and did a thoroughly good job.' ],
 					[ 'tag' => 'candidate', 'consultant' => 'Noah Ward', 'attribution' => '', 'quote' => 'Noah worked well with me and made sure I had the tools necessary to perform well during my screening call.' ],
 				],
+				/* ── Edison Lux copy doc (Oct 2026), pages 4/10/12: the home
+				      audience cards and the Clients/Candidates page heroes now
+				      carry DIFFERENT copy – headline/body/bullets feed the home
+				      cards, hero_* feed the page heroes. ── */
 				'audiences' => [
 					'company' => [
-						'headline' => 'The right people. The right level. Zero compromise on calibre.',
-						'body'     => "Whether you're staffing a single critical seat or building a team for a new asset, one conversation is all it takes to put our network to work. VPs of engineering and plant owners don't have time to run a search – we run it for you.",
-						'bullets'  => "Engaged search – our flagship model, 100% success rate\nRetained executive search for boardroom-level appointments\nTeam builds for new plants, projects and regions\nDirect hire and contract across the full talent hierarchy",
+						'headline' => 'Zero compromise on quality.',
+						'body'     => 'Whether you are filling a single critical role or building a team for a new asset, one conversation connects you to our network. VPs of engineering and plant owners rely on us to manage the search process.',
+						'bullets'  => "Engaged search – our flagship model, 100% success rate\nContract staffing solutions\nTeam builds for new plants, projects and regions",
 						'cta'      => 'Staff your asset',
+						'hero_eyebrow'  => '',
+						'hero_headline' => 'The right people, zero compromise.',
+						'hero_body'     => "Whether you are staffing a single critical seat or building a team, one conversation is all it takes. We run the search, so you don't have to.\n\nWe offer tailored solutions based on your business needs, process and exact requirements.",
 					],
 					'candidate' => [
-						'headline' => "Power your career.\nOn your terms.",
-						'body'     => "Shift supervisor moving up. EPC director chasing COD. VP of engineering eyeing the next chapter. We only call when there's a role worth your time – and we sell your experience before you sit in an interview.",
-						'bullets'  => "Confidential, partnership-led conversations\nRoles across critical power, renewables, EPC and nuclear\nRelocation, comp and market intelligence guidance\nWe sell your experience before the first interview",
+						'headline' => 'Power your career.',
+						'body'     => '',
+						'bullets'  => "Confidential, partnership-led conversations\nIndustry insights and advice from Specialists in your industry\nMaking the search and application process simple",
 						'cta'      => 'Power your career',
+						'hero_headline' => "Power your career.\nOn your terms.",
+						'hero_body'     => "We work with major organizations within the US Energy sector, across utilities, independent power producers and OEMs.\n\nBuild your career with Edison Lux and connect with leading employers across the Energy industry, supported by specialists that understand your market.",
 					],
 				],
-				'about_hero' => [ 'pre' => 'One sector.', 'accent' => "\nUS energy, end to end.", 'post' => 'Lived, not learned.' ],
-				'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators and shift supervisors to the directors and C-suite leaders responsible for billion-dollar assets. One market. Done properly.',
-				'what_we_do' => [
-					'headline'   => 'Embedded in the industries that keep the lights on.',
-					'paragraphs' => "Critical power, combined-cycle and gas generation, renewables and energy transition, biomass and EFW, nuclear, and EPC construction – these are the corners of US energy we know inside out. Every consultant lives in the sector, not adjacent to it.\n\nFor plant owners, developers, EPCs and VPs of engineering, we operate as an extension of the leadership team – discreet, accountable and never transactional. When a COD is at risk or a plant is short-staffed, one conversation is all it takes.",
+				// Copy doc page 7: eyebrow gone, "Lived, not learned" gone, the
+				// hero body reworded (Alex asked for a rewording), and the 100%
+				// stat card enlarged with a gradient CTA through to the services.
+				'about_hero' => [ 'pre' => 'One sector.', 'accent' => "\nUS & Europe Energy.", 'post' => '', 'eyebrow' => '' ],
+				'about_hero_body' => 'Energy is all we do – and why clients and candidates across the US and Europe make Edison Lux their first call.',
+				'about_hero_stat_cta' => [ 'text' => 'Our solutions', 'url' => '/clients' ],
+				// Copy doc page 7: "The story behind" becomes From vision to
+				// reality, with the client's four paragraphs; the story stat rail
+				// carries the three facts from the doc's side panel.
+				'about_story' => [
+					'eyebrow'  => '',
+					'headline' => 'From vision to',
+					'italic'   => 'reality.',
+					'body'     => "Edison Lux was formed in 2025, and is quickly becoming one of the leading Energy recruitment brands that operates across the US and Europe.\n\nEdison Lux has a deep understanding of the Energy industry and every Consultant is a genuine industry expert, specialising in their own niche.\n\nThrough client partnerships, thorough candidate qualification and innovative recruitment tools, we deliver the right talent at pace, without compromising on quality.\n\nWe're building a recruitment brand that understands the industries we serve, the challenges our clients face and the people who drive them forward.",
 				],
+				'about_stats' => [
+					[ 'value' => '4',                        'label' => 'Service options, including Verto Engage' ],
+					[ 'value' => 'Control room → Boardroom', 'label' => 'From Operators and Engineers to all levels of Technical & Commercial Leadership' ],
+					[ 'value' => 'US & Europe Energy',       'label' => 'Critical Power, Combined Cycle & Gas, Renewables, Biomass & EFW, Nuclear and EPC' ],
+				],
+				'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators and shift supervisors to the directors and C-suite leaders responsible for billion-dollar assets.',
+				// Copy doc page 8: eyebrow gone, softer second paragraph.
+				'what_we_do' => [
+					'eyebrow'    => '',
+					'headline'   => 'Embedded in the industries that keep the lights on.',
+					'paragraphs' => "Critical power, combined-cycle and gas generation, renewables and energy transition, biomass and EFW, nuclear, and EPC construction are the areas of US energy we know inside out. Every consultant is embedded in the sector with dedicated niches.\n\nFor plant owners, developers, EPCs, and VPs of engineering, we operate as an extension of your leadership team: discreet, accountable, and focused on long-term partnership.",
+				],
+				// Copy doc page 9: Proof points → Why clients choose Edison Lux.
+				'proof_eyebrow' => '',
+				'proof_heading' => 'Why clients choose Edison Lux.',
 				'proof' => [
-					'100% success rate on engaged search assignments',
-					'World-class NPS across operators, developers and EPCs',
+					'100% success using Verto Engage, backed by an enhanced candidate guarantee',
+					'World class reviews from within the Energy sector',
 					'Feedback captured from every candidate and client interaction',
-					'US and EU coverage – no client brief sits outside our knowledge base',
+					'US & Europe – no client brief sits outside our knowledge',
+				],
+				// Copy doc page 4: Meet the desk → Your market, our Specialists.
+				'team_heading' => 'Your market, our Specialists.',
+				'team_body'    => '',
+				// Copy doc page 6: no strapline under the testimonials title.
+				'testimonials_body' => '',
+				// Copy doc page 10: Partnerships, not one offs (+ a different
+				// image for variety – the EPC construction asset, not more pylons).
+				'clients_split' => [
+					'headline' => 'Partnerships, not one offs.',
+					'body'     => "We believe great recruitment is about building lasting partnerships, not simply filling vacancies.\n\nWe connect businesses with exceptional technical and commercial talent, including the hard-to-find professionals who aren't actively looking.\n\nOur approach combines internal processes built over years of refinement with specialist market knowledge and the individuality that makes each of our consultants stand out.\n\nWhen we represent your business, we do it like it's ours.",
+				],
+				// Copy doc page 12: eyebrow gone, US spellings, merit-led body.
+				'candidates_split' => [
+					'eyebrow' => '',
+					'body'    => "A job posted on LinkedIn gets hundreds of resumes. Working with Edison Lux means your experience is put front and center, presented to the hiring manager to review.\n\nYou get the best representation to the best jobs and employers within US Energy.",
 				],
 				'team_focus' => 'US power & energy search.',
 				'insights'   => [
@@ -2342,8 +2408,10 @@ class Verto_Installer {
 			'mode'       => 'strip',
 			'brand'      => $brand,
 			'eyebrow'    => 'The team',
-			'heading'    => "Meet the $name desk.",
-			'body'       => "Operators, engineers and market specialists. The people you'll actually talk to when you engage $name.",
+			// Edison copy doc (Oct 2026), page 4: "Your market, our Specialists",
+			// nothing else – per-brand overrides, other brands keep the default.
+			'heading'    => $c['team_heading'] ?? "Meet the $name desk.",
+			'body'       => $c['team_body'] ?? "Operators, engineers and market specialists. The people you'll actually talk to when you engage $name.",
 			'focus_text' => $c['team_focus'],
 		] );
 		$contact = function ( string $eyebrow, string $heading, string $bullets ) {
@@ -2391,7 +2459,9 @@ class Verto_Installer {
 				'variant'   => 'landing',
 				'eyebrow'   => "About $name",
 				'headline'  => $c['about']['headline'],
-				'body'      => $c['about']['mission'],
+				// Edison copy doc page 2: the landing split gets its own body,
+				// decoupled from the Mission column on the about page.
+				'body'      => $c['about']['landing_body'] ?? $c['about']['mission'],
 				'cta_text'  => 'Learn more about us',
 				'cta_link'  => [ 'url' => '/about' ],
 				'image'     => self::media_setting( $media, 'vertek' === $brand ? 'insight_manufacturing' : $c['about_image'] ),
@@ -2410,28 +2480,29 @@ class Verto_Installer {
 				] + $sp, $c['specialisms'] ),
 			] ) ], 'verto-bs' ),
 		];
-		// Round 5, item 4 (Edison): "Two desks. One market." – the sales desk
-		// and the technical/engineering desk, side by side.
+		// Round 5, item 4 (Edison) → Edison copy doc (Oct 2026), page 5:
+		// "Two desks. One market." becomes "One industry. Energy." – the
+		// Sales & Service desk and the On site staffing desk, side by side.
 		if ( 'edison-lux' === $brand ) {
 			$home[] = self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Inside Edison Lux',
 					'lines'   => [
-						[ '_id' => self::eid(), 'line' => 'Two desks.' ],
-						[ '_id' => self::eid(), 'line' => 'One market.' ],
+						[ '_id' => self::eid(), 'line' => 'One industry.' ],
+						[ '_id' => self::eid(), 'line' => 'Energy.' ],
 					],
-					'body'    => 'US energy runs on two kinds of talent – the commercial people who win the work and the technical people who deliver it. Edison Lux runs a dedicated desk for each.',
+					'body'    => "Our Energy team supports the entire lifecycle, from commercial and winning the work, to the technical staff who deliver and manage the asset.\n\nYou'll work closely with a Specialist who's dedicated to supporting the jobs you're hiring for. Whether that's Sales, Operators, Plant Managers, Technicians, Engineers or contract staff.",
 				] ),
 				self::widget( 'verto-audience-cards', [ 'items' => [
-					[ '_id' => self::eid(), 'style' => 'ink', 'kicker' => 'Sales & commercial roles',
+					[ '_id' => self::eid(), 'style' => 'ink', 'kicker' => 'Sales & Service',
 					  'headline' => 'The people who win the work.',
-					  'body'     => 'Commercial talent across power generation, renewables and the EPC landscape – from business development to the boardroom.',
-					  'bullets'  => "Business development & sales leadership\nAccount management & client partnerships\nCommercial directors & C-suite appointments",
+					  'body'     => 'We provide sales & service talent across power generation and critical power.',
+					  'bullets'  => "VP sales\nRegional management\nOutside sales\nService techs & Engineers",
 					  'cta_text' => 'Explore sales roles', 'cta_link' => [ 'url' => '/candidates' ] ],
-					[ '_id' => self::eid(), 'style' => 'surface', 'kicker' => 'Technical & engineering roles',
+					[ '_id' => self::eid(), 'style' => 'surface', 'kicker' => 'On site staffing',
 					  'headline' => 'The people who keep it running.',
-					  'body'     => 'Operations and engineering talent for the assets themselves – control room to plant leadership, outage to COD.',
-					  'bullets'  => "Control room operators & shift supervisors\nO&M, commissioning & project engineers\nPlant management & engineering leadership",
+					  'body'     => 'Our operations and engineering talent supports the assets themselves, from control room staff to plant leadership.',
+					  'bullets'  => "Control room operators & Shift Supervisors\nService Engineering\nIC&E\nO&M, commissioning & project management\nPlant management & engineering leadership\nContract staff",
 					  'cta_text' => 'Explore technical roles', 'cta_link' => [ 'url' => '/candidates' ] ],
 				] ] ),
 			], 'verto-bs vbs-desks' );
@@ -2451,7 +2522,8 @@ class Verto_Installer {
 				'heading_pre'      => 'What clients and candidates say.',
 				'heading_accent'   => '',
 				'heading_post'     => '',
-				'body'             => 'Real feedback from the clients we staff for and the people we place – gathered from every engagement.',
+				// Edison copy doc page 6: no strapline under the title.
+				'body'             => $c['testimonials_body'] ?? 'Real feedback from the clients we staff for and the people we place – gathered from every engagement.',
 				'stat_value'       => '',
 				'stat_label'       => '',
 				'consultant_brand' => $name,
@@ -2488,7 +2560,11 @@ class Verto_Installer {
 		$home_id = self::upsert_page( 'home', 'Home', $home );
 
 		/* ── ABOUT ── */
-		$about_hero_body = $c['about']['headline'] . " – and it's how we've built $name into the firm clients and candidates in " . $c['focus_lower'] . ' reach out to first.';
+		$about_hero_body = $c['about_hero_body'] ?? ( $c['about']['headline'] . " – and it's how we've built $name into the firm clients and candidates in " . $c['focus_lower'] . ' reach out to first.' );
+		// Edison copy doc page 7: the 100% stat card grows and carries a
+		// gradient CTA through to the services; story split becomes the
+		// client's "From vision to reality" copy with its own fact rail.
+		$story = $c['about_story'] ?? [];
 		$about = [
 			self::section( [ self::widget( 'verto-quote-band', [
 				'image'          => self::media_setting( $media, $c['hero']['image'] ),
@@ -2496,7 +2572,7 @@ class Verto_Installer {
 				'overlay'        => 'hero-left',
 				'pad'            => 'hero',
 				'parallax_speed' => 0.3,
-				'eyebrow'        => "About $name",
+				'eyebrow'        => $c['about_hero']['eyebrow'] ?? "About $name",
 				'eyebrow_style'  => 'brand',
 				'heading_pre'    => $c['about_hero']['pre'],
 				'heading_accent' => $c['about_hero']['accent'],
@@ -2504,15 +2580,17 @@ class Verto_Installer {
 				'body'           => $about_hero_body,
 				'stat_value'     => $c['stats'][0]['value'],
 				'stat_label'     => $c['stats'][0]['label'],
+				'stat_cta_text'  => $c['about_hero_stat_cta']['text'] ?? '',
+				'stat_cta_link'  => [ 'url' => $c['about_hero_stat_cta']['url'] ?? '' ],
 			] ) ], 'verto-bs' ),
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'         => 'story',
-				'eyebrow'         => "About $name",
-				'headline'        => 'The story behind',
-				'headline_italic' => "$name.",
-				'body'            => $c['positioning'] . "\n\nWe started in technical sales in 2011 – the roots of the Verto Group. $name is the brand built specifically for the part of the market we know best: the engineers, operators and commercial leaders our sector runs on.",
+				'eyebrow'         => $story['eyebrow'] ?? "About $name",
+				'headline'        => $story['headline'] ?? 'The story behind',
+				'headline_italic' => $story['italic'] ?? "$name.",
+				'body'            => $story['body'] ?? ( $c['positioning'] . "\n\nWe started in technical sales in 2011 – the roots of the Verto Group. $name is the brand built specifically for the part of the market we know best: the engineers, operators and commercial leaders our sector runs on." ),
 				'logo'            => self::media_setting( $media, $logo_key ),
-				'stats'           => $stats,
+				'stats'           => isset( $c['about_stats'] ) ? array_map( fn( $st ) => [ '_id' => self::eid() ] + $st, $c['about_stats'] ) : $stats,
 				'cta_text'        => '',
 			] ) ], 'verto-bs' ),
 		];
@@ -2542,7 +2620,7 @@ class Verto_Installer {
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',
 				'reverse'   => 'yes',
-				'eyebrow'   => 'What we do today',
+				'eyebrow'   => $c['what_we_do']['eyebrow'] ?? 'What we do today',
 				'headline'  => $c['what_we_do']['headline'],
 				'body'      => $c['what_we_do']['paragraphs'],
 				'image'     => self::media_setting( $media, $wwd_img ),
@@ -2592,11 +2670,18 @@ class Verto_Installer {
 			] ) ], 'verto-bs' );
 		}
 		$about[] = self::section( [ self::widget( 'verto-proof-list', [
+			// Edison copy doc page 9: Proof points → Why clients choose Edison Lux.
+			'eyebrow' => $c['proof_eyebrow'] ?? 'Proof points',
+			'heading' => $c['proof_heading'] ?? 'Why clients hire us a second time.',
 			'items' => array_map( fn( $p ) => [ '_id' => self::eid(), 'text' => $p ], $c['proof'] ),
 		] ) ], 'verto-bs' );
-		// Round 5, item 5: compact services band (the three engagement models)
-		// on every brand-site page, linking through to /clients.
-		$about[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
+		// Round 5, item 5: compact services band on every brand-site page,
+		// linking through to /clients. Edison copy doc page 9: Alex flagged the
+		// home/about duplication – Edison's ABOUT drops the band (home keeps
+		// the full four-models section; /clients is the services page itself).
+		if ( 'edison-lux' !== $brand ) {
+			$about[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
+		}
 		$about[] = self::section( [ $team_strip ], 'verto-bs' );
 		$about[] = self::section( [ self::widget( 'verto-cta-band', [
 			'heading'   => 'Ready to talk?',
@@ -2616,12 +2701,13 @@ class Verto_Installer {
 				'overlay'        => 'hero-left',
 				'pad'            => 'hero',
 				'parallax_speed' => 0.3,
-				'eyebrow'        => 'For companies',
+				// Edison copy doc page 10: no eyebrow, its own hero copy.
+				'eyebrow'        => $co['hero_eyebrow'] ?? 'For companies',
 				'eyebrow_style'  => 'dim',
-				'heading_pre'    => $co['headline'],
+				'heading_pre'    => $co['hero_headline'] ?? $co['headline'],
 				'heading_accent' => '',
 				'heading_post'   => '',
-				'body'           => $co['body'],
+				'body'           => $co['hero_body'] ?? $co['body'],
 				'cta1_text'      => 'Submit a vacancy',
 				'cta1_link'      => [ 'url' => '#contact' ],
 				'cta2_text'      => "How $name works",
@@ -2634,10 +2720,12 @@ class Verto_Installer {
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',
 				'eyebrow'   => "About $name",
-				'headline'  => 'A partnership, not a placement.',
-				'body'      => "We exist to find you the best technical commercial talent on the market – and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
-				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_01', 'vertek' => 'insight_fluidpower', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
-				'image_alt' => [ 'edison-lux' => 'A critical power facility at dusk', 'vertek' => 'Hydraulic componentry on a fluid power line', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
+				// Edison copy doc page 10: Partnerships, not one offs – and the
+				// EPC construction asset instead of a third run of pylons.
+				'headline'  => $c['clients_split']['headline'] ?? 'A partnership, not a placement.',
+				'body'      => $c['clients_split']['body'] ?? "We exist to find you the best technical commercial talent on the market – and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_06', 'vertek' => 'insight_fluidpower', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
+				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Hydraulic componentry on a fluid power line', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
 				'grayscale' => 'yes',
 				'panel_bg'  => '#ffffff',
 				'stats'     => [
@@ -2734,10 +2822,11 @@ class Verto_Installer {
 				'parallax_speed' => 0.3,
 				'eyebrow'        => 'For candidates',
 				'eyebrow_style'  => 'brand',
-				'heading_pre'    => $ca['headline'],
+				// Edison copy doc page 12: hero keeps "On your terms", new body.
+				'heading_pre'    => $ca['hero_headline'] ?? $ca['headline'],
 				'heading_accent' => '',
 				'heading_post'   => '',
-				'body'           => $ca['body'],
+				'body'           => $ca['hero_body'] ?? $ca['body'],
 				'cta1_text'      => 'Start a conversation',
 				'cta1_link'      => [ 'url' => '#contact' ],
 				'cta2_text'      => "About $name",
@@ -2748,9 +2837,10 @@ class Verto_Installer {
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',
 				'reverse'   => 'yes',
-				'eyebrow'   => 'Represented properly',
+				// Edison copy doc page 12: eyebrow gone, US-English merit copy.
+				'eyebrow'   => $c['candidates_split']['eyebrow'] ?? 'Represented properly',
 				'headline'  => 'Sold on your merits.',
-				'body'      => "A job posted on LinkedIn gets hundreds of CVs. Working with $name means you and your experience are put front and centre – sold to the hiring manager before your first interview.\n\nWe only call when there's a role genuinely worth your time. Honest feedback, no fluff, no promises we can't deliver.",
+				'body'      => $c['candidates_split']['body'] ?? "A job posted on LinkedIn gets hundreds of CVs. Working with $name means you and your experience are put front and centre – sold to the hiring manager before your first interview.\n\nWe only call when there's a role genuinely worth your time. Honest feedback, no fluff, no promises we can't deliver.",
 				// Round 9, item 18: sector imagery (matching the What-we-cover
 				// cards) instead of the repeated hero image.
 				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_03', 'vertek' => 'insight_hvac', 'modulr' => 'insight_architecture' ][ $brand ] ?? $c['hero']['image'] ),
@@ -2759,7 +2849,7 @@ class Verto_Installer {
 				'panel_bg'  => '#ffffff',
 				'stats'     => [
 					[ '_id' => self::eid(), 'value' => '72h',  'label' => 'First feedback after your intro call' ],
-					[ '_id' => self::eid(), 'value' => '100%', 'label' => 'Confidential – always' ],
+					[ '_id' => self::eid(), 'value' => '100%', 'label' => 'Confidential. Always' ],
 					[ '_id' => self::eid(), 'value' => '1:1',  'label' => 'Same consultant, brief to offer' ],
 				],
 				'cta_text'  => "About $name",

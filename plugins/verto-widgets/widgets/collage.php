@@ -25,6 +25,14 @@ class Verto_Widget_Collage extends \Elementor\Widget_Base {
 			'options' => [ 'std' => 'Standard (1×1)', 'wide' => 'Wide (2×1)', 'big' => 'Big (2×2)' ],
 			'default' => 'std',
 		] );
+		// Client (Oct 2026): portrait photos in wide tiles were cropping
+		// faces off – per-tile vertical crop focus (CSS object-position Y,
+		// e.g. "40%" keeps a face band at 40% of the photo's height in view;
+		// empty = centre).
+		$rep->add_control( 'focus', [
+			'label' => 'Crop focus – vertical (e.g. 40%)', 'type' => \Elementor\Controls_Manager::TEXT,
+			'default' => '',
+		] );
 		$this->add_control( 'items', [
 			'label' => 'Tiles', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ alt }}}',
@@ -45,10 +53,12 @@ class Verto_Widget_Collage extends \Elementor\Widget_Base {
 				esc_attr( $size_class ),
 				(int) $i * 90
 			);
+			$focus = trim( (string) ( $tile['focus'] ?? '' ) );
 			printf(
-				'<img src="%s" alt="%s" loading="lazy" />',
+				'<img src="%s" alt="%s" loading="lazy"%s />',
 				esc_url( $tile['image']['url'] ),
-				esc_attr( $tile['alt'] ?? '' )
+				esc_attr( $tile['alt'] ?? '' ),
+				'' !== $focus ? ' style="object-position:center ' . esc_attr( $focus ) . ';"' : ''
 			);
 			if ( ! empty( $tile['caption'] ) ) {
 				echo '<div class="verto-collage__scrim" aria-hidden="true"></div>';

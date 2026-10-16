@@ -52,7 +52,11 @@ class Verto_Widget_Section_Intro extends \Elementor\Widget_Base {
 		}
 		printf( '</%s>', esc_attr( $tag ) );
 		if ( $s['body'] ) {
-			printf( '<p class="verto-intro__body">%s</p>', esc_html( $s['body'] ) );
+			// Blank-line-separated paragraphs (Edison "One industry. Energy."
+			// intro carries two).
+			foreach ( preg_split( '/\n\s*\n/', $s['body'] ) as $para ) {
+				printf( '<p class="verto-intro__body">%s</p>', esc_html( $para ) );
+			}
 		}
 		if ( $s['link_text'] ) {
 			printf( '<a class="verto-intro__link" href="%s">%s →</a>', esc_url( $s['link']['url'] ?? '#' ), esc_html( $s['link_text'] ) );

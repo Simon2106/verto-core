@@ -17,7 +17,8 @@ $verto_hub   = [
 	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Incentive trips, awards, promotions and the occasional market note – straight from the team.' ],
 	'modulr'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'architecture & data centres.', 'body' => 'The thinking from the consultants closest to the architecture & data centres market.' ],
 	'vertek'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'technical sales, service & engineering.', 'body' => 'The thinking from the consultants closest to the technical sales, service & engineering market.' ],
-	'edison-lux' => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'US energy staffing.', 'body' => 'The thinking from the consultants closest to the US energy staffing market.' ],
+	// Edison copy doc (Oct 2026), page 13: "Inside the industry."
+	'edison-lux' => [ 'eyebrow' => 'Insights', 'l1' => 'Inside the', 'l2' => 'industry.', 'body' => 'Thoughts from the consultants working closest to your market.' ],
 ];
 $verto_head   = $verto_hub[ $verto_brand ] ?? $verto_hub['verto'];
 $verto_kicker = 'verto' === $verto_brand ? 'Verto Group' : ucwords( str_replace( '-', ' ', $verto_brand ) );

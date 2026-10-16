@@ -1027,6 +1027,18 @@ figure.verto-quote { margin: 0; }
 @media (min-width: 1024px) { .vbs-band__stat { position: absolute; right: 2rem; bottom: 2rem; margin-top: 0; } }
 .vbs-band__statvalue { margin-top: 0.75rem; font-size: 1.875rem; line-height: 2.25rem; }
 .vbs-band__statlabel { margin-top: 0.5rem; font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.8; }
+/* Edison copy doc (Oct 2026), page 7: enlarged stat card with a gradient CTA
+   through to the services (only renders when stat_cta_text is set). */
+.vbs-band__stat--lg { max-width: 280px; padding: 2rem; }
+.vbs-band__stat--lg .vbs-band__statvalue { font-size: 2.75rem; line-height: 1.1; }
+.vbs-band__statcta {
+	display: inline-block; margin-top: 1.25rem; padding: 0.55rem 1.1rem;
+	font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em;
+	color: #fff; text-decoration: none; border-radius: 3px;
+	background: var(--brand-gradient, var(--brand));
+	transition: opacity 0.2s ease;
+}
+.vbs-band__statcta:hover { opacity: 0.85; color: #fff; }
 .vbs-band__cols { margin-top: 4rem; display: grid; gap: 2.5rem; }
 @media (min-width: 1024px) { .vbs-band__cols { grid-template-columns: repeat(3, 1fr); } }
 .vbs-band__col { padding-left: 1.5rem; border-left: 1px solid; }

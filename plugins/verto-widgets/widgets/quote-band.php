@@ -58,6 +58,10 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 		$this->add_control( 'cta2_link', [ 'label' => 'CTA 2 link', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->add_control( 'stat_value', [ 'label' => 'Floating stat – value', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '3 regions' ] );
 		$this->add_control( 'stat_label', [ 'label' => 'Floating stat – label', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'US & EU coverage' ] );
+		// Edison copy doc (Oct 2026), page 7: optional gradient CTA inside an
+		// enlarged stat card (the 100% box linking through to the services).
+		$this->add_control( 'stat_cta_text', [ 'label' => 'Floating stat – CTA text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'stat_cta_link', [ 'label' => 'Floating stat – CTA link', 'type' => \Elementor\Controls_Manager::URL ] );
 
 		$cols = new \Elementor\Repeater();
 		$cols->add_control( 'label', [ 'label' => 'Label', 'type' => \Elementor\Controls_Manager::TEXT ] );
@@ -223,7 +227,11 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 						?>
 					</h2>
 					<?php if ( $s['body'] ) : ?>
-						<p class="vbs-band__body" style="color:<?php echo esc_attr( $fg ); ?>;"><?php echo esc_html( $s['body'] ); ?></p>
+						<?php // Blank-line-separated paragraphs (Edison copy doc
+						// uses two-paragraph hero bodies on Clients/Candidates). ?>
+						<?php foreach ( preg_split( '/\n\s*\n/', $s['body'] ) as $para ) : ?>
+							<p class="vbs-band__body" style="color:<?php echo esc_attr( $fg ); ?>;"><?php echo esc_html( $para ); ?></p>
+						<?php endforeach; ?>
 					<?php endif; ?>
 					<?php if ( $s['cta1_text'] || $s['cta2_text'] ) : ?>
 						<div class="vbs-band__ctas">
@@ -238,10 +246,15 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 				</div>
 
 				<?php if ( $s['stat_value'] ) : ?>
-					<div class="vbs-band__stat" style="background:var(--ink);color:var(--ink-foreground);border-radius:4px;box-shadow:0 30px 80px -30px rgba(0,0,0,0.6);border:1px solid color-mix(in oklab, var(--brand) 30%, transparent);">
+					<?php // Optional gradient CTA inside the stat card (Edison
+					// about hero: enlarged 100% card linking to the services). ?>
+					<div class="vbs-band__stat<?php echo ! empty( $s['stat_cta_text'] ) ? ' vbs-band__stat--lg' : ''; ?>" style="background:var(--ink);color:var(--ink-foreground);border-radius:4px;box-shadow:0 30px 80px -30px rgba(0,0,0,0.6);border:1px solid color-mix(in oklab, var(--brand) 30%, transparent);">
 						<span class="vbs-statcard__dash" style="background:var(--brand);"></span>
 						<div class="vbs-band__statvalue" style="color:var(--brand);"><?php echo esc_html( $s['stat_value'] ); ?></div>
 						<div class="vbs-band__statlabel"><?php echo esc_html( $s['stat_label'] ); ?></div>
+						<?php if ( ! empty( $s['stat_cta_text'] ) ) : ?>
+							<a class="vbs-band__statcta" href="<?php echo esc_url( $s['stat_cta_link']['url'] ?? '#' ); ?>"><?php echo esc_html( $s['stat_cta_text'] ); ?> &rarr;</a>
+						<?php endif; ?>
 					</div>
 				<?php endif; ?>
 

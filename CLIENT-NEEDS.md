@@ -139,3 +139,23 @@ confidence – short descriptions so Alex can name them by reply:
   grey knitted cardigan (ModulR treatment). Most likely Forough Rezaei – the
   only ModulR woman without a photo (she is clearly not Monira, Charlotte,
   Sade or Natasha) – please confirm and it goes straight into the migration.
+
+## Edison Lux copy doc (Oct 2026) - notes for Alex (v0.22.7)
+
+- All copy edits from the 13-page annotated doc are applied. Two spots in the doc
+  target sections that were REPLACED by the four-models services section Alex
+  approved in v0.22.4 (pages 6/9/11 reference the old Engaged Search / Retained
+  Executive Search / Team Builds cards). The four models stay; his page-11 "Verto
+  Engage" card wording ("Initial up front payment, taken off after successful
+  hire" etc.) was NOT applied because that section is shared by all four sites -
+  confirm with Alex whether the four-models cards should adopt it everywhere.
+- Duplication he flagged (services tiles on home AND about): resolved by removing
+  the compact services strip from the Edison About page only.
+- "Change this photo" (clouds/man, page 8): already replaced in round 9 with the
+  combined-cycle plant image.
+- "Change one of these images for variety" (page 10): clients-page split now uses
+  the EPC construction asset instead of a third pylon shot. Real per-sector
+  photography still outstanding (above).
+- Reworded paragraph he asked for (about hero): "Energy is all we do - and why
+  clients and candidates across the US and Europe make Edison Lux their first
+  call." - flag for his next pass.
