@@ -76,10 +76,19 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 			'options' => [ '' => 'None', 'client' => 'Client', 'candidate' => 'Candidate' ],
 			'default' => '',
 		] );
+		// Round 10: optional consultant avatar row per quote. 'consultant' is
+		// the consultant's FULL roster name – the headshot resolves at render
+		// time from the matching verto_team post's featured image (so treated
+		// photo updates flow through automatically); 'photo' is a manual
+		// override for people outside the roster. No photo → initials pill.
+		$quotes->add_control( 'consultant', [ 'label' => 'Consultant (full name – resolves the team headshot)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$quotes->add_control( 'photo', [ 'label' => 'Consultant photo (override)', 'type' => \Elementor\Controls_Manager::MEDIA, 'default' => [] ] );
 		$this->add_control( 'quotes', [
 			'label' => 'Quotes', 'type' => \Elementor\Controls_Manager::REPEATER,
-			'fields' => $quotes->get_controls(), 'title_field' => '{{{ attribution }}}', 'default' => [],
+			'fields' => $quotes->get_controls(), 'title_field' => '{{{ consultant }}} {{{ attribution }}}', 'default' => [],
 		] );
+		// Round 10: brand label for the avatar caption ("Consultant, {Brand}").
+		$this->add_control( 'consultant_brand', [ 'label' => 'Consultant caption – brand name', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'quotes_style', [
 			'label' => 'Section style', 'type' => \Elementor\Controls_Manager::SELECT,
 			'options' => [
@@ -105,6 +114,68 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 		$this->add_control( 'case_client', [ 'label' => 'Case study – client (enables case layout)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'case_sector', [ 'label' => 'Case study – sector', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->end_controls_section();
+	}
+
+	/** Per-request cache: consultant name → team headshot URL ('' = none). */
+	private static $team_photo_cache = [];
+
+	/**
+	 * Round 10: the consultant avatar row on a quote card – 38px circular
+	 * headshot (or initials pill when no photo exists, e.g. Saman Akbari by
+	 * client instruction) + name + "Consultant, {Brand}" caption. The photo
+	 * resolves from the verto_team post whose title matches the consultant
+	 * name, so headshot migrations (v2/v3 treated versions) flow through
+	 * without touching the quote data; the repeater 'photo' media control
+	 * overrides for anyone outside the roster.
+	 */
+	private function consultant_avatar( array $q, string $brand_label ): string {
+		$name = trim( (string) ( $q['consultant'] ?? '' ) );
+		if ( '' === $name ) return '';
+		$src = '';
+		if ( ! empty( $q['photo']['id'] ) ) {
+			$src = wp_get_attachment_image_url( $q['photo']['id'], 'thumbnail' );
+		}
+		if ( ! $src && ! empty( $q['photo']['url'] ) ) {
+			$src = $q['photo']['url'];
+		}
+		if ( ! $src ) {
+			if ( ! array_key_exists( $name, self::$team_photo_cache ) ) {
+				$posts = get_posts( [
+					'post_type'      => 'verto_team',
+					'post_status'    => 'publish',
+					'posts_per_page' => 1,
+					'title'          => $name,
+				] );
+				self::$team_photo_cache[ $name ] = $posts
+					? (string) get_the_post_thumbnail_url( $posts[0]->ID, 'thumbnail' )
+					: '';
+			}
+			$src = self::$team_photo_cache[ $name ];
+		}
+		if ( $src ) {
+			$img = sprintf(
+				'<img class="vbs-quote-ava__img" src="%s" alt="%s" width="38" height="38" loading="lazy" />',
+				esc_url( $src ),
+				esc_attr( $name )
+			);
+		} else {
+			$initials = '';
+			foreach ( preg_split( '/\s+/', $name ) as $word ) {
+				$initials .= function_exists( 'mb_substr' ) ? mb_substr( $word, 0, 1 ) : substr( $word, 0, 1 );
+				if ( 2 <= ( function_exists( 'mb_strlen' ) ? mb_strlen( $initials ) : strlen( $initials ) ) ) break;
+			}
+			$img = sprintf(
+				'<span class="vbs-quote-ava__img vbs-quote-ava__init" style="color:var(--brand);">%s</span>',
+				esc_html( function_exists( 'mb_strtoupper' ) ? mb_strtoupper( $initials ) : strtoupper( $initials ) )
+			);
+		}
+		$caption = '' !== $brand_label ? 'Consultant, ' . $brand_label : 'Consultant';
+		return sprintf(
+			'<div class="vbs-quote-ava">%s<div class="vbs-quote-ava__meta"><span class="vbs-quote-ava__name">%s</span><span class="vbs-quote-ava__cap">%s</span></div></div>',
+			$img,
+			esc_html( $name ),
+			esc_html( $caption )
+		);
 	}
 
 	private function overlay_css( string $key ): string {
@@ -219,21 +290,30 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 							)
 							: '';
 						$drop = ! $carousel && 1 === $i % 2;
+						// Round 10: attribution is optional (curated real quotes
+						// run anonymous – consultant avatar carries the identity);
+						// avatar row renders after the caption when set.
+						$caption = '' !== trim( (string) ( $q['attribution'] ?? '' ) )
+							? sprintf( '<figcaption>– %s</figcaption>', esc_html( $q['attribution'] ) )
+							: '';
+						$avatar  = $this->consultant_avatar( $q, trim( (string) ( $s['consultant_brand'] ?? '' ) ) );
 						if ( $light ) {
 							$figures[] = sprintf(
-								'<figure class="vbs-quote-l%s" style="border-left:2px solid var(--brand);"><div class="vbs-quote-l__mark" style="color:var(--brand);background:var(--background);">&quot;</div>%s<blockquote>%s</blockquote><figcaption>– %s</figcaption></figure>',
+								'<figure class="vbs-quote-l%s" style="border-left:2px solid var(--brand);"><div class="vbs-quote-l__mark" style="color:var(--brand);background:var(--background);">&quot;</div>%s<blockquote>%s</blockquote>%s%s</figure>',
 								$drop ? ' vbs-quote-l--drop' : '',
 								$tag,
 								esc_html( $q['quote'] ),
-								esc_html( $q['attribution'] )
+								$caption,
+								$avatar
 							);
 						} else {
 							$figures[] = sprintf(
-								'<figure class="vbs-band__quote%s"><div class="vbs-band__mark" style="color:var(--brand);">&quot;</div>%s<blockquote>%s</blockquote><figcaption>– %s</figcaption></figure>',
+								'<figure class="vbs-band__quote%s"><div class="vbs-band__mark" style="color:var(--brand);">&quot;</div>%s<blockquote>%s</blockquote>%s%s</figure>',
 								$drop ? ' vbs-band__quote--drop' : '',
 								$tag,
 								esc_html( $q['quote'] ),
-								esc_html( $q['attribution'] )
+								$caption,
+								$avatar
 							);
 						}
 					}

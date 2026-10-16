@@ -82,15 +82,21 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 		$s      = $this->get_settings_for_display();
 		$layout = $s['layout'] ?: 'cards3';
 		$bg     = 'muted' === $s['bg'] ? 'background:var(--muted);' : '';
+		// v0.22.4 (client): the row4 four-models section is simplified – the
+		// eyebrow loses its dash, the right-hand intro paragraph is gone
+		// (simple single-column head), and the cards drop their 01-04
+		// numbers. Other layouts keep the original treatment.
+		$flat      = 'row4' === $layout;
+		$side_text = $flat ? '' : $s['side_text'];
 		?>
 		<div class="vbs-rail vbs-rail--<?php echo esc_attr( $layout ); ?>" style="<?php echo esc_attr( $bg ); ?>">
 			<div class="container-wide">
-				<div class="vbs-rail__head<?php echo $s['side_text'] ? ' vbs-rail__head--split' : ''; ?>">
+				<div class="vbs-rail__head<?php echo $side_text ? ' vbs-rail__head--split' : ''; ?>">
 					<div>
-						<?php if ( $s['eyebrow'] ) : ?><span class="eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></span><?php endif; ?>
+						<?php if ( $s['eyebrow'] ) : ?><span class="eyebrow<?php echo $flat ? ' eyebrow--plain' : ''; ?>"><?php echo esc_html( $s['eyebrow'] ); ?></span><?php endif; ?>
 						<h2 class="display-2 vbs-mt5"><?php echo nl2br( esc_html( $s['heading'] ) ); ?></h2>
 					</div>
-					<?php if ( $s['side_text'] ) : ?><p class="vbs-rail__side"><?php echo esc_html( $s['side_text'] ); ?></p><?php endif; ?>
+					<?php if ( $side_text ) : ?><p class="vbs-rail__side"><?php echo esc_html( $side_text ); ?></p><?php endif; ?>
 				</div>
 
 				<?php if ( 'line' === $layout ) :
@@ -128,13 +134,16 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 							<div class="vbs-card<?php echo $is3 ? ' vbs-card--p8' : ' vbs-card--p7'; ?><?php echo $stagger ? ' vbs-card--drop' : ''; ?><?php echo $badge ? ' vbs-card--lead' : ''; ?>" style="background:color-mix(in oklab, var(--foreground) 6%, var(--background));">
 								<span class="vbs-card__bar" style="background:<?php echo esc_attr( $bar_bg ); ?>;"></span>
 								<?php if ( $badge ) : ?><span class="vbs-card__badge"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
-								<?php if ( $is3 && $it['kicker'] ) : ?>
-									<div class="vbs-rail__numrow">
-										<div class="vbs-rail__num3" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
-										<span class="vbs-dash" style="background:var(--brand);"></span>
-									</div>
-								<?php else : ?>
-									<div class="<?php echo $is3 ? 'vbs-rail__num3' : 'vbs-rail__num'; ?>" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
+								<?php // v0.22.4 (client): row4 cards carry no 01-04 number and no dash decoration – title / kicker / body / bullets only. ?>
+								<?php if ( ! $row4 ) : ?>
+									<?php if ( $is3 && $it['kicker'] ) : ?>
+										<div class="vbs-rail__numrow">
+											<div class="vbs-rail__num3" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
+											<span class="vbs-dash" style="background:var(--brand);"></span>
+										</div>
+									<?php else : ?>
+										<div class="<?php echo $is3 ? 'vbs-rail__num3' : 'vbs-rail__num'; ?>" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
+									<?php endif; ?>
 								<?php endif; ?>
 								<h3 class="<?php echo $is3 ? 'vbs-rail__title3' : 'vbs-rail__title4'; ?>"><?php echo esc_html( $it['title'] ); ?></h3>
 								<?php if ( $it['kicker'] ) : ?><p class="vbs-rail__kicker"><?php echo esc_html( $it['kicker'] ); ?></p><?php endif; ?>

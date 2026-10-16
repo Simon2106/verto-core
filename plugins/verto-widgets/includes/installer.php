@@ -326,6 +326,13 @@ class Verto_Installer {
 			'celebration_poster' => 'promotion-celebration-poster.jpg',
 			'sade_celebration_video'  => 'sade-celebration.mp4',      // Sade's celebration, second clip
 			'sade_celebration_poster' => 'sade-celebration-poster.jpg',
+			/* ── Oct-2026 promotion films (client drop) – two more confetti
+			   walk-ins, same treatment as the Milly / Sade clips: portrait
+			   720×1280 h264/aac, faststart, posters pulled from the films. */
+			'harvey_video'       => 'harvey-promotion.mp4',           // Harvey Earl's promotion – and the US move
+			'harvey_poster'      => 'harvey-promotion-poster.jpg',
+			'frank_video'        => 'frank-promotion.mp4',            // Frank Warner's promotion announcement
+			'frank_poster'       => 'frank-promotion-poster.jpg',
 			'share_video'        => 'share-scheme.mp4',               // "What does Verto's share scheme mean" interview (58s)
 			'share_poster'       => 'share-scheme-poster.jpg',
 			// Round 5, item 10: the share-scheme awards-night photo – the team
@@ -494,11 +501,14 @@ class Verto_Installer {
 			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-olivia-pinhorne-v3.png' ],
 			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-rex-reavley-v3.png' ],
 			'Jake Massingham'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-jake-massingham-v3.png' ],
-			'Sam Parnell'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-sam-parnell.jpg' ],
+			// photos-0.22.3: identified among the held-back zip-3 files ("jake
+			// vertek 1 (8)" = Sam, "(9)" = Frank – matched against their
+			// existing headshots: same faces, Frank in the same Fred Perry).
+			'Sam Parnell'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-sam-parnell-v3.png' ],
 			'Saman Akbari'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
 			'Harvey Earl'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-harvey-earl.jpg' ],
 			'Lewis Sullivan'   => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lewis-sullivan-v3.png' ],
-			'Frank Warner'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-frank-warner.jpg' ],
+			'Frank Warner'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-frank-warner-v3.png' ],
 			'Alex Wright'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-alex-wright-v3.png' ],
 			'Lethu Zwane'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lethu-zwane-v3.png' ],
 			'Lewis Mason'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-lewis-mason.webp' ],
@@ -609,7 +619,7 @@ class Verto_Installer {
 
 	/** Team-photo batch version – bump when the client sends new treated
 	 *  headshots so existing installs swap them in on their next Rebuild. */
-	const TEAM_PHOTOS = 'photos-0.21.0';
+	const TEAM_PHOTOS = 'photos-0.22.3';
 
 	/**
 	 * Versioned team-photo migration. Round 9, item 22 (photos-0.21.0): the
@@ -617,9 +627,11 @@ class Verto_Installer {
 	 * (grayscale subject, brand glow + logo). Every file below was matched to
 	 * the roster against the existing headshots; Saman Akbari is deliberately
 	 * excluded ("Leave Saman off cos he's not in that brand"), and Milly
-	 * Compton keeps her verified v2 (round 9, item 23). Six zip-3 files
-	 * arrived with someone else's filename and no identifiable match – they
-	 * are NOT applied (see CLIENT-NEEDS.md: photo naming needed).
+	 * Compton keeps her verified v2 (round 9, item 23). The held-back zip-3
+	 * files were re-examined for the photos-0.22.3 batch: Sam Parnell and
+	 * Frank Warner are now positively identified and applied; the remaining
+	 * unidentified faces are still NOT applied (see CLIENT-NEEDS.md:
+	 * photo naming needed).
 	 * seed_team() skips people who already have a thumbnail, so EXISTING
 	 * installs need this pass to replace the old photos in place. Runs once
 	 * per TEAM_PHOTOS version; skips anyone whose thumbnail already points
@@ -658,6 +670,12 @@ class Verto_Installer {
 			'Lewis Wright'      => 'modulr-lewis-wright-v3.png',
 			'Karabo Mothopeng'  => 'verto-karabo-mothopeng.png',
 			'Angel Ndlovu'      => 'verto-angel-ndlovu.png',
+			// photos-0.22.3 batch – held-back zip-3 files identified on re-review:
+			// "jake vertek 1 (8)" is Sam Parnell (same cropped hair, beard and
+			// grin as his headshot); "jake vertek 1 (9)" is Frank Warner (same
+			// face AND the same Fred Perry jumper as his headshot).
+			'Sam Parnell'       => 'vertek-sam-parnell-v3.png',
+			'Frank Warner'      => 'vertek-frank-warner-v3.png',
 		];
 		foreach ( $updates as $name => $file ) {
 			if ( ! file_exists( $dir . $file ) ) continue;
@@ -696,11 +714,9 @@ class Verto_Installer {
 			'solent' => [
 				'name'    => 'Solent, UK',
 				'address' => 'Arena Business Centre, Whiteley – Solent',
-				// Round 9, item 11: skyline-uk.jpg is a London skyline – wrong
-				// for the Solent. Interim: lead with real office/team photography
-				// until the client supplies the Spinnaker/Havant photo
-				// (CLIENT-NEEDS.md).
-				'skyline' => 'verto_04',
+				// skyline-uk.jpg is now the client-supplied Spinnaker Tower photo
+				// (replaced the wrong London skyline, Sep 2026).
+				'skyline' => 'skyline_uk',
 				'photos'  => [ 'verto_05', 'verto_03', 'summit_05', 'gala_02' ],
 				'blurb'   => 'The Arena Business Centre on the Solent is where Verto started in 2020 – a lockdown launch that grew into the group\'s home. It\'s still the biggest office: every UK desk sits here, the sales days are loudest here, and the summer summit is a short walk down the coast at Southsea Castle.',
 				'note'    => '',
@@ -1068,6 +1084,53 @@ class Verto_Installer {
 		self::seed_media_drop_posts( $media, $cat_ids );
 		self::seed_share_awards_post( $media, $cat_ids );
 		self::seed_event_film_embeds( $media );
+		self::seed_promotion_film_posts( $media, $cat_ids );
+	}
+
+	/** Batch 5 – Oct-2026 promotion films (client drop): Harvey Earl's and
+	 *  Frank Warner's promotion announcements, same confetti treatment as
+	 *  the Milly / Sade clips. Versioned in its own option, mirroring the
+	 *  seed_event_film_embeds() / seed_share_awards_post() migrations, so
+	 *  EXISTING installs gain both posts on Rebuild; fresh installs run it
+	 *  in the same build, right after the earlier batches. */
+	private static function seed_promotion_film_posts( array $media, array $cat_ids ): void {
+		if ( get_option( 'verto_installer_posts_promos' ) ) return;
+		$vid = static function ( $video_key, $poster_key ) use ( $media ) {
+			if ( empty( $media[ $video_key ]['url'] ) ) return '';
+			$poster = empty( $media[ $poster_key ]['url'] ) ? '' : ' poster="' . esc_url( $media[ $poster_key ]['url'] ) . '"';
+			return "\n\n" . '[video mp4="' . esc_url( $media[ $video_key ]['url'] ) . '"' . $poster . ' preload="none"]';
+		};
+		// The films ship with the plugin, so both should exist by now – but if
+		// an import failed, leave the option unset so the next Rebuild retries.
+		if ( '' === $vid( 'harvey_video', 'harvey_poster' ) || '' === $vid( 'frank_video', 'frank_poster' ) ) return;
+		$posts = [
+			[ 'title'   => 'Harvey Earl promoted',
+			  'excerpt' => 'The office knew before Harvey did – confetti down, everyone on their feet, and Harvey Earl walking into a promotion announced the Verto way.',
+			  'content' => "The whole office in on it, the confetti already on the carpet, and Harvey Earl walking into an announcement with his name on it. Promotions get the full treatment here – press play for the moment it landed." . $vid( 'harvey_video', 'harvey_poster' ),
+			  'image'   => 'harvey_poster', 'category' => 'Wins', 'date' => '2026-09-29 12:00:00' ],
+			[ 'title'   => 'Frank Warner promoted',
+			  'excerpt' => 'Confetti on the floor and the whole office waiting – Frank Warner\'s promotion, announced in front of everyone. Watch the walk-in.',
+			  'content' => "Another week, another walk-in: confetti underfoot, the whole office waiting, and Frank Warner stepping into a promotion announced the only way we know how. Press play for the moment it landed." . $vid( 'frank_video', 'frank_poster' ),
+			  'image'   => 'frank_poster', 'category' => 'Wins', 'date' => '2026-10-02 12:00:00' ],
+		];
+		$ids = [];
+		foreach ( $posts as $post ) {
+			$cat_id = $cat_ids[ $post['category'] ] ?? 0;
+			$id = wp_insert_post( [
+				'post_title'   => $post['title'],
+				'post_excerpt' => $post['excerpt'],
+				'post_content' => $post['content'],
+				'post_status'  => 'publish',
+				'post_type'    => 'post',
+				'post_date'    => $post['date'],
+				'post_category'=> $cat_id ? [ $cat_id ] : [],
+			] );
+			if ( $id && ! is_wp_error( $id ) && ! empty( $media[ $post['image'] ]['id'] ) ) {
+				set_post_thumbnail( $id, $media[ $post['image'] ]['id'] );
+			}
+			$ids[] = $id;
+		}
+		update_option( 'verto_installer_posts_promos', $ids );
 	}
 
 	/** Batch 4 – Sep-2026 event films: embed the Ibiza incentive film into
@@ -1291,6 +1354,12 @@ class Verto_Installer {
 				] ),
 				self::widget( 'verto-values' ),
 			], 'verto-values-light verto-container-pad verto-container-pad--values' ),
+			// v0.22.4 (client): the full four-models section joins the GROUP
+			// home too – after Values, before Instagram. Brand-neutral: the
+			// group's gold --brand token drives the accents, Verto Engage
+			// stays the flagship, and the section sits on the light page
+			// ground ('default') rather than the muted band.
+			self::four_models_section( 'default' ),
 			// Client feedback round 2, item 13: Instagram feed on the homepage.
 			self::section( [ self::widget( 'verto-socials' ) ], 'verto-container-pad' ),
 		];
@@ -1380,7 +1449,7 @@ class Verto_Installer {
 				// Round 9, item 11: Solent tile – real office photography until
 				// the Spinnaker photo arrives (the London skyline was wrong).
 				self::widget( 'verto-footprint', [ 'items' => [
-					[ '_id' => self::eid(), 'note' => 'Founding office', 'name' => 'Solent, UK', 'line1' => 'Where Verto started in 2020. Our largest office.', 'line2' => 'Vertek · ModulR · Life Sciences', 'image' => self::media_setting( $media, 'verto_03' ) ],
+					[ '_id' => self::eid(), 'note' => 'Founding office', 'name' => 'Solent, UK', 'line1' => 'Where Verto started in 2020. Our largest office.', 'line2' => 'Vertek · ModulR · Life Sciences', 'image' => self::media_setting( $media, 'skyline_uk' ) ],
 					[ '_id' => self::eid(), 'note' => 'US headquarters', 'name' => 'Austin, TX', 'line1' => 'Edison Lux and the Vertek US build-out.', 'line2' => 'The fastest-growing part of the group', 'image' => self::media_setting( $media, 'skyline_us' ) ],
 					[ '_id' => self::eid(), 'note' => 'Coming soon', 'name' => 'Miami, FL', 'line1' => "ModulR's US practice and founding desks.", 'line2' => 'Ground-floor opportunity', 'image' => self::media_setting( $media, 'skyline_eu' ) ],
 				] ] ),
@@ -1415,7 +1484,7 @@ class Verto_Installer {
 					[ '_id' => self::eid(), 'size' => 'big',  'image' => self::media_setting( $media, 'ibiza_11' ),      'alt' => 'The Verto team in the sea in Ibiza', 'caption' => 'Ibiza – the 2026 summer incentive' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'summit_02' ),     'alt' => 'The Verto summer summit',            'caption' => 'The summit' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'barcelona_01' ),  'alt' => 'The team outside the W Barcelona',   'caption' => 'Barcelona' ],
-					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'verto_03' ),      'alt' => "Verto's 6th birthday in the Solent office", 'caption' => 'Solent, UK' ],
+					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'skyline_uk' ),      'alt' => 'The Spinnaker Tower on the Solent', 'caption' => 'Solent, UK' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'skyline_us' ),    'alt' => 'Austin, TX – the US build-out',      'caption' => 'Austin, TX' ],
 					[ '_id' => self::eid(), 'size' => 'wide', 'image' => self::media_setting( $media, 'summit_05' ),     'alt' => 'The team on the ramparts at Southsea Castle', 'caption' => '' ],
 					[ '_id' => self::eid(), 'size' => 'std',  'image' => self::media_setting( $media, 'verto_04' ),      'alt' => 'An office party at Verto',           'caption' => '' ],
@@ -1477,7 +1546,7 @@ class Verto_Installer {
 				// awaited – CLIENT-NEEDS.md); every tile links through to the
 				// careers locations section.
 				self::widget( 'verto-footprint', [ 'items' => [
-					[ '_id' => self::eid(), 'note' => 'Where it started – Feb 2020', 'name' => 'Solent, UK', 'line1' => 'Arena Business Centre, Havant, Portsmouth', 'line2' => 'Vertek · ModulR · Verto Life Sciences', 'image' => self::media_setting( $media, 'verto_03' ), 'link' => [ 'url' => '/careers#locations' ] ],
+					[ '_id' => self::eid(), 'note' => 'Where it started – Feb 2020', 'name' => 'Solent, UK', 'line1' => 'Arena Business Centre, Havant, Portsmouth', 'line2' => 'Vertek · ModulR · Verto Life Sciences', 'image' => self::media_setting( $media, 'skyline_uk' ), 'link' => [ 'url' => '/careers#locations' ] ],
 					[ '_id' => self::eid(), 'note' => 'US HQ', 'name' => 'Austin, TX', 'line1' => '5900 Balcones Drive, Austin', 'line2' => 'Edison Lux · Vertek US', 'image' => self::media_setting( $media, 'skyline_us' ), 'link' => [ 'url' => '/careers#locations' ] ],
 					[ '_id' => self::eid(), 'note' => 'Coming soon', 'name' => 'Miami, FL', 'line1' => 'Opening soon', 'line2' => 'ModulR US', 'image' => self::media_setting( $media, 'skyline_eu' ), 'link' => [ 'url' => '/careers#locations' ] ],
 				] ] ),
@@ -1795,12 +1864,38 @@ class Verto_Installer {
 					[ 'icon' => 'layers',          'title' => 'Project Lifecycle',       'description' => 'CD → SD → DD → CD → CA. Concept design through construction administration.' ],
 					[ 'icon' => 'heart-handshake', 'title' => 'Inclusion & EDI',         'description' => 'Championing women in architecture and EDI across technical built-environment roles.' ],
 				],
-				// Round 5, item 7: placeholder testimonials for the home band –
-				// clearly marked; the client is sending the real quotes.
+				/* ── Round 10: REAL feedback (client's Canva doc + pasted extras,
+				      Sep 2026), curated + lightly cleaned (typos/spacing only,
+				      meaning unchanged). Reviewers stay anonymous except Ochuko
+				      (client instruction); 'consultant' = full roster name – the
+				      quote-band resolves the verto_team headshot at render time.
+				      home_testimonials = the mixed 4–5 highlight set; the full
+				      curated sets live in client_quotes / candidate_quotes. ── */
 				'home_testimonials' => [
-					[ 'tag' => 'client',    'quote' => 'Modulr built our data-centre delivery team under NDA – three regions, fourteen hires, zero leaks and zero attrition.', 'attribution' => 'Programme Director, hyperscale operator – placeholder, real testimonial to follow' ],
-					[ 'tag' => 'candidate', 'quote' => "I wasn't looking. One considered introduction later I'm leading the studio I'd admired for years – and the conversation stayed confidential throughout.", 'attribution' => 'Associate Principal, architecture practice – placeholder, real testimonial to follow' ],
-					[ 'tag' => 'client',    'quote' => 'No CVs into the void – a shortlist of three, all interviewable, all briefed. We hired two of them.', 'attribution' => 'Practice Principal, AOR firm – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'client',    'consultant' => 'Charlotte Northam', 'attribution' => 'Ochuko', 'quote' => "Charlotte listens to and understands the staffing needs of my office. She approaches the search with a sense of dogged commitment and responsiveness that matches the urgency. Charlotte's personable touch makes working with her a pleasure." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => 'Sade took the time to get to know me and what I was looking for, and matched it with a strong fit for both sides.' ],
+					[ 'tag' => 'client',    'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => 'Sade has been fantastic to work with and has quickly established herself as a trusted recruitment partner. We have been particularly impressed with her responsiveness, market knowledge, and commitment to achieving the right outcomes.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Charlotte Northam', 'attribution' => '', 'quote' => 'I cannot speak highly enough of my experience with Charlotte. She went above and beyond to help me find my dream job. From the very beginning, Charlotte really understood me, my level of experience and what I was searching for.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Natasha Sykes', 'attribution' => '', 'quote' => 'Natasha has been very supportive throughout the application, which I have found to be lacking with other recruiters. The calls surrounding interviews are appreciated because they make candidates feel valued.' ],
+				],
+				// All five client quotes that exist (2 Sade, 3 Charlotte incl.
+				// Ochuko – the Ochuko quote appears in both source docs, so four
+				// unique texts run here).
+				'client_quotes' => [
+					[ 'tag' => 'client', 'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => 'Sade has been fantastic to work with and has quickly established herself as a trusted recruitment partner. She has taken the time to understand our requirements and consistently provided a high level of service and communication throughout. We have been particularly impressed with her responsiveness, market knowledge, and commitment to achieving the right outcomes.' ],
+					[ 'tag' => 'client', 'consultant' => 'Charlotte Northam', 'attribution' => 'Ochuko', 'quote' => "Charlotte listens to and understands the staffing needs of my office. She approaches the search with a sense of dogged commitment and responsiveness that matches the urgency. Charlotte's personable touch makes working with her a pleasure." ],
+					[ 'tag' => 'client', 'consultant' => 'Charlotte Northam', 'attribution' => '', 'quote' => "Charlotte is an incredible partner. She is professional, efficient and attentive. We've worked together on several opportunities at more than one firm, and I often recommend her to friends and colleagues." ],
+					[ 'tag' => 'client', 'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => "Sade is an absolute pleasure to work with. She's incredibly knowledgeable, approachable, and easy to talk to, which makes collaborating with her a genuinely enjoyable experience. I'd highly recommend Sade to anyone who wants to work with someone who combines professionalism with a truly warm and personable nature." ],
+				],
+				'candidate_quotes' => [
+					[ 'tag' => 'candidate', 'consultant' => 'Charlotte Northam', 'attribution' => '', 'quote' => 'I cannot speak highly enough of my experience with Charlotte. She went above and beyond to help me find my dream job. From the very beginning, Charlotte really understood me, my level of experience and what I was searching for. She felt like a true friend and ally in this process.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => 'Sade took the time to get to know me and what I was looking for, and matched it with a strong fit for both sides.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Natasha Sykes', 'attribution' => '', 'quote' => 'Natasha is an extremely good communicator, very precise and responsive.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Charlotte Northam', 'attribution' => '', 'quote' => 'Charlotte actually came with real leads and real roles, which was refreshing. She came prepared, knew what I was looking for and was a real pleasure to work with.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Sade Kendall', 'attribution' => '', 'quote' => 'Sade is a head above the rest of the recruiters. Always kept me informed, very proactive and a pleasure talking to. She went above and beyond to assist me.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Natasha Sykes', 'attribution' => '', 'quote' => 'Natasha has kept me up to date every step of the way, from asking if I would be interested in a job right through to interviews and asking how they went. Anybody lucky enough to deal with Natasha is 100% in the right hands.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Monira Akter', 'attribution' => '', 'quote' => 'Monira has been actively looking to place me from inception, which is unusual for an agency – so attentive.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Forough Rezaei', 'attribution' => '', 'quote' => 'Overall a great experience. Forough and Charlotte were both very attentive, knowledgeable and straight to the point. I will gladly work with them both again when the right opportunity surfaces.' ],
 				],
 				'audiences' => [
 					'company' => [
@@ -1875,7 +1970,7 @@ class Verto_Installer {
 				'stats' => [
 					[ 'value' => '100%',                 'label' => 'Success rate on engaged search' ],
 					[ 'value' => 'Basement → Boardroom', 'label' => 'Operator to C-suite coverage' ],
-					[ 'value' => 'US-only',              'label' => 'Undivided sector focus' ],
+					[ 'value' => 'US & EU',              'label' => 'Energy focus, both markets' ],
 				],
 				// Round 5, item 3: sector IMAGES on the cards (icons kept) –
 				// interim crops of existing licensed energy assets; the client's
@@ -1888,18 +1983,37 @@ class Verto_Installer {
 					[ 'icon' => 'atom',      'image' => 'spec_edison_05', 'title' => 'Nuclear',                             'description' => 'New build, SMR, fusion, decommissioning and defence – engineering, operations and maintenance.' ],
 					[ 'icon' => 'briefcase', 'image' => 'spec_edison_06', 'title' => 'EPC – Construction & Commissioning',  'description' => "FEED, detailed design, construction, commissioning and project delivery." ],
 				],
-				// Round 6: REAL Edison Lux testimonials (client-supplied, verbatim
-				// – do not rewrite). First names inside the quotes (Dan, Noah,
-				// Joe, Milly) are Edison consultants; the attribution is the
-				// client's or candidate's own job title.
+				/* ── Round 10: curated real feedback (client's Canva doc, Sep
+				      2026), lightly cleaned only (typos/spacing, meaning
+				      unchanged). Reviewers anonymous per the new convention;
+				      'consultant' = full roster name for the avatar row.
+				      home_testimonials = mixed highlight set; full curated sets
+				      in client_quotes / candidate_quotes. ── */
 				'home_testimonials' => [
-					[ 'tag' => 'client',    'quote' => 'Dan was excellent to work with very responsive and informative very straightforward approach to recruiting', 'attribution' => 'Combined Cycle Plant Manager' ],
-					[ 'tag' => 'candidate', 'quote' => "Noah is a stud. He has been very helpful, he's taken the time to understand what's important to me in my search for a new home. I look forward to continuing to work with him.", 'attribution' => 'Control Room Operator, 2nd Engineer' ],
-					[ 'tag' => 'client',    'quote' => 'Dan has outpaced all other recruiters in response and candidate quality.', 'attribution' => 'Sales Director, Industrial OEM' ],
-					[ 'tag' => 'client',    'quote' => 'Joe is extremely driven, responsive, and helpful and has brought us great candidates that fit the requirements that we are looking for. Happy to recommend him to any friend or colleague', 'attribution' => 'Project Manager, Solar EPC' ],
-					[ 'tag' => 'client',    'quote' => "I've recently started working with Milly Compton on recruitment projects for our power generation team. In this short time, she has demonstrated a strong understanding of our needs and the industry as a whole. Milly has quickly grasped the technical demands of our sector and has already helped us identify top candidates for key roles. Her recruitment efforts have been instrumental in strengthening our team with qualified professionals who align well with our company's culture and operational requirements. Milly is highly professional, thorough, and communicative, making her a valuable asset throughout the recruitment process.", 'attribution' => 'Service Manager, Energy Infrastructure Solutions' ],
-					[ 'tag' => 'client',    'quote' => 'I have come to know Milly as a highly capable and knowledgeable professional with strong expertise in Executive Recruiting. They have demonstrated sound business judgment, a clear understanding of market dynamics, and the ability to successfully plan and execute business initiatives. In particular, I have been impressed by their tenacity and ability to secure highly talented candidates for executive level roles.', 'attribution' => 'VP of Sales, Critical Power' ],
-					[ 'tag' => 'client',    'quote' => 'Milly Compton has consistently demonstrated an exceptional understanding of the power generation sector, including its unique challenges and evolving needs. Their ability to source, evaluate, and place top-tier candidates has made a significant impact on our hiring process. Milly has delivered candidates who not only meet our technical requirements but also align with our organizational culture.', 'attribution' => 'Sales Manager, Industrial Power Products' ],
+					[ 'tag' => 'client',    'consultant' => 'Dan Bisset', 'attribution' => '', 'quote' => 'Dan has outpaced all other recruiters in response and candidate quality.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Noah Ward', 'attribution' => '', 'quote' => "Noah is a stud. He has been very helpful, he's taken the time to understand what's important to me in my search for a new home. I look forward to continuing to work with him." ],
+					[ 'tag' => 'client',    'consultant' => 'Joe Williams', 'attribution' => '', 'quote' => 'Joe is extremely driven, responsive, and helpful and has brought us great candidates that fit the requirements we are looking for. Happy to recommend him to any friend or colleague.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Milly Compton', 'attribution' => '', 'quote' => "Milly Compton's industry experience shines through, and her ability to make the process move quickly and efficiently made a world of difference in landing me the job I wanted." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Matthew Pearce', 'attribution' => '', 'quote' => "Knowledge of the client's needs and candidate competency and qualifications are extremely good. I had great feedback and consistent communication with Matthew." ],
+				],
+				// All six client quotes that exist.
+				'client_quotes' => [
+					[ 'tag' => 'client', 'consultant' => 'Joe Williams', 'attribution' => '', 'quote' => 'Joe is extremely driven, responsive, and helpful and has brought us great candidates that fit the requirements we are looking for. Happy to recommend him to any friend or colleague.' ],
+					[ 'tag' => 'client', 'consultant' => 'Milly Compton', 'attribution' => '', 'quote' => 'Good communication, and Milly understands our needs and goes out of the way to get us good candidates time and time again.' ],
+					[ 'tag' => 'client', 'consultant' => 'Dan Bisset', 'attribution' => '', 'quote' => 'Dan has outpaced all other recruiters in response and candidate quality.' ],
+					[ 'tag' => 'client', 'consultant' => 'Milly Compton', 'attribution' => '', 'quote' => 'They find candidates that meet our job description in very short order.' ],
+					[ 'tag' => 'client', 'consultant' => 'Matthew Pearce', 'attribution' => '', 'quote' => 'Matthew Pearce has been great with his communication throughout recruiting me and vetting me to potential employers.' ],
+					[ 'tag' => 'client', 'consultant' => 'Milly Compton', 'attribution' => '', 'quote' => 'Great collaboration. Regular updates, and proactive when needed.' ],
+				],
+				'candidate_quotes' => [
+					[ 'tag' => 'candidate', 'consultant' => 'Noah Ward', 'attribution' => '', 'quote' => "Noah is a stud. He has been very helpful, he's taken the time to understand what's important to me in my search for a new home. I look forward to continuing to work with him." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Joe Williams', 'attribution' => '', 'quote' => "I enjoyed working with Joe. He listened to what my needs were and was in contact with me throughout the process, always keeping me informed. It showed me that I wasn't just a number; he really cared about doing a good job and making sure both me and the hiring company were happy." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Milly Compton', 'attribution' => '', 'quote' => "Milly Compton's industry experience shines through, and her ability to make the process move quickly and efficiently made a world of difference in landing me the job I wanted." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Dan Bisset', 'attribution' => '', 'quote' => 'Dan Bisset is a great communicator; easy to speak to and enthusiastic in his role. I fully trust that he is working to find the best roles for his candidates and the best candidates for the roles.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Matthew Pearce', 'attribution' => '', 'quote' => "Knowledge of the client's needs and candidate competency and qualifications are extremely good. I had great feedback and consistent communication with Matthew." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Ollie Hesmondhalgh', 'attribution' => '', 'quote' => 'Professional, timely and effective communication, and an all-round friendly and natural character. Based on my experience, I would say that Oliver is a credit to your organisation.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Milly Compton', 'attribution' => '', 'quote' => 'I dealt with Milly and she was great throughout the whole process. She kept me informed, understood my reasons for wanting a specific role and did a thoroughly good job.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Noah Ward', 'attribution' => '', 'quote' => 'Noah worked well with me and made sure I had the tools necessary to perform well during my screening call.' ],
 				],
 				'audiences' => [
 					'company' => [
@@ -1925,7 +2039,7 @@ class Verto_Installer {
 					'100% success rate on engaged search assignments',
 					'World-class NPS across operators, developers and EPCs',
 					'Feedback captured from every candidate and client interaction',
-					'US-only focus – no client brief sits outside our knowledge base',
+					'US and EU coverage – no client brief sits outside our knowledge base',
 				],
 				'team_focus' => 'US power & energy search.',
 				'insights'   => [
@@ -1984,12 +2098,40 @@ class Verto_Installer {
 					[ 'icon' => 'factory',     'title' => 'CNC & Metalworking',               'description' => 'Cutting tools, workholding, toolholding, metrology, CMM and metalworking.' ],
 					[ 'icon' => 'thermometer', 'title' => 'Compressors',                      'description' => 'Air and gas compression – rotary screw, centrifugal and reciprocating – sales, service and engineering.' ],
 				],
-				// Round 5, item 7: placeholder testimonials for the home band –
-				// clearly marked; the client is sending the real quotes.
+				/* ── Round 10: curated real feedback (client's Canva doc, Sep
+				      2026), lightly cleaned only (typos/spacing, meaning
+				      unchanged). Reviewers anonymous per the new convention;
+				      'consultant' = full roster name for the avatar row (Saman
+				      Akbari would render the initials pill – no photo by client
+				      instruction). home_testimonials = mixed highlight set; full
+				      curated sets in client_quotes / candidate_quotes. ── */
 				'home_testimonials' => [
-					[ 'tag' => 'client',    'quote' => "Vertek's shortlist was three deep and every one of them knew the product. We hired in eleven days.", 'attribution' => 'VP of Sales, fluid power manufacturer – placeholder, real testimonial to follow' ],
-					[ 'tag' => 'candidate', 'quote' => 'They sold my experience before I ever sat in an interview. The offer matched the brief, and the brief matched the job.', 'attribution' => 'Technical Sales Engineer, HVAC – placeholder, real testimonial to follow' ],
-					[ 'tag' => 'client',    'quote' => 'Our fifth hire through Vertek in two years. Same consultant, same standard, no surprises.', 'attribution' => 'Managing Director, industrial distributor – placeholder, real testimonial to follow' ],
+					[ 'tag' => 'client',    'consultant' => 'Ben Cranston', 'attribution' => '', 'quote' => "Ben went above and beyond hunting down candidates and setting up interviews. Without his detailed knowledge of the Austin talent landscape we wouldn't have been able to make several key hires." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Harvey Earl', 'attribution' => '', 'quote' => 'Harvey is down to earth, transparent, and makes this whole process feel human. Never once did I feel as if I was just another resume he was presenting to a client. He got to know me, kept me in the loop, and made it feel like he was working for me just as much. He was in my corner.' ],
+					[ 'tag' => 'client',    'consultant' => 'Gary Hunt', 'attribution' => '', 'quote' => 'Gary understands our business needs and only sent through candidates with relevant experience for the role advertised. All candidates were of a very good standard and resulted in a successful job offer.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Olivia Pinhorne', 'attribution' => '', 'quote' => 'Where some people like to really dress up a role, Olivia gave me the information I actually needed to decide if the role was for me. Come interview stage there were no surprises – the role aligned perfectly with my expectations.' ],
+					[ 'tag' => 'client',    'consultant' => 'Alex Wright', 'attribution' => '', 'quote' => "Alex was a true professional to work with. We were provided with a consistent stream of quality leads without delays. When one candidate didn't work out, the next two or three were in our inbox the next morning." ],
+				],
+				'client_quotes' => [
+					[ 'tag' => 'client', 'consultant' => 'Gary Hunt', 'attribution' => '', 'quote' => 'Gary understands our business needs and only sent through candidates with relevant experience for the role advertised. All candidates were of a very good standard and resulted in a successful job offer. Timely communication throughout ensured a smooth process from start to finish.' ],
+					[ 'tag' => 'client', 'consultant' => 'Ben Cranston', 'attribution' => '', 'quote' => "Ben went above and beyond hunting down candidates and setting up interviews. Without his detailed knowledge of the Austin talent landscape we wouldn't have been able to make several key hires." ],
+					[ 'tag' => 'client', 'consultant' => 'Sam Parnell', 'attribution' => '', 'quote' => "Sam has been fantastic across the board. We've filled two roles with him since April and are hoping to fill a third in the next few weeks. He's super responsive and has been able to adjust the search as needed. I've already shared his information with a colleague." ],
+					[ 'tag' => 'client', 'consultant' => 'Olivia Pinhorne', 'attribution' => '', 'quote' => "Olivia sorted out some excellent CVs, perfectly matched to the role. She wasn't pushy or irritating like some other agencies. Available when you need her, very pleasant to deal with." ],
+					[ 'tag' => 'client', 'consultant' => 'Alex Wright', 'attribution' => '', 'quote' => "Alex was a true professional to work with. We were provided with a consistent stream of quality leads without delays. When one candidate didn't work out, the next two or three were in our inbox the next morning." ],
+					[ 'tag' => 'client', 'consultant' => 'Frank Warner', 'attribution' => '', 'quote' => 'Quite simply, it was the diligent way that Frank listened to our needs and sought out candidates that matched our profile. He made himself available, shortlisted and presented good candidates, and has been easy to work with to the point where we have developed a relationship of trust.' ],
+					[ 'tag' => 'client', 'consultant' => 'Lewis Mason', 'attribution' => '', 'quote' => 'We had not worked with Verto before, but Lewis has provided a great service and managed our expectations in a courteous and professional manner. He fulfilled the brief, and we have now secured three candidates – a successful first year working together.' ],
+					[ 'tag' => 'client', 'consultant' => 'Ben Cranston', 'attribution' => '', 'quote' => 'Ben has a great ability to turn a job description into qualified candidates. His attention to detail, responsiveness and energy level make hiring with him very efficient and effective.' ],
+				],
+				'candidate_quotes' => [
+					[ 'tag' => 'candidate', 'consultant' => 'Harvey Earl', 'attribution' => '', 'quote' => 'Harvey is down to earth, transparent, and makes this whole process feel human. Never once did I feel as if I was just another resume he was presenting to a client. He got to know me, kept me in the loop, and made it feel like he was working for me just as much. He was in my corner.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Olivia Pinhorne', 'attribution' => '', 'quote' => 'Where some people like to really dress up a role, Olivia gave me the information I actually needed to decide if the role was for me. Come interview stage there were no surprises – the role aligned perfectly with my expectations and I was able to prepare correctly for the questions asked.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Lewis Mason', 'attribution' => '', 'quote' => 'The application was made by Verto to the company in question, and within two weeks I am very pleased to say I got the job. Lewis kept me informed throughout and handled the discussions with the recruiting company during the interview process.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Gary Hunt', 'attribution' => '', 'quote' => 'Gary has been excellent to work with. He made the effort to understand my situation and kept me well informed on how I could perform my best at every stage, so the process had no surprises.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Lewis Sullivan', 'attribution' => '', 'quote' => "Lewis reached out right when I was looking to make a change and it honestly couldn't have been better timing. He understood what I was aiming for and didn't waste my time with roles that didn't fit. Really appreciate the support he gave throughout." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Frank Warner', 'attribution' => '', 'quote' => "Frank has been an absolute pleasure to work with. He's been extremely attentive, there when I need him, and followed up on every request I made. He's a top-notch recruiter." ],
+					[ 'tag' => 'candidate', 'consultant' => 'Rex Reavley', 'attribution' => '', 'quote' => 'The personal interaction with Rex was top class. No chasing was required. He was absolutely on the ball.' ],
+					[ 'tag' => 'candidate', 'consultant' => "Harley O'Connell", 'attribution' => '', 'quote' => 'Harley was excellent – he called before meetings and after to make sure all was OK. Honestly, Harley is the best recruitment consultant I have worked with in a long time.' ],
+					[ 'tag' => 'candidate', 'consultant' => 'Ben Cranston', 'attribution' => '', 'quote' => 'Ben was very professional in all the interactions I had with him. He was thorough in explaining the process, providing all of the relevant information and handling the scheduling.' ],
 				],
 				'audiences' => [
 					'company' => [
@@ -2058,16 +2200,9 @@ class Verto_Installer {
 					[ 'year' => '2024', 'title' => 'Advanced manufacturing practice launched – defence, aerospace, semiconductor, robotics' ],
 					[ 'year' => '2026', 'title' => '14,000+ specialist candidates on the CRM and counting' ],
 				],
-				'testimonials' => [
-					[ 'quote' => "Vertek's understanding of our product, our distribution model and the talent market was the difference. They didn't send resumes – they sent the right people, fully briefed, every time.",
-					  'attribution' => 'VP of Sales, Global Fluid Power Manufacturer' ],
-					[ 'quote' => "We've used a lot of recruiters. Vertek is the only one that consistently understood the difference between a sales engineer who can talk hydraulics and one who's actually time-served. That's why we keep coming back.",
-					  'attribution' => 'Managing Director, UK Pneumatics Distributor' ],
-					[ 'quote' => 'They built our entire US commercial team from the ground up – sales engineers, service leaders, a regional director – in under twelve months. No drama, no surprises, no oversell.',
-					  'attribution' => 'Founder, US Advanced Manufacturing OEM' ],
-					[ 'quote' => "I wasn't actively looking. Vertek took the time to understand what I actually wanted next, brought one opportunity, and represented me brilliantly. I started six weeks later.",
-					  'attribution' => 'HVAC Service Manager (now Regional Director)' ],
-				],
+				// Round 10: the prototype's invented 'testimonials' array is GONE –
+				// the real curated client_quotes / candidate_quotes above feed the
+				// Clients and Candidates page bands for every brand now.
 				'process' => [
 					[ 'title' => 'Discover', 'body' => 'We sit down with the business, the product line and the territory – not just the job spec. Success at 90 days, 6 months and 12 months is mapped before we name a single candidate.' ],
 					[ 'title' => 'Map',      'body' => 'We map the entire competitor, manufacturer and distributor landscape on patch. Time-served engineers, sales specialists, service leaders – visible and invisible.' ],
@@ -2129,6 +2264,42 @@ class Verto_Installer {
 		update_option( 'verto_installer_posts', $ids );
 	}
 
+	/**
+	 * The four Verto engagement models – Engage (flagship) / Exclusive /
+	 * Contingent / Contract – as the full row4 process-rail section
+	 * ("Four ways to work with us."). v0.22.4 (client): simplified – no
+	 * "One standard." second line, no right-hand intro paragraph, plain
+	 * (dash-less) eyebrow, and the cards drop their 01-04 numbers (the
+	 * row4 render handles the card side). Shared by the brand Clients
+	 * page, every brand HOME (replacing the round-6 compact services
+	 * band there) and the GROUP home (brand-neutral: the group's gold
+	 * --brand token drives the accents; light 'default' background).
+	 * No fees or percentages on the site (CLIENT-NEEDS.md).
+	 */
+	private static function four_models_section( string $bg = 'muted' ): array {
+		return self::section( [ self::widget( 'verto-process-rail', [
+			'layout'    => 'row4',
+			'bg'        => $bg,
+			'eyebrow'   => 'Hiring solutions',
+			'heading'   => "Four ways to work with\u{00A0}us.",
+			'side_text' => '',
+			'items'     => [
+				[ '_id' => self::eid(), 'title' => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
+				  'body' => 'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement.',
+				  'bullets' => "Maximum visibility\nBetter fill rates\nFewer offer rejections" ],
+				[ '_id' => self::eid(), 'title' => 'Exclusive', 'kicker' => 'One search, one partner',
+				  'body' => 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.',
+				  'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage" ],
+				[ '_id' => self::eid(), 'title' => 'Contingent', 'kicker' => 'The classic model',
+				  'body' => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
+				  'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on" ],
+				[ '_id' => self::eid(), 'title' => 'Contract', 'kicker' => 'Interim & project specialists',
+				  'body' => 'Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.',
+				  'bullets' => "Compliantly engaged\nReady fast\nProjects, cover and peaks" ],
+			],
+		] ) ], 'verto-bs' );
+	}
+
 	/** Build the standalone brand site: Home, About, Clients, Candidates, Insights. */
 	private static function create_brand_site_pages( string $brand, array $media ): void {
 		$c = self::brand_content( $brand );
@@ -2145,27 +2316,25 @@ class Verto_Installer {
 			'heading' => "Open roles at $name.",
 			'intro'   => "Seats on the $name desk itself – live now, with more to come as the team grows.",
 		] ) ], 'verto-bs vbs-vacancies' );
-		// Round 9, item 2: candidate reviews – the brand testimonials
-		// carousel filtered to Candidate-tagged quotes (Edison carries a real
-		// one; Modulr / Vertek stay on clearly marked placeholders until the
-		// client's arrive).
-		$cand_quotes = array_values( array_filter( $c['home_testimonials'] ?? [], fn( $q ) => 'candidate' === ( $q['tag'] ?? '' ) ) );
+		// Round 9, item 2 → round 10: candidate reviews – now the full curated
+		// CANDIDATE set per brand (real quotes, consultant avatar rows; the
+		// headshots resolve from the verto_team posts at render time).
+		$cand_quotes = $c['candidate_quotes'] ?? [];
 		$reviews     = ! $cand_quotes ? null : self::section( [ self::widget( 'verto-quote-band', [
-			'quotes_style'   => 'light',
-			'quotes_layout'  => 'carousel',
-			'pad'            => 'band',
-			'image'          => [],
-			'eyebrow'        => 'Candidate reviews',
-			'eyebrow_style'  => 'brand',
-			'heading_pre'    => "What candidates say about $name.",
-			'heading_accent' => '',
-			'heading_post'   => '',
-			'body'           => 'edison-lux' === $brand
-				? 'Real feedback from the people we place – gathered from every engagement.'
-				: 'Placeholder quote – real candidate testimonials are being collected and will replace this.',
-			'stat_value'     => '',
-			'stat_label'     => '',
-			'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $cand_quotes ),
+			'quotes_style'     => 'light',
+			'quotes_layout'    => 'carousel',
+			'pad'              => 'band',
+			'image'            => [],
+			'eyebrow'          => 'Candidate reviews',
+			'eyebrow_style'    => 'brand',
+			'heading_pre'      => 'What candidates say.',
+			'heading_accent'   => '',
+			'heading_post'     => '',
+			'body'             => 'Real feedback from the people we place – gathered from every engagement.',
+			'stat_value'       => '',
+			'stat_label'       => '',
+			'consultant_brand' => $name,
+			'quotes'           => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $cand_quotes ),
 		] ) ], 'verto-bs' );
 		$logo_key   = [ 'modulr' => 'logo_modulr_png', 'vertek' => 'logo_vertek', 'edison-lux' => 'logo_edison' ][ $brand ] ?? '';
 		$stats      = array_map( fn( $st ) => [ '_id' => self::eid() ] + $st, $c['stats'] );
@@ -2268,34 +2437,33 @@ class Verto_Installer {
 			], 'verto-bs vbs-desks' );
 		}
 		// Round 5, items 6+7 (+ round 6): the "Trusted by" logo marquee is gone
-		// everywhere; a testimonials carousel takes its slot. Edison Lux now
-		// carries the client's REAL quotes; Modulr and Vertek stay on
-		// clearly-marked placeholders until their real ones arrive.
-		$real_quotes = 'edison-lux' === $brand;
+		// everywhere; a testimonials carousel takes its slot. Round 10: every
+		// brand now carries REAL quotes – home_testimonials is the curated
+		// mixed (client + candidate) highlight set, with consultant avatars.
 		$home = array_merge( $home, [
 			self::section( [ self::widget( 'verto-quote-band', [
-				'quotes_style'   => 'light',
-				'quotes_layout'  => 'carousel',
-				'pad'            => 'band',
-				'image'          => [],
-				'eyebrow'        => 'Testimonials',
-				'eyebrow_style'  => 'brand',
-				'heading_pre'    => 'What clients and candidates say.',
-				'heading_accent' => '',
-				'heading_post'   => '',
-				'body'           => $real_quotes
-					? 'Real feedback from the clients we staff for and the people we place – gathered from every engagement.'
-					: 'Placeholder quotes – real client and candidate testimonials are being collected and will replace these.',
-				'stat_value'     => '',
-				'stat_label'     => '',
-				'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['home_testimonials'] ?? [] ),
+				'quotes_style'     => 'light',
+				'quotes_layout'    => 'carousel',
+				'pad'              => 'band',
+				'image'            => [],
+				'eyebrow'          => 'Testimonials',
+				'eyebrow_style'    => 'brand',
+				'heading_pre'      => 'What clients and candidates say.',
+				'heading_accent'   => '',
+				'heading_post'     => '',
+				'body'             => 'Real feedback from the clients we staff for and the people we place – gathered from every engagement.',
+				'stat_value'       => '',
+				'stat_label'       => '',
+				'consultant_brand' => $name,
+				'quotes'           => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['home_testimonials'] ?? [] ),
 			] ) ], 'verto-bs' ),
 			// Round 9, item 1: brand vacancies – directly after the
 			// testimonials carousel.
 			$vacancies,
-			// Round 6: the compact services band (three engagement models →
-			// /clients) joins the brand HOME pages too.
-			self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' ),
+			// v0.22.4 (client): the HOME page now carries the FULL four-models
+			// section (replacing the round-6 compact services band here –
+			// About / Candidates / Insights keep the compact band).
+			self::four_models_section(),
 			self::section( [ self::widget( 'verto-audience-cards', [ 'items' => [
 				[ '_id' => self::eid(), 'style' => 'ink', 'kicker' => 'For companies',
 				  'headline' => $c['audiences']['company']['headline'], 'body' => $c['audiences']['company']['body'],
@@ -2484,28 +2652,8 @@ class Verto_Installer {
 			// Contingent / Contract. Round 9, item 17: one flat row – equal
 			// height, no stagger, accent bars in the brand gradient (row4
 			// layout; --brand-gradient falls back to the flat brand colour).
-			// No fees or percentages on the site (CLIENT-NEEDS.md).
-			self::section( [ self::widget( 'verto-process-rail', [
-				'layout'    => 'row4',
-				'bg'        => 'muted',
-				'eyebrow'   => 'Hiring solutions',
-				'heading'   => "Four ways to work with\u{00A0}us.\nOne standard.",
-				'side_text' => "From a fully managed partnership to flexible contract cover – we build the hiring plan around your requirement, whether you're filling one role or an entire team.",
-				'items'     => [
-					[ '_id' => self::eid(), 'title' => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
-					  'body' => 'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement.',
-					  'bullets' => "Maximum visibility\nBetter fill rates\nFewer offer rejections" ],
-					[ '_id' => self::eid(), 'title' => 'Exclusive', 'kicker' => 'One search, one partner',
-					  'body' => 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.',
-					  'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage" ],
-					[ '_id' => self::eid(), 'title' => 'Contingent', 'kicker' => 'The classic model',
-					  'body' => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
-					  'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on" ],
-					[ '_id' => self::eid(), 'title' => 'Contract', 'kicker' => 'Interim & project specialists',
-					  'body' => 'Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.',
-					  'bullets' => "Compliantly engaged\nReady fast\nProjects, cover and peaks" ],
-				],
-			] ) ], 'verto-bs' ),
+			// v0.22.4 (client): simplified head + cards – see four_models_section().
+			self::four_models_section(),
 		];
 		// Process – horizontal rail with connector line (Vertek-only data).
 		if ( ! empty( $c['process'] ) ) {
@@ -2545,20 +2693,25 @@ class Verto_Installer {
 				],
 			] ) ], 'verto-bs' );
 		}
-		// Testimonials – light section, brand-rule quotes (Vertek-only data).
-		if ( ! empty( $c['testimonials'] ) ) {
+		// Round 10: client testimonials – the curated CLIENT set for every
+		// brand (real quotes, consultant avatar rows), carousel like the
+		// candidate reviews band.
+		if ( ! empty( $c['client_quotes'] ) ) {
 			$clients[] = self::section( [ self::widget( 'verto-quote-band', [
-				'quotes_style'   => 'light',
-				'pad'            => 'band',
-				'eyebrow'        => 'In their words',
-				'eyebrow_style'  => 'brand',
-				'heading_pre'    => 'Trusted by the businesses we serve.',
-				'heading_accent' => '',
-				'heading_post'   => '',
-				'body'           => '',
-				'stat_value'     => '',
-				'stat_label'     => '',
-				'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['testimonials'] ),
+				'quotes_style'     => 'light',
+				'quotes_layout'    => 'carousel',
+				'pad'              => 'band',
+				'image'            => [],
+				'eyebrow'          => 'In their words',
+				'eyebrow_style'    => 'brand',
+				'heading_pre'      => 'What clients say.',
+				'heading_accent'   => '',
+				'heading_post'     => '',
+				'body'             => 'Real feedback from the businesses we hire for – gathered from every engagement.',
+				'stat_value'       => '',
+				'stat_label'       => '',
+				'consultant_brand' => $name,
+				'quotes'           => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['client_quotes'] ),
 			] ) ], 'verto-bs' );
 		}
 		$clients[] = self::section( [ self::widget( 'verto-feature-row', [
@@ -2638,25 +2791,9 @@ class Verto_Installer {
 				'items'     => array_map( fn( $st ) => [ '_id' => self::eid(), 'kicker' => '', 'bullets' => '' ] + $st, $c['candidate_process'] ),
 			] ) ], 'verto-bs' );
 		}
-		// Candidate testimonials – dark parallax band, quotes 3–4 (prototype slice(2, 4)).
-		if ( ! empty( $c['testimonials'] ) && count( $c['testimonials'] ) > 2 ) {
-			$candidates[] = self::section( [ self::widget( 'verto-quote-band', [
-				'image'          => self::media_setting( $media, $c['hero']['image'] ),
-				'image_alt'      => '',
-				'overlay'        => 'testimonial',
-				'pad'            => 'band',
-				'parallax_speed' => 0.32,
-				'eyebrow'        => "From the people we've placed",
-				'eyebrow_style'  => 'dim',
-				'heading_pre'    => 'Career moves that actually fit.',
-				'heading_accent' => '',
-				'heading_post'   => '',
-				'body'           => '',
-				'stat_value'     => '',
-				'stat_label'     => '',
-				'quotes'         => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, array_slice( $c['testimonials'], 2, 2 ) ),
-			] ) ], 'verto-bs' );
-		}
+		// Round 10: the old dark "Career moves that actually fit" band (fed by
+		// the prototype's invented Vertek 'testimonials' slice) is GONE – the
+		// curated candidate reviews carousel above carries the real quotes.
 		// Round 5, item 5: compact services band on every brand-site page.
 		$candidates[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
 		$candidates[] = self::section( [ $team_strip ], 'verto-bs' );

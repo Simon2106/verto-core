@@ -233,3 +233,55 @@ in brands.$brand.index.tsx). Port verbatim into installer defaults.
       Group-site Rebuild required (seeds the jobs); visit Settings →
       Permalinks once (or just load any page — the soft flush handles it)
       so /jobs/… resolves.
+- [x] v0.22.0 – real per-brand client/candidate feedback sections (round 10).
+      quote-band: repeater gained optional 'consultant' (full roster name) +
+      'photo' (media override) controls and a widget-level consultant_brand
+      label – each quote can carry a 38px circular avatar row (name +
+      "Consultant, {Brand}" caption). The headshot resolves AT RENDER TIME
+      from the verto_team post whose title matches the consultant name
+      (thumbnail size, per-request cache), so the v2/v3 treated-photo
+      migrations flow through with zero data changes; no photo (Ben
+      Cranston, Forough Rezaei, Saman Akbari – Saman by client instruction)
+      → initials pill. figcaption is now optional (curated quotes run
+      anonymous – only the Ochuko ModulR client quote keeps a name, per
+      client). Avatar CSS in verto-ui.css (.vbs-quote-ava*), light + dark.
+      installer: the ~100-quote corpus (Canva doc + Simon's pasted extras)
+      curated per brand per audience – specific, outcome-led quotes, max two
+      per consultant per section, light cleanup only (typos, spacing, no em
+      dashes, meaning unchanged). brand_content gained client_quotes +
+      candidate_quotes; home_testimonials repointed to a 4–5 quote mixed
+      highlight set per brand. CLIENTS page: "What clients say." carousel
+      (curated client set – ModulR 4 unique of the 5 sourced, the Ochuko
+      quote appears in both source docs; Edison all 6; Vertek 8). CANDIDATES
+      page: round-9 reviews band upgraded to "What candidates say." with the
+      full curated candidate set (ModulR 8, Edison 8, Vertek 9). All
+      "placeholder testimonial" labelling is gone (ModulR/Vertek home bands
+      were still marked); Vertek's invented prototype 'testimonials' array
+      and the dark "Career moves that actually fit" slice band are removed –
+      everything shown is real feedback now. Rebuild required on the three
+      brand installs (modulr-wp / vertek-wp / edisonlux-wp).
+- [x] v0.22.3 – light team strips + profile photo audit (round 11).
+      (1) Client: "make this background white/grey" – the "Meet the … desk."
+      team strip now reads LIGHT on all three brand sites. The strip paints
+      itself var(--muted): already light Cloud on Edison; verto-ui.css now
+      re-scopes the section tokens on ModulR (grey #EDF0F6, Deep Navy ink,
+      eyebrow back to full Royal Blue) and Vertek (grey #ECEDEF, Graphite
+      ink) wherever the strip appears (home / about / clients / candidates);
+      the round-9 item-21 Vertek graphite .vbs-team rule is superseded. Photo
+      cards gain a 1px brand ring + soft brand shadow on the light ground so
+      the dark treated headshots read as deliberate cards. CSS-only – takes
+      effect on deploy, no Rebuild needed for this part.
+      (2) Profile photo audit in CLIENT-NEEDS.md: full roster table (Person /
+      Brand / Current photo / Treated?) showing exactly who still needs a
+      treated photo. The six held-back zip-3 mystery files were re-examined
+      against the FULL roster: "jake vertek 1 (8)" is Sam Parnell (same
+      cropped hair / beard / grin) and "jake vertek 1 (9)" is Frank Warner
+      (same face and the same Fred Perry jumper) – both exported to
+      assets/import as vertek-sam-parnell-v3.png / vertek-frank-warner-v3.png
+      and applied via the photos-0.22.3 migration (team_map + TEAM_PHOTOS
+      bump); "tash modulr (3)" is the same image as Lewis Wright's
+      applied v3 (a duplicate export, no action). The rest stay unapplied with face descriptions in
+      CLIENT-NEEDS.md ("Martin webs" unnumbered is very likely Martyn
+      Jamieson, "tash modulr (2)" very likely Forough Rezaei – awaiting
+      client confirmation). Rebuild required on ALL FOUR installs for the
+      photo migration (group + modulr-wp / vertek-wp / edisonlux-wp).

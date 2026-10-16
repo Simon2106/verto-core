@@ -107,8 +107,9 @@ get_header();
 
 	<?php if ( 'verto' === $verto_brand ) : ?>
 		<!-- RECENT EVENTS – a compact rail of the client's event films
-		     (Sep-2026 drop: summit / Ibiza / charity night, plus the Milly and
-		     Sade promotion films). Poster tiles with play badges; the video
+		     (Sep-2026 drop: summit / Ibiza / charity night, plus the Milly /
+		     Sade / Harvey / Frank promotion films). Poster tiles with play
+		     badges; the video
 		     only starts (and loads – preload="none") when the badge is
 		     pressed (verto-effects.js §12). Supersedes the old People's
 		     stories placeholder slots – these are the real films. A tile
@@ -122,6 +123,8 @@ get_header();
 			[ 'title' => 'Charity night',        'note' => 'The gala for Maeve&rsquo;s Mission',     'video' => 'charity_film',    'poster' => 'charity_film_poster' ],
 			[ 'title' => 'Milly&rsquo;s promotion', 'note' => 'Confetti in the Edison Lux corner',   'video' => 'milly_video',     'poster' => 'milly_poster' ],
 			[ 'title' => 'Sade&rsquo;s promotion',  'note' => 'The moment it landed',                'video' => 'sade_video',      'poster' => 'sade_poster' ],
+			[ 'title' => 'Harvey&rsquo;s promotion', 'note' => 'The office knew before he did',      'video' => 'harvey_video',    'poster' => 'harvey_poster' ],
+			[ 'title' => 'Frank&rsquo;s promotion',  'note' => 'Confetti underfoot, the walk-in',    'video' => 'frank_video',     'poster' => 'frank_poster' ],
 		];
 		$verto_missing = 0;
 		foreach ( $verto_events as $verto_s ) { if ( empty( $verto_media[ $verto_s['video'] ]['url'] ) ) $verto_missing++; }
@@ -131,7 +134,7 @@ get_header();
 				<div class="verto-events__intro">
 					<span class="verto-eyebrow">Recent events</span>
 					<h2 class="verto-display-3" style="margin-top:1.25rem;">The last few months, on film.</h2>
-					<p class="verto-events__body">The summit, the Ibiza trip, the charity night and two promotions landing &ndash; press play.</p>
+					<p class="verto-events__body">The summit, the Ibiza trip, the charity night and four promotions landing &ndash; press play.</p>
 				</div>
 				<?php if ( $verto_missing ) : ?>
 					<span class="verto-events__note">&#9888; <?php echo (int) $verto_missing; ?> film<?php echo 1 === $verto_missing ? '' : 's'; ?> pending &ndash; run Verto Setup &rarr; Rebuild to import the videos</span>

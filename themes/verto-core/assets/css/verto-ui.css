@@ -1461,6 +1461,23 @@ body.verto-brand-edison-lux .vbs-statcard__value {
 .vbs-quote-l blockquote::before, .vbs-quote-l blockquote::after { content: none; }
 .vbs-quote-l figcaption { margin-top: 1.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.7; font-style: normal; }
 
+/* ── Round 10: consultant avatar row on quote cards (grid + carousel, light
+      + dark) – 38px circular headshot or initials pill, name + caption. ── */
+.vbs-quote-ava { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.25rem; }
+.vbs-quote-ava__img {
+  width: 38px; height: 38px; border-radius: 999px; flex: 0 0 auto;
+  object-fit: cover; object-position: center top;
+  border: 1px solid color-mix(in oklab, var(--brand) 40%, transparent);
+  background: color-mix(in oklab, var(--brand) 12%, transparent);
+}
+.vbs-quote-ava__init {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; font-style: normal;
+}
+.vbs-quote-ava__meta { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.vbs-quote-ava__name { font-size: 0.8125rem; font-weight: 600; line-height: 1.2; }
+.vbs-quote-ava__cap { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.65; line-height: 1.2; }
+
 /* ── Vertek brand overrides (port of [data-brand="vertek"] in styles.css):
       Saira SemiBold uppercase display, JetBrains Mono labels, squared CTAs ── */
 body.verto-brand-vertek .display-1,
@@ -1977,11 +1994,19 @@ body.verto-modal-open { overflow: hidden; }
 .vbs-rail__grid4--flat { align-items: stretch; }
 .vbs-rail__grid4--flat .vbs-card { height: 100%; transform: none; }
 .vbs-rail__grid4--flat .vbs-card__bar { transform: scaleX(1); }
+/* v0.22.4 (client): the four-models section is simplified – the row4 cards
+   drop their 01-04 numbers and dash decorations (markup side in
+   process-rail.php), so the title no longer needs its offset below the
+   number; and the section eyebrow loses its leading dash via the plain
+   modifier the widget now emits for row4. */
+.vbs-rail__grid4--flat .vbs-rail__title4 { margin-top: 0; }
+.eyebrow--plain::before { display: none; }
 
 /* ── Item 21: Vertek home – alternate the run of near-black sections with
-      the muted graphite so the page stops reading as four identical slabs. ── */
+      the muted graphite so the page stops reading as four identical slabs.
+      (The team strip half of this item is superseded by the v0.22.3 light
+      team-strip treatment at the end of this file.) ── */
 body.verto-brand-vertek .vbs-spec { background: var(--muted) !important; }
-body.verto-brand-vertek .vbs-team { background: var(--muted); }
 
 /* ── Item 1: compact brand vacancies board (jobs-board layout=compact) –
       rows only, token-driven so it reads correctly on light (Edison) and
@@ -2020,3 +2045,38 @@ a.verto-footprint__card { text-decoration: none; color: inherit; }
 }
 .verto-footprint__card--link:hover .verto-footprint__go,
 .verto-footprint__card--link:focus-visible .verto-footprint__go { opacity: 1; transform: none; }
+
+/* ── v0.22.3 (client): "make this background white/grey" – the Meet-the-desk
+      team strip reads LIGHT on every brand site. The strip paints itself with
+      var(--muted), which is already the light Cloud on Edison Lux; on the
+      dark-ground brands (ModulR navy, Vertek graphite) the section re-scopes
+      its tokens to a light grey ground with ink text. Brand accents (eyebrow,
+      card tint, hover overlay) keep the brand colour. ── */
+body.verto-brand-modulr .vbs-team {
+  --muted: #EDF0F6;                  /* light grey ground, Mist-leaning */
+  --foreground: #000A3B;             /* Deep Navy ink */
+  --muted-foreground: color-mix(in oklab, #000A3B 62%, #EDF0F6);
+  --accent-soft: var(--accent);      /* eyebrow back to full Royal Blue – the
+                                        lifted navy-ground tint fails on light */
+  --border: color-mix(in oklab, #000A3B 14%, transparent);
+  color: var(--foreground);
+}
+body.verto-brand-vertek .vbs-team {
+  --muted: #ECEDEF;                  /* light grey ground, Silver-leaning */
+  --foreground: #15171C;             /* Graphite ink */
+  --muted-foreground: color-mix(in oklab, #15171C 60%, #ECEDEF);
+  --border: color-mix(in oklab, #15171C 14%, transparent);
+  color: var(--foreground);
+}
+/* On the light ground the photo cards pick up a 1px brand ring + soft brand
+   lift (the strip's take on the group-site data-brand ring treatment), so the
+   dark treated headshots read as deliberate cards rather than holes. The card
+   tint itself – color-mix(brand 6%, muted) inline – now mixes against the
+   light grey and stays clean on all three brands. */
+body.verto-brand-modulr .vbs-team .vbs-team__card,
+body.verto-brand-vertek .vbs-team .vbs-team__card,
+body.verto-brand-edison-lux .vbs-team .vbs-team__card {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--brand) 35%, transparent),
+    0 16px 32px -20px color-mix(in oklab, var(--brand) 45%, transparent);
+}
