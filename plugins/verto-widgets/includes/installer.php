@@ -2055,6 +2055,7 @@ class Verto_Installer {
 						'body'     => '',
 						'bullets'  => "Confidential, partnership-led conversations\nIndustry insights and advice from Specialists in your industry\nMaking the search and application process simple",
 						'cta'      => 'Power your career',
+						'hero_eyebrow'  => '',
 						'hero_headline' => "Power your career.\nOn your terms.",
 						'hero_body'     => "We work with major organizations within the US Energy sector, across utilities, independent power producers and OEMs.\n\nBuild your career with Edison Lux and connect with leading employers across the Energy industry, supported by specialists that understand your market.",
 					],
@@ -2113,6 +2114,21 @@ class Verto_Installer {
 				'candidates_split' => [
 					'eyebrow' => '',
 					'body'    => "A job posted on LinkedIn gets hundreds of resumes. Working with Edison Lux means your experience is put front and center, presented to the hiring manager to review.\n\nYou get the best representation to the best jobs and employers within US Energy.",
+				],
+				/* ── About/Candidates round (Oct 2026, Alex) ── */
+				// Mission/Vision/Purpose: no eyebrow, columns in line (CSS).
+				'compass_eyebrow' => '',
+				// Why clients choose: no numbers (brand dashes instead).
+				'proof_numbered'  => 'no',
+				// Candidates page: no section eyebrows.
+				'reviews_eyebrow' => '',
+				// Candidates page: the candidate PROCESS replaces the services
+				// band (Alex asked what should go there instead of solutions).
+				'candidate_process' => [
+					[ 'title' => 'A confidential conversation', 'body' => 'Tell us where you want to go – role, market, comp, relocation. Nothing moves without your say-so, and nothing is shared without your sign-off.' ],
+					[ 'title' => 'Matched to live roles',       'body' => 'Your Specialist maps your experience against live briefs across US & Europe energy – utilities, IPPs, OEMs and EPCs – not a database blast.' ],
+					[ 'title' => 'Sold before the interview',   'body' => 'We present your experience directly to the hiring manager, then prep you properly – the company, the panel, the plant and the likely questions.' ],
+					[ 'title' => 'Offer to onboarding',         'body' => 'Comp guidance, negotiation, resignation and relocation support, through to your first day – and we stay in touch well after it.' ],
 				],
 				'team_focus' => 'US power & energy search.',
 				'insights'   => [
@@ -2398,7 +2414,7 @@ class Verto_Installer {
 			'quotes_layout'    => 'carousel',
 			'pad'              => 'band',
 			'image'            => [],
-			'eyebrow'          => 'Candidate reviews',
+			'eyebrow'          => $c['reviews_eyebrow'] ?? 'Candidate reviews',
 			'eyebrow_style'    => 'brand',
 			'heading_pre'      => 'What candidates say.',
 			'heading_accent'   => '',
@@ -2638,13 +2654,14 @@ class Verto_Installer {
 				'panel_bg'  => '#ffffff',
 				'stats'     => [],
 				'cta_text'  => '',
-			] ) ], 'verto-bs' ),
+			] ) ], 'verto-bs vbs-wwd' ),
 			self::section( [ self::widget( 'verto-quote-band', [
 				'image'          => self::media_setting( $media, $c['hero']['image'] ),
 				'overlay'        => 'mission',
 				'pad'            => 'band',
 				'parallax_speed' => 0.35,
-				'eyebrow'        => 'The compass',
+				// Oct 2026 (Alex): Edison drops the eyebrow; columns flatten via CSS.
+				'eyebrow'        => $c['compass_eyebrow'] ?? 'The compass',
 				'eyebrow_style'  => 'dim',
 				'heading_pre'    => 'Mission. Vision. Purpose.',
 				'heading_accent' => '',
@@ -2681,8 +2698,10 @@ class Verto_Installer {
 		}
 		$about[] = self::section( [ self::widget( 'verto-proof-list', [
 			// Edison copy doc page 9: Proof points → Why clients choose Edison Lux.
-			'eyebrow' => $c['proof_eyebrow'] ?? 'Proof points',
-			'heading' => $c['proof_heading'] ?? 'Why clients hire us a second time.',
+			// Oct 2026: Edison also drops the 01-04 numbers (brand dashes instead).
+			'eyebrow'  => $c['proof_eyebrow'] ?? 'Proof points',
+			'heading'  => $c['proof_heading'] ?? 'Why clients hire us a second time.',
+			'numbered' => $c['proof_numbered'] ?? 'yes',
 			'items' => array_map( fn( $p ) => [ '_id' => self::eid(), 'text' => $p ], $c['proof'] ),
 		] ) ], 'verto-bs' );
 		// Round 5, item 5: compact services band on every brand-site page,
@@ -2830,7 +2849,7 @@ class Verto_Installer {
 				'pad'            => 'hero',
 				'align'          => 'right',
 				'parallax_speed' => 0.3,
-				'eyebrow'        => 'For candidates',
+				'eyebrow'        => $ca['hero_eyebrow'] ?? 'For candidates',
 				'eyebrow_style'  => 'brand',
 				// Edison copy doc page 12: hero keeps "On your terms", new body.
 				'heading_pre'    => $ca['hero_headline'] ?? $ca['headline'],
@@ -2866,7 +2885,18 @@ class Verto_Installer {
 				'cta_link'  => [ 'url' => '/about' ],
 			] ) ], 'verto-bs' ),
 			// Round 9, item 1: brand vacancies – straight after the hero/split.
-			$vacancies,
+			// Oct 2026 (Alex): Edison's CANDIDATES page lists the jobs we're
+			// advertising FOR CLIENTS (Vincere-synced), not the internal desk
+			// seats – those stay on the group Careers board. Appears once
+			// Edison-tagged client jobs exist in the sync.
+			'edison-lux' === $brand ? self::section( [ self::widget( 'verto-jobs-board', [
+				'layout'       => 'compact',
+				'brand'        => $brand,
+				'source'       => 'client',
+				'list_eyebrow' => 'Live roles',
+				'heading'      => 'Live roles in US & Europe Energy.',
+				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Apply direct, or start a conversation below.',
+			] ) ], 'verto-bs vbs-vacancies' ) : $vacancies,
 		];
 		// Round 9, item 2: candidate reviews carousel.
 		if ( $reviews ) {
@@ -2895,7 +2925,11 @@ class Verto_Installer {
 		// the prototype's invented Vertek 'testimonials' slice) is GONE – the
 		// curated candidate reviews carousel above carries the real quotes.
 		// Round 5, item 5: compact services band on every brand-site page.
-		$candidates[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
+		// Oct 2026 (Alex): Edison's candidates page swaps the (client-facing)
+		// services band for the candidate process above.
+		if ( 'edison-lux' !== $brand ) {
+			$candidates[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
+		}
 		$candidates[] = self::section( [ $team_strip ], 'verto-bs' );
 		$candidates[] = $contact( 'Start a conversation', 'A confidential chat. No spam, no fluff.', $ca['bullets'] );
 		self::upsert_page( 'candidates', 'Candidates', $candidates );

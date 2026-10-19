@@ -56,6 +56,15 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 			'label' => 'Brand filter (slug, optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '',
 			'description' => 'e.g. edison-lux – shows only that brand\'s jobs.',
 		] );
+		// Oct 2026 (Edison candidates page): "client" lists the Vincere-synced
+		// roles advertised FOR CLIENTS (never the internal desk seats, never
+		// the placeholder fallback – renders nothing until tagged jobs exist).
+		$this->add_control( 'source', [
+			'label' => 'Job source', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [ 'internal' => 'Internal (Join Verto seats)', 'client' => 'Client vacancies (Vincere)' ],
+			'default' => 'internal',
+		] );
+		$this->add_control( 'list_eyebrow', [ 'label' => 'Compact eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join the team' ] );
 		// Round 4, item 5: catchier heading, and no word "roles" in the section.
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Your next desk is here.' ] );
 		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks – not client vacancies. And if your desk isn't listed yet, we still want to hear from experienced consultants." ] );
@@ -69,11 +78,12 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 	 * no sync has run yet – the placeholder JOBS const is the fallback, so
 	 * the board never renders empty.
 	 */
-	private function live_jobs() {
-		if ( ! function_exists( 'verto_vincere_get_jobs' ) ) {
+	private function live_jobs( string $source = 'internal' ) {
+		$fn = 'client' === $source ? 'verto_vincere_get_client_jobs' : 'verto_vincere_get_jobs';
+		if ( ! function_exists( $fn ) ) {
 			return [];
 		}
-		$jobs = verto_vincere_get_jobs();
+		$jobs = $fn();
 		if ( ! is_array( $jobs ) || ! $jobs ) {
 			return [];
 		}
@@ -108,7 +118,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		<div class="verto-jobs-compact">
 			<div class="container-wide">
 				<div class="verto-jobs-compact__head">
-					<span class="eyebrow"><?php echo esc_html( 'Join the team' ); ?></span>
+					<span class="eyebrow"><?php echo esc_html( $s['list_eyebrow'] ?: 'Join the team' ); ?></span>
 					<h2 class="display-3 vbs-mt5"><?php echo esc_html( $s['heading'] ); ?></h2>
 					<?php if ( ! empty( $s['intro'] ) ) : ?>
 						<p class="verto-jobs-compact__intro"><?php echo esc_html( $s['intro'] ); ?></p>
@@ -137,7 +147,11 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$s     = $this->get_settings_for_display();
 		$apply = $s['apply_url']['url'] ?? '/contact';
 
-		$live  = $this->live_jobs();
+		$source = ( $s['source'] ?? 'internal' ) ?: 'internal';
+		$live   = $this->live_jobs( $source );
+		// Client mode never falls back to the internal placeholders – an empty
+		// board renders nothing until Edison-tagged client jobs exist.
+		$client = 'client' === $source;
 		// Round 9, item 1: optional brand scope (live rows and the
 		// placeholder fallback alike).
 		$brand_scope = sanitize_key( (string) ( $s['brand'] ?? '' ) );
@@ -145,11 +159,11 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 			$scope = fn( $rows ) => array_values( array_filter( $rows, fn( $j ) => $brand_scope === ( $j['brand'] ?? '' ) ) );
 			$live  = $scope( $live );
 			if ( 'compact' === ( $s['layout'] ?? 'full' ) ) {
-				$this->render_compact( $s, $live ? $live : $scope( self::JOBS ) );
+				$this->render_compact( $s, $live ? $live : ( $client ? [] : $scope( self::JOBS ) ) );
 				return;
 			}
 		} elseif ( 'compact' === ( $s['layout'] ?? 'full' ) ) {
-			$this->render_compact( $s, $live ? $live : self::JOBS );
+			$this->render_compact( $s, $live ? $live : ( $client ? [] : self::JOBS ) );
 			return;
 		}
 		$jobs      = $live ? $live : self::JOBS;

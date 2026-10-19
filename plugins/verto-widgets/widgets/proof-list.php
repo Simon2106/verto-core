@@ -17,6 +17,11 @@ class Verto_Widget_Proof_List extends \Elementor\Widget_Base {
 		$this->start_controls_section( 'content', [ 'label' => 'Proof' ] );
 		$this->add_control( 'eyebrow', [ 'label' => 'Eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Proof points' ] );
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Why clients hire us a second time.' ] );
+		// Oct 2026 (Edison): optional dash markers instead of the 01-04 numbers.
+		$this->add_control( 'numbered', [
+			'label' => 'Markers', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [ 'yes' => 'Numbers (01…)', 'no' => 'Brand dash' ], 'default' => 'yes',
+		] );
 		$rep = new \Elementor\Repeater();
 		$rep->add_control( 'text', [ 'label' => 'Proof point', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'rows' => 2 ] );
 		$this->add_control( 'items', [
@@ -38,15 +43,21 @@ class Verto_Widget_Proof_List extends \Elementor\Widget_Base {
 		<div class="vbs-proof" style="background:var(--muted);">
 			<div class="container-wide">
 				<div class="vbs-proof__head">
-					<span class="eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></span>
+					<?php if ( $s['eyebrow'] ) : ?><span class="eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></span><?php endif; ?>
 					<h2 class="display-3 vbs-mt5"><?php echo esc_html( $s['heading'] ); ?></h2>
 				</div>
 				<?php // Round 9, item 14: clean 2-col grid – the alternating
-				// 2rem drop is gone so the 01-04 numbers sit on one line. ?>
+				// 2rem drop is gone so the 01-04 numbers sit on one line.
+				// Oct 2026 (Edison): numbers optional – brand dash instead.
+				$numbered = 'no' !== ( $s['numbered'] ?? 'yes' ); ?>
 				<ul class="vbs-proof__grid">
 					<?php foreach ( $s['items'] as $i => $it ) : ?>
 						<li class="vbs-proof__item">
-							<div class="vbs-proof__num" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
+							<?php if ( $numbered ) : ?>
+								<div class="vbs-proof__num" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
+							<?php else : ?>
+								<span class="vbs-proof__dash" style="background:var(--brand-gradient, var(--brand));"></span>
+							<?php endif; ?>
 							<p class="vbs-proof__text"><?php echo esc_html( $it['text'] ); ?></p>
 						</li>
 					<?php endforeach; ?>

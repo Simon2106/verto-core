@@ -1117,6 +1117,59 @@ class Verto_Vincere {
 		return $cache;
 	}
 
+	/**
+	 * CLIENT jobs: active, not internal, not manual – the roles advertised on
+	 * behalf of clients (Oct 2026: surfaced on the Edison candidates page).
+	 * Rows shaped exactly like get_jobs().
+	 */
+	public static function get_client_jobs() {
+		static $cache = null;
+		if ( null !== $cache ) {
+			return $cache;
+		}
+		$cache = [];
+		$posts = get_posts( [
+			'post_type'      => self::CPT,
+			'post_status'    => 'publish',
+			'posts_per_page' => 100,
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+			'meta_query'     => [
+				[ 'key' => '_active', 'value' => '1' ],
+				[
+					'relation' => 'OR',
+					[ 'key' => '_internal', 'compare' => 'NOT EXISTS' ],
+					[ 'key' => '_internal', 'value' => '1', 'compare' => '!=' ],
+				],
+				[
+					'relation' => 'OR',
+					[ 'key' => '_manual', 'compare' => 'NOT EXISTS' ],
+					[ 'key' => '_manual', 'value' => '1', 'compare' => '!=' ],
+				],
+			],
+			'no_found_rows'  => true,
+		] );
+		foreach ( $posts as $post ) {
+			$package = (string) get_post_meta( $post->ID, '_package', true );
+			if ( '' === $package ) {
+				$package = (string) get_post_meta( $post->ID, '_job_type', true );
+			}
+			$cache[] = [
+				'id'          => (int) $post->ID,
+				'title'       => get_the_title( $post ),
+				'brand'       => (string) get_post_meta( $post->ID, '_brand', true ),
+				'location'    => (string) get_post_meta( $post->ID, '_location', true ),
+				'level'       => (string) get_post_meta( $post->ID, '_level', true ),
+				'package'     => $package ? $package : 'Competitive package',
+				'url'         => (string) get_post_meta( $post->ID, '_apply_url', true ),
+				'permalink'   => (string) get_permalink( $post ),
+				'vincere_id'  => (string) get_post_meta( $post->ID, '_vincere_id', true ),
+				'owner_email' => (string) get_post_meta( $post->ID, '_owner_email', true ),
+			];
+		}
+		return $cache;
+	}
+
 	/* ── Admin: page, actions, notices ─────────────────────────────────── */
 
 	public static function admin_menu() {
@@ -1445,6 +1498,15 @@ class Verto_Vincere {
 /** Template tag used by the Jobs Board widget (safe if module removed). */
 function verto_vincere_get_jobs() {
 	return Verto_Vincere::get_jobs();
+}
+
+/**
+ * CLIENT jobs (Oct 2026, Edison candidates page): active synced jobs that are
+ * NOT internal Verto seats and NOT installer-seeded manual roles – the
+ * vacancies we advertise on behalf of clients. Same row shape as get_jobs().
+ */
+function verto_vincere_get_client_jobs() {
+	return Verto_Vincere::get_client_jobs();
 }
 
 Verto_Vincere::boot();

@@ -1173,6 +1173,38 @@ body.verto-brand-modulr .verto-header__cta--brand { background: var(--brand-grad
    "display-2 uppercase tracking-tight") — outranks the display-2 override */
 body .vbs-hero .vbs-hero__title { text-transform: uppercase; }
 
+/* ── Edison Lux About/Candidates round (Oct 2026, Alex) ── */
+/* 1. About hero: the enlarged 100% stat card sits IN LINE with the hero copy
+   instead of floating detached bottom-right (only the --lg card, i.e. the one
+   carrying the gradient CTA). */
+@media (min-width: 1024px) {
+	.vbs-band__stat--lg { position: static; right: auto; bottom: auto; margin-top: 2.5rem; }
+}
+/* 2. From vision to reality: no italic serif – the tail word renders in the
+   display font with the brand gradient instead (the section's differentiator). */
+body.verto-brand-edison-lux .vbs-story__headline .vbs-italic {
+	font-style: normal; font-family: inherit;
+	background: var(--brand-gradient);
+	-webkit-background-clip: text; background-clip: text; color: transparent;
+}
+/* 3. Panel splits (What we do / Partnerships / Sold on your merits): narrower
+   sections – image column capped so the photo doesn't dictate the height,
+   copy column a touch wider so the writing fills the space. */
+body.verto-brand-edison-lux .vbs-asplit__imgwrap { min-height: 320px; }
+@media (min-width: 1024px) { body.verto-brand-edison-lux .vbs-asplit__imgwrap { min-height: 420px; } }
+@media (min-width: 1024px) { body.verto-brand-edison-lux .vbs-asplit__copywrap { padding-top: 4rem; padding-bottom: 4rem; } }
+body.verto-brand-edison-lux .vbs-asplit__copy { max-width: 32rem; }
+body.verto-brand-edison-lux .vbs-asplit__body--panel { font-size: 1.0625rem; line-height: 1.7; opacity: 0.9; }
+/* 4. Mission / Vision / Purpose: columns in line (no staggered drop). */
+body.verto-brand-edison-lux .vbs-band__col { transform: none !important; }
+/* 5. Why clients choose Edison Lux: gradient dash markers (numbers removed
+   via the widget's `numbered` control). */
+.vbs-proof__dash { display: block; width: 2.5rem; height: 3px; margin-top: 0.7rem; border-radius: 2px; flex-shrink: 0; }
+/* Edison Lux (Oct 2026, Alex): primary buttons carry the green→blue brand
+   gradient site-wide – same convention as ModulR ("Our Solutions" hero CTA,
+   Talk to us, Submit a vacancy, etc.). */
+body.verto-brand-edison-lux .btn-primary { background: var(--brand-gradient); color: #fff; }
+body.verto-brand-edison-lux .verto-header__cta--brand { background: var(--brand-gradient); color: #fff; }
 /* Edison Lux — gradient stat values on the dark overlay card (matches CTA button).
    On-dark only: guidelines keep Energy Green decorative-only on white. */
 body.verto-brand-edison-lux .vbs-statcard__value {
