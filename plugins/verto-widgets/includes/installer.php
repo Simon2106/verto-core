@@ -2098,6 +2098,9 @@ class Verto_Installer {
 				// Copy doc page 4: Meet the desk → Your market, our Specialists.
 				'team_heading' => 'Your market, our Specialists.',
 				'team_body'    => '',
+				// Oct 2026 (Alex): full Edison desk on the strip – 7 people pad
+				// out to two rows (4 + 3) instead of the default four cards.
+				'team_limit'   => 12,
 				// Copy doc page 6: no strapline under the testimonials title.
 				'testimonials_body' => '',
 				// Copy doc page 10: Partnerships, not one offs (+ a different
@@ -2417,6 +2420,9 @@ class Verto_Installer {
 			'heading'    => $c['team_heading'] ?? "Meet the $name desk.",
 			'body'       => $c['team_body'] ?? "Operators, engineers and market specialists. The people you'll actually talk to when you engage $name.",
 			'focus_text' => $c['team_focus'],
+			// Oct 2026 (Alex): Edison shows the WHOLE desk – two rows of cards
+			// instead of the default four.
+			'limit'      => $c['team_limit'] ?? 4,
 		] );
 		$contact = function ( string $eyebrow, string $heading, string $bullets ) {
 			$lis = '';
