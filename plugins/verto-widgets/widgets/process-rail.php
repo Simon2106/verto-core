@@ -133,7 +133,8 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 							?>
 							<div class="vbs-card<?php echo $is3 ? ' vbs-card--p8' : ' vbs-card--p7'; ?><?php echo $stagger ? ' vbs-card--drop' : ''; ?><?php echo $badge ? ' vbs-card--lead' : ''; ?>" style="background:color-mix(in oklab, var(--foreground) 6%, var(--background));">
 								<span class="vbs-card__bar" style="background:<?php echo esc_attr( $bar_bg ); ?>;"></span>
-								<?php if ( $badge ) : ?><span class="vbs-card__badge"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
+								<?php // Oct 2026 (client): on row4 the badge moves BELOW the title so all four titles sit in line. ?>
+								<?php if ( $badge && ! $row4 ) : ?><span class="vbs-card__badge"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
 								<?php // v0.22.4 (client): row4 cards carry no 01-04 number and no dash decoration – title / kicker / body / bullets only. ?>
 								<?php if ( ! $row4 ) : ?>
 									<?php if ( $is3 && $it['kicker'] ) : ?>
@@ -146,6 +147,7 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 									<?php endif; ?>
 								<?php endif; ?>
 								<h3 class="<?php echo $is3 ? 'vbs-rail__title3' : 'vbs-rail__title4'; ?>"><?php echo esc_html( $it['title'] ); ?></h3>
+								<?php if ( $badge && $row4 ) : ?><span class="vbs-card__badge vbs-card__badge--inline"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
 								<?php if ( $it['kicker'] ) : ?><p class="vbs-rail__kicker"><?php echo esc_html( $it['kicker'] ); ?></p><?php endif; ?>
 								<p class="<?php echo $is3 ? 'vbs-rail__body3' : 'vbs-rail__body'; ?>"><?php echo esc_html( $it['body'] ); ?></p>
 								<?php

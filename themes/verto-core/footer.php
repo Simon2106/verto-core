@@ -16,7 +16,9 @@ $verto_is_brand_site = 'verto' !== $verto_brand;
 		'edison-lux' => 'US Energy Staffing',
 	];
 	$verto_media    = get_option( 'verto_installer_media', [] );
-	$verto_logo_key = [ 'modulr' => 'logo_modulr_png', 'vertek' => 'logo_vertek', 'edison-lux' => 'logo_edison' ][ $verto_brand ] ?? '';
+	// Oct 2026 (Alex): the dark footer needs the WHITE Edison lockup – the
+	// colour version's ink letters vanish on navy.
+	$verto_logo_key = [ 'modulr' => 'logo_modulr_png', 'vertek' => 'logo_vertek', 'edison-lux' => 'logo_edison_white' ][ $verto_brand ] ?? '';
 	$verto_logo     = '';
 	foreach ( [ 'svg', 'png' ] as $verto_ext ) {
 		if ( file_exists( get_stylesheet_directory() . "/assets/img/{$verto_brand}-logo.{$verto_ext}" ) ) {

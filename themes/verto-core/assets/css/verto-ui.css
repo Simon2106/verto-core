@@ -925,6 +925,9 @@ figure.verto-quote { margin: 0; }
   background: color-mix(in oklab, var(--brand) 12%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand) 45%, transparent);
 }
+/* Oct 2026 (client): on the flat four-models row the badge sits BELOW the
+   title so all four card titles line up. */
+.vbs-card__badge--inline { display: inline-block; align-self: flex-start; margin: 0.5rem 0 0.25rem; }
 .vbs-spec__icon { width: 2.25rem; height: 2.25rem; }
 .vbs-spec__num { margin-top: 1rem; font-size: 0.875rem; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.6; }
 .vbs-spec__title { margin-top: 0.5rem; font-size: 1.5rem; line-height: 2rem; }
@@ -1174,11 +1177,16 @@ body.verto-brand-modulr .verto-header__cta--brand { background: var(--brand-grad
 body .vbs-hero .vbs-hero__title { text-transform: uppercase; }
 
 /* ── Edison Lux About/Candidates round (Oct 2026, Alex) ── */
-/* 1. About hero: the enlarged 100% stat card sits IN LINE with the hero copy
-   instead of floating detached bottom-right (only the --lg card, i.e. the one
-   carrying the gradient CTA). */
+/* 1. About hero (round 12 revision): shorter band (pad=band via installer),
+   and the enlarged 100% card sits BESIDE the copy, vertically centred – no
+   more detached corner box or tall dead space. */
 @media (min-width: 1024px) {
-	.vbs-band__stat--lg { position: static; right: auto; bottom: auto; margin-top: 2.5rem; }
+	.vbs-band__inner:has(.vbs-band__stat--lg) { display: flex; align-items: center; gap: 4rem; }
+	.vbs-band__inner:has(.vbs-band__stat--lg) .vbs-band__copy { flex: 1 1 auto; }
+	.vbs-band__stat--lg { position: static; right: auto; bottom: auto; margin-top: 0; margin-left: auto; flex: 0 0 300px; }
+}
+@media (max-width: 1023px) {
+	.vbs-band__stat--lg { position: static; margin-top: 2.5rem; }
 }
 /* 2. From vision to reality: no italic serif – the tail word renders in the
    display font with the brand gradient instead (the section's differentiator). */
@@ -1197,9 +1205,57 @@ body.verto-brand-edison-lux .vbs-asplit__copy { max-width: 32rem; }
 body.verto-brand-edison-lux .vbs-asplit__body--panel { font-size: 1.0625rem; line-height: 1.7; opacity: 0.9; }
 /* 4. Mission / Vision / Purpose: columns in line (no staggered drop). */
 body.verto-brand-edison-lux .vbs-band__col { transform: none !important; }
-/* 5. Why clients choose Edison Lux: gradient dash markers (numbers removed
-   via the widget's `numbered` control). */
-.vbs-proof__dash { display: block; width: 2.5rem; height: 3px; margin-top: 0.7rem; border-radius: 2px; flex-shrink: 0; }
+/* 5. Why clients choose Edison Lux: gradient tick badges (numbers and the
+   interim dashes both retired – Oct 2026 round 12). */
+.vbs-proof__tick { display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; flex-shrink: 0; margin-top: 0.15rem; box-shadow: 0 6px 16px -6px rgba(0,0,0,0.35); }
+
+/* ── Edison Lux round 12 (Oct 2026, four emails) ── */
+/* No section eyebrows anywhere on the Edison site – the display headings
+   carry the sections on their own. */
+body.verto-brand-edison-lux .eyebrow,
+body.verto-brand-edison-lux .verto-eyebrow,
+body.verto-brand-edison-lux .vbs-asplit__kick,
+body.verto-brand-edison-lux .vbs-story__kick,
+body.verto-brand-edison-lux .verto-services__head .vbs-asplit__kick,
+body.verto-brand-edison-lux .verto-jobs__eyebrow { display: none !important; }
+/* Home about split: at ultra-wide the image's right edge lines up with the
+   content container instead of running to the viewport edge. */
+@media (min-width: 1440px) {
+	body.verto-brand-edison-lux .vbs-asplit--frame .vbs-asplit__imgwrap { margin-right: max(4rem, calc((100vw - 80rem) / 2)); }
+	body.verto-brand-edison-lux .vbs-asplit--frame.vbs-asplit--reverse .vbs-asplit__imgwrap { margin-right: 0; margin-left: max(4rem, calc((100vw - 80rem) / 2)); }
+}
+/* Specialism cards: numbers and icons gone, gradient top bar instead; cards
+   and section tighter. */
+body.verto-brand-edison-lux .vbs-spec__num,
+body.verto-brand-edison-lux .vbs-spec__icon { display: none; }
+body.verto-brand-edison-lux .vbs-card .vbs-card__bar { background: var(--brand-gradient) !important; }
+body.verto-brand-edison-lux .vbs-spec { padding-block: 4rem; }
+body.verto-brand-edison-lux .vbs-spec__grid { margin-top: 2.5rem; gap: 1rem; }
+body.verto-brand-edison-lux .vbs-spec__title { margin-top: 0.25rem; }
+/* "One industry. Energy." intro: heading left, paragraphs right – no more
+   half-empty row. Tighter desks section. */
+@media (min-width: 1024px) {
+	body.verto-brand-edison-lux .vbs-desks .verto-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 4rem; max-width: none; align-items: start; }
+	body.verto-brand-edison-lux .vbs-desks .verto-intro .verto-title-reveal { grid-column: 1; grid-row: 1 / span 4; }
+	body.verto-brand-edison-lux .vbs-desks .verto-intro .verto-intro__body { grid-column: 2; }
+	body.verto-brand-edison-lux .vbs-desks .verto-intro .verto-intro__body:first-of-type { margin-top: 0.5rem; }
+}
+body.verto-brand-edison-lux .vbs-aud { padding-block: 4rem; }
+/* Light testimonial/review bands sit on grey so the sections read separately. */
+body.verto-brand-edison-lux .vbs-band--light { background: var(--muted); }
+/* Carousel quote cards: attribution rows align along one line even when the
+   quotes run different lengths. */
+.vbs-band__quotes--light .vbs-quote-l { display: flex; flex-direction: column; }
+.vbs-band__quotes--light .vbs-quote-l > :last-child { margin-top: auto; }
+/* No hairline between the team strip and Insights. */
+body.verto-brand-edison-lux .vbs-insights-sec { border-top: none; }
+/* From vision to reality: side column in a grey card so the logo and facts
+   read as one unit; labels sentence case; tighter section. */
+body.verto-brand-edison-lux .vbs-story { padding-block: 4rem; }
+body.verto-brand-edison-lux .vbs-story__side { background: var(--muted); padding: 2.5rem; border-radius: 0.75rem; gap: 2rem; }
+body.verto-brand-edison-lux .vbs-story__statcol { gap: 2rem; }
+body.verto-brand-edison-lux .vbs-story__statlabel { text-transform: none; letter-spacing: 0; font-size: 0.9375rem; }
+body.verto-brand-edison-lux .vbs-story__statvalue--sm { font-size: 1.375rem; }
 /* Edison Lux (Oct 2026, Alex): primary buttons carry the green→blue brand
    gradient site-wide – same convention as ModulR ("Our Solutions" hero CTA,
    Talk to us, Submit a vacancy, etc.). */

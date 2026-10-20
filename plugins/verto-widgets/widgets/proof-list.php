@@ -56,7 +56,11 @@ class Verto_Widget_Proof_List extends \Elementor\Widget_Base {
 							<?php if ( $numbered ) : ?>
 								<div class="vbs-proof__num" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
 							<?php else : ?>
-								<span class="vbs-proof__dash" style="background:var(--brand-gradient, var(--brand));"></span>
+								<?php // Oct 2026 (Alex, "stumped with the dashes"): gradient
+							// tick badge instead. ?>
+							<span class="vbs-proof__tick" style="background:var(--brand-gradient, var(--brand));" aria-hidden="true">
+								<svg viewBox="0 0 24 24" width="14" height="14" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+							</span>
 							<?php endif; ?>
 							<p class="vbs-proof__text"><?php echo esc_html( $it['text'] ); ?></p>
 						</li>

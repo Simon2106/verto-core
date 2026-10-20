@@ -465,7 +465,9 @@ class Verto_Installer {
 
 	/** Team-structure schema version – bump when the master map changes so
 	 *  existing installs re-run the migration on their next Rebuild. */
-	const TEAM_STRUCTURE = 'structure-0.10.1';
+	// 0.22.12: Edison job titles from Alex (Joe → Lead Recruiter, Milly →
+	// Principal Consultant | Power & Energy).
+	const TEAM_STRUCTURE = 'structure-0.22.12';
 
 	/**
 	 * The client's definitive team structure (Alex Hatfield, Aug 2026).
@@ -529,12 +531,12 @@ class Verto_Installer {
 			'Forough Rezaei'    => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => null ],
 			'Natasha Sykes'     => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'modulr-natasha-sykes-v3.png' ],
 			/* ── Consultants – Edison Lux ── */
-			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-joe-williams-v3.png' ],
+			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Lead Recruiter', 'photo' => 'edison-joe-williams-v3.png' ],
 			'Matthew Pearce'     => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-matthew-pearce.jpg' ],
 			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-lewis-dominy-v3.png' ],
 			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-noah-ward-v3.png' ],
 			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'vertek-oliver-hesmondhalgh.jpg' ],
-			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Consultant', 'photo' => 'edison-milly-compton-v2.png' ],
+			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Principal Consultant | Power & Energy', 'photo' => 'edison-milly-compton-v2.png' ],
 		];
 	}
 
@@ -1766,7 +1768,7 @@ class Verto_Installer {
 			  'name_gradient' => 'linear-gradient(90deg, #3CC739 0%, #2B8EE5 100%)',
 			  'sectors' => "Critical Power & CCGT\nRenewables & Storage\nEPC & Project Delivery\nO&M (Operations & Maintenance)",
 			  'logo' => self::media_setting( $media, 'logo_edison_white' ),
-			  'positioning' => 'Edison Lux delivers talent solutions for the US & Europe energy sector, from control room operators to Senior Leadership responsible for billion-dollar assets.',
+			  'positioning' => 'Edison Lux delivers talent solutions for the US & European energy sector, from control room operators to Senior Leadership responsible for billion-dollar assets.',
 			  'link' => [ 'url' => verto_brand_url( 'edison-lux' ) ] ],
 			// Round 4, item 13: new ModulR positioning; sectors trimmed to three
 			// (Interior Design & Fit-out dropped pending client decision).
@@ -1958,7 +1960,7 @@ class Verto_Installer {
 					'line2'  => 'Together',
 					// Edison Lux copy doc (Oct 2026): US & Europe, Senior
 					// Leadership phrasing, "One market. Done properly." dropped.
-					'sub'    => 'Edison Lux delivers talent solutions for the US & Europe energy sector, from control room operators to Senior Leadership responsible for billion-dollar assets.',
+					'sub'    => 'Edison Lux delivers talent solutions for the US & European energy sector, from control room operators to Senior Leadership responsible for billion-dollar assets.',
 					// Round 5, item 1: dam (hydro) removed – Edison does zero
 					// hydro. Pylons are the interim hero until the client's
 					// licensed CCGT/turbine photography arrives (CLIENT-NEEDS.md).
@@ -2063,8 +2065,10 @@ class Verto_Installer {
 				// Copy doc page 7: eyebrow gone, "Lived, not learned" gone, the
 				// hero body reworded (Alex asked for a rewording), and the 100%
 				// stat card enlarged with a gradient CTA through to the services.
-				'about_hero' => [ 'pre' => 'One sector.', 'accent' => "\nUS & Europe Energy.", 'post' => '', 'eyebrow' => '' ],
-				'about_hero_body' => 'Energy is all we do – and why clients and candidates across the US and Europe make Edison Lux their first call.',
+				// Oct 2026 round: European wording, shorter hero (pad band), stat
+				// card beside the copy (CSS).
+				'about_hero' => [ 'pre' => 'One sector.', 'accent' => "\nUS & European Energy.", 'post' => '', 'eyebrow' => '', 'pad' => 'band' ],
+				'about_hero_body' => 'Energy is all we do – and why clients and candidates across the US and European markets make Edison Lux their first call.',
 				'about_hero_stat_cta' => [ 'text' => 'Our solutions', 'url' => '/clients' ],
 				// Copy doc page 7: "The story behind" becomes From vision to
 				// reality, with the client's four paragraphs; the story stat rail
@@ -2073,12 +2077,15 @@ class Verto_Installer {
 					'eyebrow'  => '',
 					'headline' => 'From vision to',
 					'italic'   => 'reality.',
-					'body'     => "Edison Lux was formed in 2025, and is quickly becoming one of the leading Energy recruitment brands that operates across the US and Europe.\n\nEdison Lux has a deep understanding of the Energy industry and every Consultant is a genuine industry expert, specialising in their own niche.\n\nThrough client partnerships, thorough candidate qualification and innovative recruitment tools, we deliver the right talent at pace, without compromising on quality.\n\nWe're building a recruitment brand that understands the industries we serve, the challenges our clients face and the people who drive them forward.",
+					// Oct 2026: "was formed in 2025" removed.
+					'body'     => "Edison Lux is quickly becoming one of the leading Energy recruitment brands that operates across the US and Europe.\n\nEdison Lux has a deep understanding of the Energy industry and every Consultant is a genuine industry expert, specialising in their own niche.\n\nThrough client partnerships, thorough candidate qualification and innovative recruitment tools, we deliver the right talent at pace, without compromising on quality.\n\nWe're building a recruitment brand that understands the industries we serve, the challenges our clients face and the people who drive them forward.",
 				],
+				// Oct 2026: Alex's wording – sentence case, no shouty caps (CSS
+				// drops the uppercase on these labels), grey card behind (CSS).
 				'about_stats' => [
-					[ 'value' => '4',                        'label' => 'Service options, including Verto Engage' ],
-					[ 'value' => 'Control room → Boardroom', 'label' => 'From Operators and Engineers to all levels of Technical & Commercial Leadership' ],
-					[ 'value' => 'US & Europe Energy',       'label' => 'Critical Power, Combined Cycle & Gas, Renewables, Biomass & EFW, Nuclear and EPC' ],
+					[ 'value' => '4 service options available', 'label' => 'Including Verto Engage' ],
+					[ 'value' => 'Control room → Boardroom',    'label' => 'From Operators and Engineers to all levels of Technical & Commercial leadership' ],
+					[ 'value' => 'US & European Energy',        'label' => 'Critical Power, Combined Cycle & Gas, Renewables, Biomass & EFW, Nuclear and EPC' ],
 				],
 				'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators and shift supervisors to the directors and C-suite leaders responsible for billion-dollar assets.',
 				// Copy doc page 8: eyebrow gone, softer second paragraph.
@@ -2596,7 +2603,7 @@ class Verto_Installer {
 				'image'          => self::media_setting( $media, $c['hero']['image'] ),
 				'image_alt'      => $c['hero']['alt'],
 				'overlay'        => 'hero-left',
-				'pad'            => 'hero',
+				'pad'            => $c['about_hero']['pad'] ?? 'hero',
 				'parallax_speed' => 0.3,
 				'eyebrow'        => $c['about_hero']['eyebrow'] ?? "About $name",
 				'eyebrow_style'  => 'brand',
@@ -2931,7 +2938,8 @@ class Verto_Installer {
 			$candidates[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
 		}
 		$candidates[] = self::section( [ $team_strip ], 'verto-bs' );
-		$candidates[] = $contact( 'Start a conversation', 'A confidential chat. No spam, no fluff.', $ca['bullets'] );
+		// Oct 2026 (Alex): Edison gets a more consultative line.
+		$candidates[] = $contact( 'Start a conversation', 'edison-lux' === $brand ? 'A confidential conversation about your next move.' : 'A confidential chat. No spam, no fluff.', $ca['bullets'] );
 		self::upsert_page( 'candidates', 'Candidates', $candidates );
 
 		/* ── INSIGHTS (posts archive page) ── */
