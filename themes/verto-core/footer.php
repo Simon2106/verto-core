@@ -81,7 +81,7 @@ $verto_is_brand_site = 'verto' !== $verto_brand;
 				<?php /* Round 4, item 10: strapline removed (read too Edison), logo
 				         enlarged, locations line restyled as gold small-caps. */ ?>
 				<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/verto-logo.svg' ); ?>" alt="<?php bloginfo( 'name' ); ?>" class="verto-footer__logo" />
-				<p class="verto-footer__locations">Solent · Austin · Miami (soon)</p>
+				<p class="verto-footer__locations">Solent · Austin · New York (soon)</p>
 			</div>
 			<div class="verto-footer__col">
 				<h4>Group</h4>

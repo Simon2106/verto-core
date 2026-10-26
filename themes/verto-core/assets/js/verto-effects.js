@@ -802,3 +802,146 @@
     });
   });
 })();
+
+/* ── §14 Recent-events film rail (Oct 2026, client): one row, slow auto-slide.
+      The rail drifts right, bounces back at the end (ping-pong), pauses on
+      hover / keyboard focus / while any film is playing, and can be dragged
+      left or right. Honours prefers-reduced-motion (no auto-drift). ── */
+(function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    var rail = document.querySelector(".verto-events__rail");
+    if (!rail) return;
+
+    var paused = false;
+    var dragging = false;
+    var moved = false;
+    var dir = 1;
+    var SPEED = 0.35; /* px per frame ≈ 21px/s – slow */
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    rail.addEventListener("mouseenter", function () { paused = true; });
+    rail.addEventListener("mouseleave", function () { paused = false; });
+    rail.addEventListener("focusin",  function () { paused = true; });
+    rail.addEventListener("focusout", function () { paused = false; });
+
+    /* Drag to scroll (mouse + touch via pointer events). A real drag must not
+       trigger the tile's play button – the click-capture guard below eats it. */
+    var startX = 0, startLeft = 0;
+    rail.addEventListener("pointerdown", function (e) {
+      dragging = true; moved = false;
+      startX = e.clientX; startLeft = rail.scrollLeft;
+      rail.classList.add("is-dragging");
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - startX;
+      if (Math.abs(dx) > 5) moved = true;
+      if (moved) rail.scrollLeft = startLeft - dx;
+    });
+    window.addEventListener("pointerup", function () {
+      dragging = false;
+      rail.classList.remove("is-dragging");
+    });
+    rail.addEventListener("click", function (e) {
+      if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+
+    function step() {
+      var playing = rail.querySelector(".is-playing");
+      if (!paused && !dragging && !playing && !reduced.matches) {
+        var max = rail.scrollWidth - rail.clientWidth;
+        if (max > 2) {
+          rail.scrollLeft += SPEED * dir;
+          if (rail.scrollLeft >= max - 1) dir = -1;
+          else if (rail.scrollLeft <= 1) dir = 1;
+        }
+      }
+      window.requestAnimationFrame(step);
+    }
+    window.requestAnimationFrame(step);
+  });
+})();
+
+/* ── §15 Specialist band: fade through the desk's consultants every few
+      seconds (pause on hover). Markup from the verto-specialist-band widget. ── */
+(function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("[data-specialist-rotate]").forEach(function (box) {
+      var faces = box.querySelectorAll(".verto-specialist__face");
+      if (faces.length < 2) return;
+      var i = 0, paused = false;
+      box.addEventListener("mouseenter", function () { paused = true; });
+      box.addEventListener("mouseleave", function () { paused = false; });
+      setInterval(function () {
+        if (paused) return;
+        faces[i].classList.remove("is-active");
+        i = (i + 1) % faces.length;
+        faces[i].classList.add("is-active");
+      }, 4000);
+    });
+  });
+})();
+
+/* ── §16 Hover video previews (Oct 2026, client): WGO magazine cards and the
+      Recent-events tiles preview their film, muted, on hover – like the
+      sales-day mosaic. Zero video bytes until the pointer arrives; touch
+      devices keep the plain click-through / press-to-play behaviour. ── */
+(function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+    /* Magazine cards: lazy-inject a muted <video> over the poster image. */
+    document.querySelectorAll("[data-hover-video]").forEach(function (card) {
+      var vid = null;
+      card.addEventListener("mouseenter", function () {
+        if (!fine.matches) return;
+        if (!vid) {
+          vid = document.createElement("video");
+          vid.src = card.getAttribute("data-hover-video");
+          vid.muted = true;
+          vid.loop = true;
+          vid.playsInline = true;
+          vid.preload = "none";
+          vid.className = "verto-hovervid__video";
+          card.appendChild(vid);
+        }
+        vid.classList.add("is-on");
+        vid.play().catch(function () {});
+      });
+      card.addEventListener("mouseleave", function () {
+        if (!vid) return;
+        vid.pause();
+        vid.classList.remove("is-on");
+      });
+    });
+
+    /* Recent-events tiles: the <video> is already there (preload none) –
+       hover starts it muted; leaving pauses. The press-to-play button (§12)
+       still gives sound on click. */
+    document.querySelectorAll(".verto-events__media").forEach(function (media) {
+      var video = media.querySelector("video");
+      if (!video) return;
+      media.addEventListener("mouseenter", function () {
+        if (!fine.matches || media.classList.contains("is-playing")) return;
+        video.muted = true;
+        video.play().catch(function () {});
+      });
+      media.addEventListener("mouseleave", function () {
+        if (media.classList.contains("is-playing")) return; // user pressed play – leave it
+        video.pause();
+      });
+    });
+  });
+})();
+
+/* ── §17 Hero background films honour prefers-reduced-motion: stop playback
+      so the poster frame stands in as a still. ── */
+(function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll(".vbs-hero__video").forEach(function (v) {
+      v.removeAttribute("autoplay");
+      v.pause();
+    });
+  });
+})();

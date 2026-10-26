@@ -45,7 +45,11 @@ get_header();
 			$verto_is_video = has_shortcode( $verto_raw, 'video' ) || false !== stripos( $verto_raw, '<video' );
 			?>
 			<article class="verto-featured">
-				<a class="verto-featured__media" href="<?php the_permalink(); ?>" aria-label="<?php the_title_attribute(); ?>">
+				<?php // Oct 2026 (Alex): video stories preview on hover, like the
+				// sales-day mosaic – the card carries the post's film, muted,
+				// loaded only when the pointer arrives (verto-effects.js §16). ?>
+				<?php $verto_vid_src = $verto_is_video && preg_match( '/<video[^>]*\ssrc="([^"]+)"/i', $verto_raw, $vm ) ? $vm[1] : ''; ?>
+				<a class="verto-featured__media<?php echo $verto_vid_src ? ' verto-hovervid' : ''; ?>" <?php echo $verto_vid_src ? 'data-hover-video="' . esc_url( $verto_vid_src ) . '"' : ''; ?> href="<?php the_permalink(); ?>" aria-label="<?php the_title_attribute(); ?>">
 					<?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'full' ); } ?>
 					<?php if ( $verto_is_video ) : ?>
 						<span class="verto-post-card__play" aria-hidden="true"></span>
@@ -79,7 +83,9 @@ get_header();
 				$verto_is_video = has_shortcode( $verto_raw, 'video' ) || false !== stripos( $verto_raw, '<video' );
 				?>
 				<article class="verto-post-card">
-					<a class="verto-post-card__media" href="<?php the_permalink(); ?>">
+					<?php // Oct 2026 (Alex): hover-preview for video cards (§16). ?>
+					<?php $verto_vid_src = $verto_is_video && preg_match( '/<video[^>]*\ssrc="([^"]+)"/i', $verto_raw, $vm ) ? $vm[1] : ''; ?>
+					<a class="verto-post-card__media<?php echo $verto_vid_src ? ' verto-hovervid' : ''; ?>" <?php echo $verto_vid_src ? 'data-hover-video="' . esc_url( $verto_vid_src ) . '"' : ''; ?> href="<?php the_permalink(); ?>">
 						<?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'large' ); } ?>
 						<span class="verto-post-card__type"><span class="dot"></span><?php echo $verto_is_video ? 'Video' : 'Article'; ?></span>
 						<?php if ( $verto_is_video ) : ?>
@@ -104,6 +110,16 @@ get_header();
 		     models → /clients) appears on every brand-site page, including
 		     this Insights listing. -->
 		<div class="verto-bs"><?php echo verto_services_band_html(); // phpcs:ignore ?></div>
+		<!-- Oct 2026 (Alex): a contact route at the end of the Insights page. -->
+		<section class="verto-bs verto-insights-contact">
+			<div class="vbs-ctaband" style="background:var(--ink);color:var(--ink-foreground);">
+				<h2 class="display-3">Ready to talk?</h2>
+				<div class="verto-insights-contact__ctas">
+					<a class="btn-base btn-primary" href="/clients#contact">Hire with us</a>
+					<a class="btn-base btn-ghost-outline" style="color:var(--ink-foreground);border-color:color-mix(in oklab, var(--ink-foreground) 30%, transparent);" href="/candidates#contact">Start a conversation</a>
+				</div>
+			</div>
+		</section>
 	<?php endif; ?>
 
 	<?php if ( 'verto' === $verto_brand ) : ?>
@@ -135,7 +151,8 @@ get_header();
 				<div class="verto-events__intro">
 					<span class="verto-eyebrow">Recent events</span>
 					<h2 class="verto-display-3" style="margin-top:1.25rem;">The last few months, on film.</h2>
-					<p class="verto-events__body">The summit, the Ibiza trip, the charity night and four promotions landing &ndash; press play.</p>
+					<?php // Oct 2026 (Alex): no dash, and hover now plays the films. ?>
+					<p class="verto-events__body">The summit, the Ibiza trip, the charity night and four promotions landing. Hover to watch.</p>
 				</div>
 				<?php if ( $verto_missing ) : ?>
 					<span class="verto-events__note">&#9888; <?php echo (int) $verto_missing; ?> film<?php echo 1 === $verto_missing ? '' : 's'; ?> pending &ndash; run Verto Setup &rarr; Rebuild to import the videos</span>
@@ -153,7 +170,9 @@ get_header();
 								<span class="verto-post-card__play" aria-hidden="true"></span>
 							</button>
 						</div>
-						<figcaption class="verto-events__caption"><?php echo wp_kses_post( $verto_s['title'] ); ?> &ndash; <?php echo wp_kses_post( $verto_s['note'] ); ?></figcaption>
+						<?php // Oct 2026 (Alex): dash gone, title and note on their own
+						// lines, brighter so it reads on the ink background. ?>
+						<figcaption class="verto-events__caption"><strong><?php echo wp_kses_post( $verto_s['title'] ); ?></strong><br /><?php echo wp_kses_post( $verto_s['note'] ); ?></figcaption>
 					</figure>
 				<?php endforeach; ?>
 			</div>

@@ -278,7 +278,9 @@ class Verto_Widget_Quote_Band extends \Elementor\Widget_Base {
 				<?php elseif ( $s['columns'] ) : ?>
 					<div class="vbs-band__cols">
 						<?php foreach ( $s['columns'] as $i => $col ) :
-							$shift = 1 === $i ? 'transform:translateY(1.5rem);' : ( 2 === $i ? 'transform:translateY(3rem);' : '' );
+							// Oct 2026 (client, Edison + ModulR rounds): the staggered
+							// drop is gone – Mission/Vision/Purpose sit in line.
+							$shift = '';
 							?>
 							<div class="vbs-band__col" style="border-color:color-mix(in oklab, var(--brand) 60%, transparent);<?php echo esc_attr( $shift ); ?>">
 								<div class="vbs-band__collabel" style="color:var(--brand);"><?php echo esc_html( $col['label'] ); ?></div>

@@ -24,7 +24,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		'vertek'     => [ 'label' => 'Vertek', 'color' => '#F82B60', 'sector' => 'Engineering, Sales & Manufacturing recruitment' ],
 		'modulr'     => [ 'label' => 'ModulR', 'color' => '#7FA8FC', 'sector' => 'Built Environment recruitment' ],
 	];
-	private const LOCATIONS = [ 'Solent, UK', 'Austin, TX', 'Miami, FL' ];
+	private const LOCATIONS = [ 'Solent, UK', 'Austin, TX', 'New York, NY' ];
 	private const LEVELS    = [ 'Entry-level', 'Senior', 'Manager' ];
 	// FALLBACK-ONLY since 0.14.0: the installer seeds the standing internal
 	// vacancies as real verto_job posts (Verto_Installer::seed_internal_jobs),
@@ -36,8 +36,8 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		[ 'title' => 'Senior Recruitment Consultant – Technical Sales', 'brand' => 'vertek', 'location' => 'Solent, UK', 'level' => 'Senior', 'package' => '£35–45k base + 40% commission + share scheme' ],
 		[ 'title' => 'Entry-Level Recruitment Consultant – Engineering', 'brand' => 'vertek', 'location' => 'Solent, UK', 'level' => 'Entry-level', 'package' => '£25–28k base + uncapped commission' ],
 		[ 'title' => 'Recruitment Consultant – HVAC & Refrigeration', 'brand' => 'vertek', 'location' => 'Austin, TX', 'level' => 'Senior', 'package' => '$55–70k base + 40% commission + share scheme' ],
-		[ 'title' => 'Recruitment Consultant – Data Centres & Critical Environments', 'brand' => 'modulr', 'location' => 'Miami, FL', 'level' => 'Senior', 'package' => '$60–80k base + 40% commission + share scheme' ],
-		[ 'title' => 'Team Manager – ModulR US', 'brand' => 'modulr', 'location' => 'Miami, FL', 'level' => 'Manager', 'package' => '$90–120k base + override + equity' ],
+		[ 'title' => 'Recruitment Consultant – Data Centres & Critical Environments', 'brand' => 'modulr', 'location' => 'New York, NY', 'level' => 'Senior', 'package' => '$60–80k base + 40% commission + share scheme' ],
+		[ 'title' => 'Team Manager – ModulR US', 'brand' => 'modulr', 'location' => 'New York, NY', 'level' => 'Manager', 'package' => '$90–120k base + override + equity' ],
 		[ 'title' => 'Recruitment Consultant – Life Sciences', 'brand' => 'verto', 'location' => 'Solent, UK', 'level' => 'Senior', 'package' => '£35–45k base + 40% commission + share scheme' ],
 		[ 'title' => 'Talent & Resourcing Partner – Group', 'brand' => 'verto', 'location' => 'Solent, UK', 'level' => 'Entry-level', 'package' => '£24–27k base + bonus' ],
 	];

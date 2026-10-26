@@ -159,3 +159,44 @@ confidence – short descriptions so Alex can name them by reply:
 - Reworded paragraph he asked for (about hero): "Energy is all we do - and why
   clients and candidates across the US and Europe make Edison Lux their first
   call." - flag for his next pass.
+
+## Round 13 notes (Oct 2026 - ModulR round + group)
+
+- New York skyline photo needed (Miami replaced everywhere; the NY location
+  tile reuses the EU-skyline placeholder until a licensed NY image arrives).
+- ModulR candidates "Who we work with" sector panels (Architecture / Data
+  Centres): placeholder copy drafted for Alex to review; he also wants
+  industry photos or video per sector - ask for assets.
+- ModulR/Edison candidates "Live roles" boards show Vincere CLIENT jobs
+  tagged to the brand; empty until the team tags jobs with the brand in
+  Vincere (chase Alex).
+- "Robbie on the ModulR team strip": Robbie is not ModulR-tagged - the tile
+  Alex means is almost certainly Martin's leadership card (or a mislabelled
+  photo from the round-9 batch). Leadership is now excluded from the ModulR
+  strip; if a wrong face remains, it's a photo mix-up - ask Alex which tile.
+- "Speak to a specialist" band (Martin's idea) is live on the three brand
+  Clients pages - can roll out to every page bottom if they like it.
+- Natasha Sykes and Jake Massingham now show on the ModulR strip (Jake is
+  dual-tagged Vertek + ModulR).
+
+## Round 14 (Oct 2026) - full photo drop + Verto Amendments PDF applied (v0.22.15)
+
+- ALL team photos replaced with the "Colour fixed website pics" zip, matched
+  tile-for-tile to the client's Verto Amendments PDF. Megan Grant is now the
+  ONLY person without a photo.
+- New people added per the PDF: Simon Cottenham (Edison, VP of Sales),
+  Louis Fuller (Edison), Hannah Gresses (Vertek), Jake Price (Verto,
+  Finance & Administration Lead).
+- Roles/tiers updated across the roster per the PDF (Founders x3, Team
+  Leaders, VP of Architecture = Charlotte now management, Lead/Senior/
+  Recruitment Consultant ladder, Martyn = VP of Life Sciences).
+- Jake Massingham moved to ModulR only (per the PDF team page).
+- Roster display names kept as "Ollie Hesmondhalgh" and "Monira Akter"
+  (PDF spells "Oliver"/"Aktar") so testimonial avatar lookups don't break -
+  confirm with Alex if he wants the PDF spellings on the cards.
+- Per-brand clothing variants exist for dual-brand people (e.g. Alex H has
+  a Verto and a Vertek shirt version) but the site stores ONE photo per
+  person - the group-logo version is used. Per-brand photos would need a
+  schema change; flag if wanted.
+- Edison specialism images: Power Generation -> turbine machinery close-up,
+  Biomass/EFW -> dusk plant chimney (both from the existing licensed set).

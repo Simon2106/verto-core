@@ -3,14 +3,14 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.22.12
+ * Version: 0.22.16
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.22.12' );
+define( 'VERTO_WIDGETS_VERSION', '0.22.16' );
 
 /**
  * Compact services band for the brand sites: the FOUR Verto engagement
@@ -84,6 +84,7 @@ add_action( 'elementor/widgets/register', function ( $widgets_manager ) {
 	require_once __DIR__ . '/widgets/collage.php';
 	require_once __DIR__ . '/widgets/values-accordion.php';
 	require_once __DIR__ . '/widgets/salesdays-mosaic.php';
+	require_once __DIR__ . '/widgets/specialist-band.php';
 
 	$widgets_manager->register( new \Verto_Widget_Title_Reveal() );
 	$widgets_manager->register( new \Verto_Widget_V_Mask_Media() );
@@ -116,6 +117,7 @@ add_action( 'elementor/widgets/register', function ( $widgets_manager ) {
 	$widgets_manager->register( new \Verto_Widget_Collage() );
 	$widgets_manager->register( new \Verto_Widget_Values_Accordion() );
 	$widgets_manager->register( new \Verto_Widget_Salesdays_Mosaic() );
+	$widgets_manager->register( new \Verto_Widget_Specialist_Band() );
 } );
 
 /** Widget category so they group together in the Elementor panel. */

@@ -12,7 +12,7 @@
  *      Edison-blue even on the Verto group site), kicker, title, package,
  *      Apply button anchoring to the inline form.
  *   2. OFFICE – skyline + photo strip + blurb for the job's _location
- *      (Verto_Installer::location_gallery(): Solent / Austin / Miami-soon).
+ *      (Verto_Installer::location_gallery(): Solent / Austin / New York-soon).
  *   3. TEAM – up to six verto_team people on the job's brand (fallback verto).
  *   4. ADVERT – post_content (Vincere public_description for synced jobs,
  *      authored copy for manual ones), .verto-prose.

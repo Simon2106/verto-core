@@ -23,6 +23,10 @@ class Verto_Widget_Brand_Hero extends \Elementor\Widget_Base {
 			'default' => "Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU." ] );
 		$this->add_control( 'image', [ 'label' => 'Hero image', 'type' => \Elementor\Controls_Manager::MEDIA ] );
 		$this->add_control( 'image_alt', [ 'label' => 'Image alt', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Glowing globe at night with arcs of light connecting cities' ] );
+		// Oct 2026 (Alex, Edison): optional looping background FILM instead of
+		// the still – muted, autoplaying, with the image as poster/fallback.
+		$this->add_control( 'video_mp4',  [ 'label' => 'Hero video – MP4 (optional)',  'type' => \Elementor\Controls_Manager::MEDIA, 'media_types' => [ 'video' ] ] );
+		$this->add_control( 'video_webm', [ 'label' => 'Hero video – WebM (optional)', 'type' => \Elementor\Controls_Manager::MEDIA, 'media_types' => [ 'video' ] ] );
 		$this->add_control( 'object_position', [ 'label' => 'Image object-position', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'center 35%' ] );
 		$this->add_control( 'parallax_scale', [ 'label' => 'Parallax scale', 'type' => \Elementor\Controls_Manager::NUMBER, 'default' => 1, 'step' => 0.01 ] );
 		$this->add_control( 'parallax_offset', [ 'label' => 'Parallax Y offset (px)', 'type' => \Elementor\Controls_Manager::NUMBER, 'default' => 30 ] );
@@ -36,8 +40,22 @@ class Verto_Widget_Brand_Hero extends \Elementor\Widget_Base {
 	protected function render() {
 		$s = $this->get_settings_for_display();
 		?>
+		<?php $vbs_video = ! empty( $s['video_mp4']['url'] ) || ! empty( $s['video_webm']['url'] ); ?>
 		<div class="vbs-hero">
-			<?php if ( ! empty( $s['image']['url'] ) ) : ?>
+			<?php if ( $vbs_video ) : ?>
+			<?php // Looping film background: muted + playsinline so mobile
+			// autoplay works; the still image doubles as the poster and shows
+			// wherever autoplay is refused or reduced motion is on (CSS). ?>
+			<div class="vbs-hero__media">
+				<video class="vbs-hero__video" autoplay muted loop playsinline preload="metadata"
+					<?php if ( ! empty( $s['image']['url'] ) ) : ?>poster="<?php echo esc_url( $s['image']['url'] ); ?>"<?php endif; ?>
+					style="object-position:<?php echo esc_attr( $s['object_position'] ?: 'center center' ); ?>;">
+					<?php if ( ! empty( $s['video_webm']['url'] ) ) : ?><source src="<?php echo esc_url( $s['video_webm']['url'] ); ?>" type="video/webm" /><?php endif; ?>
+					<?php if ( ! empty( $s['video_mp4']['url'] ) ) : ?><source src="<?php echo esc_url( $s['video_mp4']['url'] ); ?>" type="video/mp4" /><?php endif; ?>
+				</video>
+				<div class="vbs-hero__wash"></div>
+			</div>
+			<?php elseif ( ! empty( $s['image']['url'] ) ) : ?>
 			<div class="vbs-hero__media">
 				<div class="verto-parallax" data-parallax-speed="0.25" data-parallax-scale="<?php echo esc_attr( $s['parallax_scale'] !== '' ? $s['parallax_scale'] : 1 ); ?>" data-parallax-offset="<?php echo esc_attr( $s['parallax_offset'] !== '' ? $s['parallax_offset'] : 0 ); ?>">
 					<img src="<?php echo esc_url( $s['image']['url'] ); ?>" alt="<?php echo esc_attr( $s['image_alt'] ); ?>" loading="lazy" style="object-position:<?php echo esc_attr( $s['object_position'] ?: 'center center' ); ?>;" />

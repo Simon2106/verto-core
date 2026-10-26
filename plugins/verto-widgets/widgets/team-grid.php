@@ -34,6 +34,9 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 			'default' => "Operators, engineers and market specialists. The people you'll actually talk to when you engage Modulr." ] );
 		$this->add_control( 'focus_text', [ 'label' => 'Card focus line', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Built environment search.' ] );
 		$this->add_control( 'limit', [ 'label' => 'Strip card count', 'type' => \Elementor\Controls_Manager::NUMBER, 'default' => 4, 'min' => 1, 'max' => 12 ] );
+		// Oct 2026 (ModulR): the strip can exclude leadership – it shows the
+		// working desk, not the founders.
+		$this->add_control( 'no_leaders', [ 'label' => 'Strip: exclude leadership tier', 'type' => \Elementor\Controls_Manager::SWITCHER, 'default' => '' ] );
 		$this->end_controls_section();
 	}
 
@@ -74,6 +77,9 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 			$d = $a->menu_order <=> $b->menu_order;
 			return $d ?: strcasecmp( $a->post_title, $b->post_title );
 		} );
+		if ( $strip && ! empty( $s['no_leaders'] ) ) {
+			$posts = array_values( array_filter( $posts, static fn( $p ) => 'leadership' !== $tier_of( $p->ID ) ) );
+		}
 		if ( $strip ) $posts = array_slice( $posts, 0, max( 1, (int) ( $s['limit'] ?: 4 ) ) );
 		$q->posts      = $posts;
 		$q->post_count = count( $posts );
