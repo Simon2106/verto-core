@@ -245,6 +245,12 @@ class Verto_Installer {
 			unset( $map['harvey_video'], $map['harvey_poster'], $map['frank_video'], $map['frank_poster'] );
 			update_option( 'verto_media_promos_v2', 1 );
 		}
+		// Edison hero film v2 (Oct 2026): the first webm was concat-muxed and
+		// wouldn't loop in browsers – re-import the clean single-pass encode.
+		if ( ! get_option( 'verto_media_edison_hero_v2' ) ) {
+			unset( $map['edison_hero_webm'] );
+			update_option( 'verto_media_edison_hero_v2', 1 );
+		}
 		$dir   = dirname( __DIR__ ) . '/assets/import/';
 		$files = [
 			'summit_video'  => 'summit-video.mp4',
@@ -1460,10 +1466,10 @@ class Verto_Installer {
 					'size'    => 'verto-display-2',
 					'tag'     => 'h1',
 					'lines'   => [
-						[ '_id' => self::eid(), 'line' => 'Made in 2020.' ],
-						[ '_id' => self::eid(), 'line' => 'Built the hard way.' ],
+						[ '_id' => self::eid(), 'line' => 'Built on ambition.' ],
+						[ '_id' => self::eid(), 'line' => 'Driven by people.' ],
 					],
-					'body' => 'We opened our doors in February 2020 – and you know what happened next. Powered by determination and a lack of other options, Verto took its first steps as many others shut down. Today that lockdown business is all grown up: three specialist brands, a life sciences desk, and teams across the UK and US.',
+					'body' => "Founded in February 2020, Verto People was built on determination, ambition and a belief that great people create great businesses. While the world was slowing down, we were just getting started. What began with three founders is now an international recruitment business: three specialist brands, a growing Life Sciences division, and offices in Portsmouth, UK and Austin, Texas.\n\nToday we connect exceptional talent with ambitious businesses across the USA and Europe, specialising in Engineering, Energy, Data Centres, Architecture, Life Sciences and Sales. We've come a long way since 2020, but the ambition is the same: create opportunities, build lasting partnerships, and make a meaningful difference to the people and businesses we work with.",
 				] ),
 				// Round 9, item 7: tighter collage – smaller tiles (see the
 				// .verto-collage row-height step-down in verto-ui.css), an
