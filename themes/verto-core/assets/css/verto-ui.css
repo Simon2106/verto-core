@@ -2271,3 +2271,6 @@ body.verto-brand-edison-lux .vbs-team .vbs-team__card {
     0 0 0 1px color-mix(in oklab, var(--brand) 35%, transparent),
     0 16px 32px -20px color-mix(in oklab, var(--brand) 45%, transparent);
 }
+
+/* Job detail: consultant line under the package (Oct 2026 advert spec). */
+.verto-jobhero__owner { margin-top: 0.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.75; }

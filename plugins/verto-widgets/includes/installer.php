@@ -291,6 +291,18 @@ class Verto_Installer {
 			'edison_hero_mp4'    => 'edison-hero.mp4',
 			'edison_hero_webm'   => 'edison-hero.webm',
 			'edison_hero_poster' => 'edison-hero-poster.jpg',
+			/* ── Oct 2026 (Alex/Simon): Vertek hero film – microchip assembly
+			      line, red/blue machine glow on black (client's licensed
+			      footage, 1600w, muted). Bottom-aligned: the action sits in
+			      the lower half of the frame. ── */
+			'vertek_hero_mp4'    => 'vertek-hero-film.mp4',
+			'vertek_hero_webm'   => 'vertek-hero-film.webm',
+			'vertek_hero_poster' => 'vertek-hero-poster.jpg',
+			/* ── Oct 2026: ModulR hero film – networked globe, deep blue
+			      (client's licensed footage, 1600w, muted). ── */
+			'modulr_hero_mp4'    => 'modulr-hero-film.mp4',
+			'modulr_hero_webm'   => 'modulr-hero-film.webm',
+			'modulr_hero_poster' => 'modulr-hero-poster.jpg',
 			'insight_power' => 'insight-power.jpg',
 			'insight_epc'   => 'insight-epc.jpg',
 			// Round 5, item 3: interim sector images for the Edison specialism
@@ -882,7 +894,7 @@ class Verto_Installer {
 				'level'    => 'Senior',
 				'package'  => '$60–80k base + 40% commission + share scheme',
 				'content'  =>
-					'<p>ModulR connects the best talent in data centres and architecture with the companies building the future, across the US and EU. The US side of that is about to get its own home: our New York office opens soon, and this is one of its founding desks.</p>'
+					'<p>ModulR connects the best talent in data centres and architecture with the companies building the future, across the USA and Europe. The US side of that is about to get its own home: our New York office opens soon, and this is one of its founding desks.</p>'
 					. '<p>We\'re after a senior recruiter to own a US data-centre or architecture market outright – build the client base, set the standard, and shape the office culture from seat one. Until the doors open you\'ll onboard with the existing ModulR team.</p>'
 					. '<h3>What you\'ll get</h3>' . $senior
 					. '<h3>What you\'ll need</h3>'
@@ -1503,7 +1515,7 @@ class Verto_Installer {
 				] ),
 			], [
 				self::widget( 'text-editor', [
-					'editor'       => "<p>Verto is a group of specialist brands, each with its own market, its own networks and its own consultants. What unites them is the Verto way of working: process-driven search built to get it right first time, feedback taken from every client and candidate interaction, and a belief that we're here to build teams, not fill seats.</p><p>A power operator hiring a Head of Commissioning shouldn't have to explain CCGT to their recruiter. A hydraulic OEM briefing a technical sales role shouldn't have to walk their consultant through what a proportional valve does. A hyperscaler filling a data-centre Project Manager shouldn't receive commercial-fit-out CVs.</p><p>So we built the opposite. Every consultant sits inside one of three brands, each led by people who've worked or recruited inside that sector. The group behind them is where it all started – and where the quality bar is set.</p>",
+					'editor'       => "<p>Verto is a group of specialist brands, each with its own market, its own networks and its own consultants. What unites them is the Verto way of working: process-driven search built to get it right first time, feedback taken from every client and candidate interaction, and a belief that we're here to build teams, not fill seats.</p><p>A power operator hiring a Head of Commissioning shouldn't have to explain CCGT to their recruiter. A hydraulic OEM briefing a technical sales role shouldn't have to walk their consultant through what a proportional valve does. A hyperscaler filling a data-centre Project Manager shouldn't receive commercial-fit-out resumes.</p><p>So we built the opposite. Every consultant sits inside one of three brands, each led by people who've worked or recruited inside that sector. The group behind them is where it all started – and where the quality bar is set.</p>",
 					'_css_classes' => 'verto-prose',
 				] ),
 			], 'verto-container-pad', 33 ),
@@ -1770,7 +1782,7 @@ class Verto_Installer {
 			  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(4,100,250,0.5), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(4,100,250,0.32), transparent 65%), #000724',
 			  'sectors' => "Architecture\nData Centres\nMEP Engineering",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
-			  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',
+			  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the USA and Europe.',
 			  'link' => [ 'url' => verto_brand_url( 'modulr' ) ] ],
 			// Round 4, item 12: Vertek is US + Europe, with the client's six
 			// named sectors on the hover face.
@@ -1780,7 +1792,7 @@ class Verto_Installer {
 			  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(248,43,96,0.34), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(248,43,96,0.22), transparent 65%), #0E1013',
 			  'sectors' => "Fluid Power (pumps, seals, valves & hydraulics)\nHVAC\nDefense & Advanced Manufacturing\nIndustrial Automation\nCNC & Metalworking\nCompressors",
 			  'logo' => self::media_setting( $media, 'logo_vertek' ),
-			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the US and Europe.',
+			  'positioning' => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe.',
 			  'link' => [ 'url' => verto_brand_url( 'vertek' ) ] ],
 		];
 	}
@@ -1832,20 +1844,25 @@ class Verto_Installer {
 					'line1'  => 'Connecting talent.',
 					'line2'  => 'Powering progress',
 					// Round 4, item 13: client-approved positioning.
-					'sub'    => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',
+					'sub'    => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the USA and Europe.',
+					// Oct 2026: looping hero film – the networked globe in motion.
+					'video_mp4'       => 'modulr_hero_mp4',
+					'video_webm'      => 'modulr_hero_webm',
+					'poster'          => 'modulr_hero_poster',
+					'object_position' => 'center bottom',
 					'image'  => 'modulr_hero',
 					'alt'    => 'Glowing globe at night with arcs of light connecting cities',
 					'scale'  => 1,
 					'offset' => 30,
 				],
 				'features' => [
-					[ 'icon' => 'globe-2',   'title' => 'US & EU',                 'body' => 'Data centres, colocation and celebrated architecture practices – two regions, one network.' ],
-					[ 'icon' => 'compass',   'title' => 'Curated Introductions',   'body' => 'Considered shortlists with real context. Never CVs into the void.' ],
+					[ 'icon' => 'bar-chart-3', 'title' => 'Verto Engage', 'body' => 'Our flagship model with a 100% success rate, an extended candidate guarantee, and the initial fee taken off on a successful hire.' ],
+					[ 'icon' => 'handshake', 'title' => 'World-Class NPS', 'body' => 'We capture feedback from every candidate and client interaction to hold ourselves to the highest standard.' ],
 					[ 'icon' => 'lock',      'title' => 'NDA-Grade Discretion',    'body' => 'Sensitive, pre-announcement and competitor-adjacent search handled as standard.' ],
-					[ 'icon' => 'handshake', 'title' => 'Long-Game Relationships', 'body' => 'We track careers and project pipelines to add value before the urgent need arises.' ],
+					[ 'icon' => 'globe-2', 'title' => 'USA & Europe', 'body' => 'Data centres, colocation and celebrated architecture practices – two regions, one network.' ],
 				],
 				'about'        => [
-					'headline' => 'Considered introductions, not CVs into the void.',
+					'headline' => 'Considered introductions, not resumes into the void.',
 					'mission'  => "Build teams for the projects that will define a generation – staffing what others can't, working quickly and discreetly, and to the standard those projects demand.",
 					'vision'   => 'A world where no exceptional architect or built-environment professional is stuck because the right opportunity was invisible to them – and the first call every project director makes when they need to scale.',
 					'purpose'  => 'Championing the professionals who build our world – opening doors that don\'t exist yet, so the most ambitious projects in architecture and critical infrastructure are built by the best people, not whoever applied first.',
@@ -1853,7 +1870,7 @@ class Verto_Installer {
 				'about_image'     => 'modulr_datacentre',
 				'about_image_alt' => 'Data centre corridor lined with server racks and glowing status lights',
 				'stats' => [
-					[ 'value' => 'US & EU',        'label' => 'Two regions, one network' ],
+					[ 'value' => 'USA & Europe',   'label' => 'Two regions, one network' ],
 					[ 'value' => 'Full lifecycle', 'label' => 'Concept design to commissioning' ],
 					[ 'value' => 'NDA-grade',      'label' => 'Discretion on every search' ],
 				],
@@ -1862,7 +1879,7 @@ class Verto_Installer {
 					[ 'icon' => 'server',          'title' => 'Data Centres',            'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
 					[ 'icon' => 'network',         'title' => 'Colocation & Edge',       'description' => 'Delivery and operations talent for colo and edge programmes at every stage.' ],
 					[ 'icon' => 'building-2',      'title' => 'Architecture',            'description' => 'Registered architects, project architects, directors, principals and partners.' ],
-					[ 'icon' => 'zap',             'title' => 'MEP Engineering',         'description' => 'Mechanical, electrical and plumbing leadership across the US project landscape.' ],
+					[ 'icon' => 'zap',             'title' => 'MEP Engineering',         'description' => 'Mechanical, electrical and plumbing leadership across the USA project landscape.' ],
 					[ 'icon' => 'layers',          'title' => 'Project Lifecycle',       'description' => 'CD → SD → DD → CD → CA. Concept design through construction administration.' ],
 					[ 'icon' => 'heart-handshake', 'title' => 'Inclusion & EDI',         'description' => 'Championing women in architecture and EDI across technical built-environment roles.' ],
 				],
@@ -1906,31 +1923,35 @@ class Verto_Installer {
 				'audiences' => [
 					'company' => [
 						'headline' => "Your next project is out there. It just isn't advertised.",
-						'body'     => "Whether you're scaling a data centre programme or shaping a skyline, one conversation opens doors that don't exist yet. Considered introductions, never CVs into the void – and discretion as standard.",
+						'body'     => "Whether you're scaling a data centre programme or shaping a skyline, one conversation opens doors that don't exist yet. Considered introductions, never resumes into the void – and discretion as standard.",
 						'bullets'  => "Curated introductions, not mass outreach\nConfidential and NDA-grade search handled as standard\nProject team builds – contract and permanent\nLong-game relationships across the project pipeline",
 						'cta'      => 'Scale your project team',
 					],
 					'candidate' => [
 						'headline' => 'The best projects are rarely advertised.',
-						'body'     => 'The best talent is rarely searching. Modulr exists in that gap – making precise, considered introductions rather than firing CVs into the void, and protecting reputations on every engagement.',
+						'body'     => 'The best talent is rarely searching. Modulr exists in that gap – making precise, considered introductions rather than firing resumes into the void, and protecting reputations on every engagement.',
 						'bullets'  => "Data centre, colocation, architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
 						'cta'      => 'Find your next project',
 					],
 				],
 				'about_hero' => [ 'pre' => 'The projects that define', 'accent' => 'a generation.', 'post' => 'Built by the right people.' ],
 				// Round 4, item 13: client-approved positioning.
-				'positioning' => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.',
+				'positioning' => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the USA and Europe.',
 				'what_we_do' => [
 					'headline'   => 'Embedded in the projects that define a generation.',
-					'paragraphs' => "Data centres, colocation and edge, architecture, MEP engineering and the full concept-to-commissioning lifecycle – this is where our network runs deepest. Every consultant works one part of the built environment, not the whole map.\n\nFor project directors, developers and practice principals, we operate as a discreet extension of the leadership team – considered introductions rather than CVs into the void, with NDA-grade discretion as standard.",
+					'paragraphs' => "Data centres, colocation and edge, architecture, MEP engineering and the full concept-to-commissioning lifecycle – this is where our network runs deepest. Every consultant works one part of the built environment, not the whole map.\n\nFor project directors, developers and practice principals, we operate as a discreet extension of the leadership team – considered introductions rather than resumes into the void, with NDA-grade discretion as standard.",
 				],
 				'proof' => [
 					'Trusted by global operators, developers and celebrated practices',
-					'Active networks across the US and EU markets',
+					'Active networks across the USA and European markets',
 					'NDA-grade discretion on every sensitive and pre-announcement search',
 					'Inclusion work championing women in architecture and EDI in technical built-environment roles',
 				],
 				'team_focus' => 'Built environment search.',
+				// Oct 2026 (Alex): subpage heroes drop the repeated globe for
+				// built-environment imagery (the EPC construction-at-dusk asset).
+				'subhero_image' => 'insight_epc',
+				'subhero_alt'   => 'Tower cranes over a steel-frame construction site at dusk',
 				/* ── Oct 2026 ModulR design round (Alex) ── */
 				// Team strip: no paragraph, whole desk in one line (leaders
 				// excluded – the strip is the working desk).
@@ -1944,14 +1965,14 @@ class Verto_Installer {
 				// band (mirrors Edison), plus the two sector panels below.
 				'candidate_process' => [
 					[ 'title' => 'A confidential conversation', 'body' => 'Tell us where you want to go – practice, project type, comp, relocation. Nothing is shared without your sign-off.' ],
-					[ 'title' => 'Matched to live briefs',      'body' => 'Your consultant maps your experience against live searches across architecture and data centres in the US and EU – not a database blast.' ],
+					[ 'title' => 'Matched to live briefs',      'body' => 'Your consultant maps your experience against live searches across architecture and data centres in the USA and Europe – not a database blast.' ],
 					[ 'title' => 'Presented properly',          'body' => 'Your portfolio and project history go directly to the hiring leader, and we prep you on the practice, the panel and the programme before every stage.' ],
 					[ 'title' => 'Offer to onboarding',         'body' => 'Comp guidance, negotiation and resignation support through to your first day – and we stay in touch well after it.' ],
 				],
 				// Candidates page: what we cover per sector, for candidates.
 				'candidate_sectors' => [
 					[ 'image' => 'insight_architecture', 'alt' => 'An architecture studio at work', 'title' => 'Architecture',
-					  'body' => 'In architecture we work with registered architects, project architects, directors, principals and partners – and place them into celebrated design studios, multidisciplinary practices and developer in-house teams across the US and EU.' ],
+					  'body' => 'In architecture we work with registered architects, project architects, directors, principals and partners – and place them into celebrated design studios, multidisciplinary practices and developer in-house teams across the USA and Europe.' ],
 					[ 'image' => 'modulr_datacentre', 'alt' => 'Data centre corridor lined with server racks', 'title' => 'Data Centres',
 					  'body' => 'In data centres we work with construction directors, project leadership, commissioning managers and MEP engineers – and place them with hyperscalers, colocation operators, developers and the contractors delivering their programmes.' ],
 				],
@@ -1992,7 +2013,7 @@ class Verto_Installer {
 				],
 				// Edison Lux copy doc (Oct 2026), page 1: all four tiles reworded.
 				'features' => [
-					[ 'icon' => 'users',       'title' => "US & EU\nEnergy",             'body' => "It's our speciality. No client brief sits outside our expertise." ],
+					[ 'icon' => 'users',       'title' => "USA & Europe\nEnergy",        'body' => "It's our speciality. No client brief sits outside our expertise." ],
 					[ 'icon' => 'star',        'title' => "Control Room To\nBoardroom",  'body' => 'From Operators, Engineers to all levels of Technical & Sales Leadership.' ],
 					[ 'icon' => 'handshake',   'title' => "World-Class\nNPS",            'body' => 'We capture feedback from every candidate and client interaction to hold ourselves to the highest standard.' ],
 					[ 'icon' => 'trending-up', 'title' => "100% Engaged\nSuccess",       'body' => 'We recognize speed and accuracy are critical. Our approach ensures you do not have to compromise one for the other.' ],
@@ -2011,7 +2032,7 @@ class Verto_Installer {
 				'stats' => [
 					[ 'value' => '100%',                     'label' => 'Success rate on engaged search' ],
 					[ 'value' => 'Control room → Boardroom', 'label' => 'Operator to C-suite coverage' ],
-					[ 'value' => 'US & EU',                  'label' => 'Energy focus, both markets' ],
+					[ 'value' => 'USA & Europe',             'label' => 'Energy focus, both markets' ],
 				],
 				// Round 5, item 3: sector IMAGES on the cards (icons kept) –
 				// interim crops of existing licensed energy assets; the client's
@@ -2084,7 +2105,7 @@ class Verto_Installer {
 						'cta'      => 'Power your career',
 						'hero_eyebrow'  => '',
 						'hero_headline' => "Power your career.\nOn your terms.",
-						'hero_body'     => "We work with major organizations within the US Energy sector, across utilities, independent power producers and OEMs.\n\nBuild your career with Edison Lux and connect with leading employers across the Energy industry, supported by specialists that understand your market.",
+						'hero_body'     => "We work with major organizations within the USA energy sector, across utilities, independent power producers and OEMs.\n\nBuild your career with Edison Lux and connect with leading employers across the Energy industry, supported by specialists that understand your market.",
 					],
 				],
 				// Copy doc page 7: eyebrow gone, "Lived, not learned" gone, the
@@ -2112,12 +2133,12 @@ class Verto_Installer {
 					[ 'value' => 'Control room → Boardroom',    'label' => 'From Operators and Engineers to all levels of Technical & Commercial leadership' ],
 					[ 'value' => 'US & European Energy',        'label' => 'Critical Power, Combined Cycle & Gas, Renewables, Biomass & EFW, Nuclear and EPC' ],
 				],
-				'positioning' => 'Edison Lux delivers talent solutions for the US energy sector – from control room operators and shift supervisors to the directors and C-suite leaders responsible for billion-dollar assets.',
+				'positioning' => 'Edison Lux delivers talent solutions for the USA and European energy sector – from control room operators and shift supervisors to the directors and C-suite leaders responsible for billion-dollar assets.',
 				// Copy doc page 8: eyebrow gone, softer second paragraph.
 				'what_we_do' => [
 					'eyebrow'    => '',
 					'headline'   => 'Embedded in the industries that keep the lights on.',
-					'paragraphs' => "Critical power, combined-cycle and gas generation, renewables and energy transition, biomass and EFW, nuclear, and EPC construction are the areas of US energy we know inside out. Every consultant is embedded in the sector with dedicated niches.\n\nFor plant owners, developers, EPCs, and VPs of engineering, we operate as an extension of your leadership team: discreet, accountable, and focused on long-term partnership.",
+					'paragraphs' => "Critical power, combined-cycle and gas generation, renewables and energy transition, biomass and EFW, nuclear, and EPC construction are the areas of USA and European energy we know inside out. Every consultant is embedded in the sector with dedicated niches.\n\nFor plant owners, developers, EPCs, and VPs of engineering, we operate as an extension of your leadership team: discreet, accountable, and focused on long-term partnership.",
 				],
 				// Copy doc page 9: Proof points → Why clients choose Edison Lux.
 				'proof_eyebrow' => '',
@@ -2126,7 +2147,7 @@ class Verto_Installer {
 					'100% success using Verto Engage, backed by an enhanced candidate guarantee',
 					'World class reviews from within the Energy sector',
 					'Feedback captured from every candidate and client interaction',
-					'US & Europe – no client brief sits outside our knowledge',
+					'USA & Europe – no client brief sits outside our knowledge',
 				],
 				// Copy doc page 4: Meet the desk → Your market, our Specialists.
 				'team_heading' => 'Your market, our Specialists.',
@@ -2145,7 +2166,7 @@ class Verto_Installer {
 				// Copy doc page 12: eyebrow gone, US spellings, merit-led body.
 				'candidates_split' => [
 					'eyebrow' => '',
-					'body'    => "A job posted on LinkedIn gets hundreds of resumes. Working with Edison Lux means your experience is put front and center, presented to the hiring manager to review.\n\nYou get the best representation to the best jobs and employers within US Energy.",
+					'body'    => "A job posted on LinkedIn gets hundreds of resumes. Working with Edison Lux means your experience is put front and center, presented to the hiring manager to review.\n\nYou get the best representation to the best jobs and employers within USA energy.",
 				],
 				/* ── About/Candidates round (Oct 2026, Alex) ── */
 				// Mission/Vision/Purpose: no eyebrow, columns in line (CSS).
@@ -2158,7 +2179,7 @@ class Verto_Installer {
 				// band (Alex asked what should go there instead of solutions).
 				'candidate_process' => [
 					[ 'title' => 'A confidential conversation', 'body' => 'Tell us where you want to go – role, market, comp, relocation. Nothing moves without your say-so, and nothing is shared without your sign-off.' ],
-					[ 'title' => 'Matched to live roles',       'body' => 'Your Specialist maps your experience against live briefs across US & Europe energy – utilities, IPPs, OEMs and EPCs – not a database blast.' ],
+					[ 'title' => 'Matched to live roles',       'body' => 'Your Specialist maps your experience against live briefs across USA & European energy – utilities, IPPs, OEMs and EPCs – not a database blast.' ],
 					[ 'title' => 'Sold before the interview',   'body' => 'We present your experience directly to the hiring manager, then prep you properly – the company, the panel, the plant and the likely questions.' ],
 					[ 'title' => 'Offer to onboarding',         'body' => 'Comp guidance, negotiation, resignation and relocation support, through to your first day – and we stay in touch well after it.' ],
 				],
@@ -2183,21 +2204,26 @@ class Verto_Installer {
 					'line1'  => 'Engineering',
 					'line2'  => "what's next",
 					// Round 4, item 12: US + Europe.
-					'sub'    => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the US and Europe. Every consultant owns one product area.',
+					'sub'    => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns one product area.',
 					'image'  => 'vertek_hero',
-					'alt'    => 'Cable-stayed bridge at night with crimson motion light trails',
+					'alt'    => 'Automated assembly machinery in red and blue machine light',
 					'scale'  => 1.18,
 					'offset' => 0,
+					// Oct 2026: looping hero film, action bottom of frame.
+					'video_mp4'       => 'vertek_hero_mp4',
+					'video_webm'      => 'vertek_hero_webm',
+					'poster'          => 'vertek_hero_poster',
+					'object_position' => 'center bottom',
 				],
 				'features' => [
-					[ 'icon' => 'crosshair',   'title' => 'Product-Owned Desks', 'body' => 'Every consultant owns one product area. Fluid power, HVAC, rotating equipment, automation – no generalists.' ],
-					[ 'icon' => 'bar-chart-3', 'title' => 'Verto Engage',        'body' => 'Our committed model, 100% success rate. Structured process, guaranteed shortlist, get it right first time.' ],
-					[ 'icon' => 'shield',      'title' => '94% Second Hire',     'body' => "Nearly all our clients come back. We're an extension of the commercial team, not a vendor." ],
-					[ 'icon' => 'leaf',        'title' => '14,000+ On CRM',      'body' => "A specialist database of technical sales, service and engineering talent LinkedIn can't surface." ],
+					[ 'icon' => 'crosshair',   'title' => 'Specialists, Not Generalists', 'body' => 'Every consultant specialises in a specific product area – Fluid Power, HVAC, Defense & Advanced Manufacturing, Industrial Automation, CNC & Metalworking and Compressors.' ],
+					[ 'icon' => 'bar-chart-3', 'title' => 'Verto Engage',        'body' => 'Our flagship model with a 100% success rate, an extended candidate guarantee, and the initial fee taken off on a successful hire.' ],
+					[ 'icon' => 'trending-up', 'title' => 'Sales Floor To Shop Floor', 'body' => 'Regional and national sales & service talent, plus the onsite manufacturing, engineering and internal sales teams who deliver.' ],
+					[ 'icon' => 'handshake',   'title' => 'World-Class NPS',     'body' => 'We capture feedback from every candidate and client interaction to hold ourselves to the highest standard.' ],
 				],
 				'about'        => [
 					'headline' => 'One product area, per consultant. Every time.',
-					'mission'  => 'Deliver the right hire, first time – combining a 14,000-strong specialist database with a process refined over years so speed never comes at the cost of quality.',
+					'mission'  => 'Deliver the right hire, first time – combining a deep specialist network with a process refined over years so speed never comes at the cost of quality.',
 					'vision'   => 'To be the firm every VP of Sales, MD and founder in technical sales and engineering reaches out to first – on both sides of the Atlantic.',
 					'purpose'  => "Product knowledge can't be faked. Neither can ours. We exist so that manufacturers and distributors never have to explain their own product to their recruiter – and so that engineers get sold on their merits.",
 				],
@@ -2206,9 +2232,9 @@ class Verto_Installer {
 				'about_image'     => 'vertek_hero',
 				'about_image_alt' => 'Cable-stayed bridge at night with crimson motion light trails',
 				'stats' => [
-					[ 'value' => '14,000+', 'label' => 'Technical sales candidates on CRM' ],
+					[ 'value' => 'USA',     'label' => 'Coverage coast to coast' ],
 					[ 'value' => '100%',    'label' => 'Success rate on Verto Engage' ],
-					[ 'value' => '94%',     'label' => 'Of clients hire with us again' ],
+					[ 'value' => '94%',     'label' => 'Of clients partner with us again' ],
 				],
 				// Round 4, item 12: the client's six named sectors.
 				'specialisms' => [
@@ -2237,7 +2263,7 @@ class Verto_Installer {
 					[ 'tag' => 'client', 'consultant' => 'Gary Hunt', 'attribution' => '', 'quote' => 'Gary understands our business needs and only sent through candidates with relevant experience for the role advertised. All candidates were of a very good standard and resulted in a successful job offer. Timely communication throughout ensured a smooth process from start to finish.' ],
 					[ 'tag' => 'client', 'consultant' => 'Ben Cranston', 'attribution' => '', 'quote' => "Ben went above and beyond hunting down candidates and setting up interviews. Without his detailed knowledge of the Austin talent landscape we wouldn't have been able to make several key hires." ],
 					[ 'tag' => 'client', 'consultant' => 'Sam Parnell', 'attribution' => '', 'quote' => "Sam has been fantastic across the board. We've filled two roles with him since April and are hoping to fill a third in the next few weeks. He's super responsive and has been able to adjust the search as needed. I've already shared his information with a colleague." ],
-					[ 'tag' => 'client', 'consultant' => 'Olivia Pinhorne', 'attribution' => '', 'quote' => "Olivia sorted out some excellent CVs, perfectly matched to the role. She wasn't pushy or irritating like some other agencies. Available when you need her, very pleasant to deal with." ],
+					[ 'tag' => 'client', 'consultant' => 'Olivia Pinhorne', 'attribution' => '', 'quote' => "Olivia sorted out some excellent resumes, perfectly matched to the role. She wasn't pushy or irritating like some other agencies. Available when you need her, very pleasant to deal with." ],
 					[ 'tag' => 'client', 'consultant' => 'Alex Wright', 'attribution' => '', 'quote' => "Alex was a true professional to work with. We were provided with a consistent stream of quality leads without delays. When one candidate didn't work out, the next two or three were in our inbox the next morning." ],
 					[ 'tag' => 'client', 'consultant' => 'Frank Warner', 'attribution' => '', 'quote' => 'Quite simply, it was the diligent way that Frank listened to our needs and sought out candidates that matched our profile. He made himself available, shortlisted and presented good candidates, and has been easy to work with to the point where we have developed a relationship of trust.' ],
 					[ 'tag' => 'client', 'consultant' => 'Lewis Mason', 'attribution' => '', 'quote' => 'We had not worked with Verto before, but Lewis has provided a great service and managed our expectations in a courteous and professional manner. He fulfilled the brief, and we have now secured three candidates – a successful first year working together.' ],
@@ -2258,7 +2284,7 @@ class Verto_Installer {
 					'company' => [
 						'headline' => 'Straightforward. No overpromising. Just the right hire.',
 						'body'     => "Tell us the product, the patch and the profile. We'll tell you honestly whether we can deliver – and then we will. Every consultant specialises by product because our clients and candidates don't generalise either.",
-						'bullets'  => "Verto Engage – our committed model, 100% success rate\nDirect hire across 14,000+ specialist candidates\nTeam builds – land one hire, then scale the function\nFrequent updates, structured briefings, no surprises",
+						'bullets'  => "Verto Engage – our flagship model, 100% success rate\nDirect hire through deep product-specialist networks\nTeam builds – land one hire, then scale the function\nFrequent updates, structured briefings, no surprises",
 						'cta'      => 'Build your team',
 					],
 					'candidate' => [
@@ -2269,7 +2295,7 @@ class Verto_Installer {
 					],
 				],
 				'about_hero' => [ 'pre' => 'Product knowledge,', 'accent' => 'one desk at a time.', 'post' => 'Never generalist.' ],
-				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the US and Europe. Every consultant owns one product area. That's why it works.",
+				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns one product area. That's why it works.",
 				'what_we_do' => [
 					'headline'   => 'Embedded in the industries that build the world.',
 					'paragraphs' => "Fluid power, HVAC, rotating equipment, industrial automation and US advanced manufacturing – these are the industries we know inside out. Every consultant specialises in a product area and stays close enough to add genuine insight to every conversation.\n\nFor VPs of Sales, Managing Directors and Founders, we operate as an extension of the leadership team – discreet, accountable and never transactional.",
@@ -2277,7 +2303,7 @@ class Verto_Installer {
 				'proof' => [
 					'100% success rate on Verto Engage',
 					'94% of clients return for a second hire',
-					'14,000+ specialist sales and engineering candidates on the CRM',
+					'Deep product-specialist networks across sales, service and engineering',
 					'Feedback captured from every candidate and client interaction – then acted on',
 				],
 				'team_focus' => 'Technical sales & engineering search.',
@@ -2319,7 +2345,7 @@ class Verto_Installer {
 					[ 'year' => '2020', 'title' => 'Vertek brand established for sales, service and engineering search' ],
 					[ 'year' => '2022', 'title' => 'US expansion into fluid power, HVAC and rotating equipment' ],
 					[ 'year' => '2024', 'title' => 'Advanced manufacturing practice launched – defence, aerospace, semiconductor, robotics' ],
-					[ 'year' => '2026', 'title' => '14,000+ specialist candidates on the CRM and counting' ],
+					[ 'year' => '2026', 'title' => 'Micro-niche desks across the USA and Europe – and counting' ],
 				],
 				// Round 10: the prototype's invented 'testimonials' array is GONE –
 				// the real curated client_quotes / candidate_quotes above feed the
@@ -2503,6 +2529,7 @@ class Verto_Installer {
 				'image'           => self::media_setting( $media, $c['hero']['poster'] ?? $c['hero']['image'] ),
 				'video_mp4'       => isset( $c['hero']['video_mp4'] ) ? self::media_setting( $media, $c['hero']['video_mp4'] ) : [],
 				'video_webm'      => isset( $c['hero']['video_webm'] ) ? self::media_setting( $media, $c['hero']['video_webm'] ) : [],
+				'object_position' => $c['hero']['object_position'] ?? 'center 35%',
 				'image_alt'       => $c['hero']['alt'],
 				'parallax_scale'  => $c['hero']['scale'],
 				'parallax_offset' => $c['hero']['offset'],
@@ -2631,8 +2658,8 @@ class Verto_Installer {
 		$story = $c['about_story'] ?? [];
 		$about = [
 			self::section( [ self::widget( 'verto-quote-band', [
-				'image'          => self::media_setting( $media, $c['hero']['image'] ),
-				'image_alt'      => $c['hero']['alt'],
+				'image'          => self::media_setting( $media, $c['subhero_image'] ?? $c['hero']['image'] ),
+				'image_alt'      => $c['subhero_alt'] ?? $c['hero']['alt'],
 				'overlay'        => 'hero-left',
 				'pad'            => $c['about_hero']['pad'] ?? 'hero',
 				'parallax_speed' => 0.3,
@@ -2695,7 +2722,7 @@ class Verto_Installer {
 				'cta_text'  => '',
 			] ) ], 'verto-bs vbs-wwd' ),
 			self::section( [ self::widget( 'verto-quote-band', [
-				'image'          => self::media_setting( $media, $c['hero']['image'] ),
+				'image'          => self::media_setting( $media, $c['subhero_image'] ?? $c['hero']['image'] ),
 				'overlay'        => 'mission',
 				'pad'            => 'band',
 				'parallax_speed' => 0.35,
@@ -2768,8 +2795,8 @@ class Verto_Installer {
 		$co      = $c['audiences']['company'];
 		$clients = [
 			self::section( [ self::widget( 'verto-quote-band', [
-				'image'          => self::media_setting( $media, $c['hero']['image'] ),
-				'image_alt'      => $c['hero']['alt'],
+				'image'          => self::media_setting( $media, $c['subhero_image'] ?? $c['hero']['image'] ),
+				'image_alt'      => $c['subhero_alt'] ?? $c['hero']['alt'],
 				'overlay'        => 'hero-left',
 				'pad'            => 'hero',
 				'parallax_speed' => 0.3,
@@ -2831,8 +2858,8 @@ class Verto_Installer {
 		if ( ! empty( $c['case_study'] ) ) {
 			$cs = $c['case_study'];
 			$clients[] = self::section( [ self::widget( 'verto-quote-band', [
-				'image'          => self::media_setting( $media, $c['hero']['image'] ),
-				'image_alt'      => $c['hero']['alt'],
+				'image'          => self::media_setting( $media, $c['subhero_image'] ?? $c['hero']['image'] ),
+				'image_alt'      => $c['subhero_alt'] ?? $c['hero']['alt'],
 				'overlay'        => 'case',
 				'pad'            => 'band',
 				'parallax_speed' => 0.32,
@@ -2893,8 +2920,8 @@ class Verto_Installer {
 		$ca         = $c['audiences']['candidate'];
 		$candidates = [
 			self::section( [ self::widget( 'verto-quote-band', [
-				'image'          => self::media_setting( $media, $c['hero']['image'] ),
-				'image_alt'      => $c['hero']['alt'],
+				'image'          => self::media_setting( $media, $c['subhero_image'] ?? $c['hero']['image'] ),
+				'image_alt'      => $c['subhero_alt'] ?? $c['hero']['alt'],
 				'overlay'        => 'hero-right',
 				'pad'            => 'hero',
 				'align'          => 'right',
@@ -2919,7 +2946,7 @@ class Verto_Installer {
 				// Edison copy doc page 12: eyebrow gone, US-English merit copy.
 				'eyebrow'   => $c['candidates_split']['eyebrow'] ?? 'Represented properly',
 				'headline'  => 'Sold on your merits.',
-				'body'      => $c['candidates_split']['body'] ?? "A job posted on LinkedIn gets hundreds of CVs. Working with $name means you and your experience are put front and centre – sold to the hiring manager before your first interview.\n\nWe only call when there's a role genuinely worth your time. Honest feedback, no fluff, no promises we can't deliver.",
+				'body'      => $c['candidates_split']['body'] ?? "A job posted on LinkedIn gets hundreds of resumes. Working with $name means you and your experience are put front and centre – sold to the hiring manager before your first interview.\n\nWe only call when there's a role genuinely worth your time. Honest feedback, no fluff, no promises we can't deliver.",
 				// Round 9, item 18: sector imagery (matching the What-we-cover
 				// cards) instead of the repeated hero image.
 				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_03', 'vertek' => 'insight_hvac', 'modulr' => 'insight_architecture' ][ $brand ] ?? $c['hero']['image'] ),
@@ -2944,7 +2971,7 @@ class Verto_Installer {
 				'brand'        => $brand,
 				'source'       => 'client',
 				'list_eyebrow' => 'Live roles',
-				'heading'      => 'edison-lux' === $brand ? 'Live roles in US & European Energy.' : 'Live roles in Architecture & Data Centres.',
+				'heading'      => 'edison-lux' === $brand ? 'Live roles in USA & European energy.' : 'Live roles in Architecture & Data Centres.',
 				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Apply direct, or start a conversation below.',
 			] ) ], 'verto-bs vbs-vacancies' ) : $vacancies,
 		];

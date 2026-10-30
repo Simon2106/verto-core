@@ -631,6 +631,10 @@ class Verto_Vincere {
 		// Field lists in decreasing richness – an unknown field name makes the
 		// search endpoint 400 (QUERY_PARSE_FAIL), so thinner tiers follow.
 		$field_tiers = apply_filters( 'verto/vincere/field_tiers', [
+			// Oct 2026 (Alex's advert spec): salary on the advert – richest
+			// tier asks for the pay fields too; if the tenant rejects any of
+			// them the ladder simply steps down.
+			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,salary_from,salary_to,salary_type,currency',
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners',
 			'id,job_title,public_description,job_type,open_date,closed_date,company,location',
 			'id,job_title,public_description,closed_date',
@@ -901,11 +905,39 @@ class Verto_Vincere {
 		}
 
 		$owner_email = '';
+		$owner_name  = '';
 		if ( isset( $item['owners'] ) && is_array( $item['owners'] ) ) {
 			$first = reset( $item['owners'] );
-			if ( is_array( $first ) && ! empty( $first['email'] ) && is_string( $first['email'] ) ) {
-				$owner_email = sanitize_email( $first['email'] );
+			if ( is_array( $first ) ) {
+				if ( ! empty( $first['email'] ) && is_string( $first['email'] ) ) {
+					$owner_email = sanitize_email( $first['email'] );
+				}
+				// Oct 2026 (Alex's advert spec): "maybe the consultant for it".
+				foreach ( [ 'full_name', 'name', 'first_name' ] as $nk ) {
+					if ( ! empty( $first[ $nk ] ) && is_string( $first[ $nk ] ) ) {
+						$owner_name = sanitize_text_field( $first[ $nk ] );
+						break;
+					}
+				}
 			}
+		}
+
+		// Oct 2026 (Alex's advert spec): salary line when the tenant returns
+		// the pay fields (requested in the richest field tier).
+		$salary   = '';
+		$sal_from = self::field_text( $item['salary_from'] ?? '' );
+		$sal_to   = self::field_text( $item['salary_to'] ?? '' );
+		$currency = self::field_text( $item['currency'] ?? '' );
+		$sal_type = self::field_text( $item['salary_type'] ?? '' );
+		if ( '' !== $sal_from || '' !== $sal_to ) {
+			$fmt    = static fn( $n ) => is_numeric( $n ) ? number_format( (float) $n ) : $n;
+			$salary = trim(
+				( $currency ? $currency . ' ' : '' )
+				. ( '' !== $sal_from ? $fmt( $sal_from ) : '' )
+				. ( '' !== $sal_from && '' !== $sal_to ? '–' : '' )
+				. ( '' !== $sal_to ? $fmt( $sal_to ) : '' )
+				. ( $sal_type ? ' ' . strtolower( str_replace( '_', ' ', $sal_type ) ) : '' )
+			);
 		}
 
 		$apply_base = trim( (string) $settings['apply_base'] );
@@ -922,6 +954,8 @@ class Verto_Vincere {
 			'job_type'    => implode( ' · ', array_unique( $type_bits ) ),
 			'apply_url'   => $apply_url,
 			'owner_email' => $owner_email,
+			'owner_name'  => $owner_name,
+			'salary'      => $salary,
 			'internal'    => $internal,
 		];
 	}
@@ -1008,13 +1042,63 @@ class Verto_Vincere {
 			'_job_type'    => $job['job_type'],
 			'_apply_url'   => $job['apply_url'],
 			'_owner_email' => $job['owner_email'],
+			'_owner_name'  => $job['owner_name'] ?? '',
+			'_salary'      => $job['salary'] ?? '',
 			'_internal'    => $job['internal'] ? '1' : '0',
 			'_active'      => '1',
 		];
 		foreach ( $meta as $key => $value ) {
 			update_post_meta( $post_id, $key, $value );
 		}
+		// Oct 2026 (Alex): brand tagging now lives in the position's "website
+		// sector" CUSTOM FIELD – one extra lookup per client job.
+		self::apply_sector_custom_field( $post_id, $job );
 		return true;
+	}
+
+	/**
+	 * Oct 2026: the client tags each advertised job's brand in a Vincere
+	 * POSITION CUSTOM FIELD called "website sector" (values like 'edison
+	 * lux'). Custom fields aren't in the search payload, so client jobs get
+	 * one extra GET /position/{id}/customfields. The lookup runs once per
+	 * job (flagged in meta) and re-runs on later syncs only while the job is
+	 * still unmapped (brand 'verto'), so a tag added in Vincere after the
+	 * first sync is picked up within the hour. Throttled well under the
+	 * 10-req/s API limit; internal desk seats are skipped.
+	 */
+	private static function apply_sector_custom_field( $post_id, array $job ) {
+		if ( ! empty( $job['internal'] ) ) {
+			return;
+		}
+		$checked = (string) get_post_meta( $post_id, '_sector_cf_checked', true );
+		$brand   = (string) get_post_meta( $post_id, '_brand', true );
+		if ( $checked && 'verto' !== $brand && '' !== $brand ) {
+			return; // already resolved to a real brand
+		}
+		$json = self::api_get( 'position/' . rawurlencode( $job['vincere_id'] ) . '/customfields' );
+		update_post_meta( $post_id, '_sector_cf_checked', '1' );
+		usleep( 150000 ); // ~6 req/s worst case – inside Vincere's limits
+		if ( is_wp_error( $json ) || ! is_array( $json ) ) {
+			return;
+		}
+		$rows = $json['data'] ?? ( $json['items'] ?? $json );
+		foreach ( (array) $rows as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$name = strtolower( self::field_text( $row['name'] ?? ( $row['key'] ?? ( $row['field_name'] ?? '' ) ) ) );
+			if ( false === strpos( $name, 'sector' ) && false === strpos( $name, 'website' ) ) {
+				continue;
+			}
+			$value = self::field_text( $row['field_value'] ?? ( $row['field_values'] ?? ( $row['value'] ?? ( $row['values'] ?? '' ) ) ) );
+			if ( '' === $value ) {
+				continue;
+			}
+			$settings = self::settings();
+			update_post_meta( $post_id, '_brand', self::map_brand( $value, (string) $settings['brand_map'], false ) );
+			update_post_meta( $post_id, '_brand_raw', $value );
+			break;
+		}
 	}
 
 	/** Draft + flag jobs no longer present in the feed. Returns count. */
@@ -1094,7 +1178,11 @@ class Verto_Vincere {
 		foreach ( $posts as $post ) {
 			// Package line: explicit _package (installer-seeded standing jobs)
 			// beats the synced _job_type ("Permanent · Full Time" etc.).
-			$package = (string) get_post_meta( $post->ID, '_package', true );
+			// Oct 2026 (advert spec): salary beats the job-type line when synced.
+			$package = (string) get_post_meta( $post->ID, '_salary', true );
+			if ( '' === $package ) {
+				$package = (string) get_post_meta( $post->ID, '_package', true );
+			}
 			if ( '' === $package ) {
 				$package = (string) get_post_meta( $post->ID, '_job_type', true );
 			}
@@ -1150,7 +1238,11 @@ class Verto_Vincere {
 			'no_found_rows'  => true,
 		] );
 		foreach ( $posts as $post ) {
-			$package = (string) get_post_meta( $post->ID, '_package', true );
+			// Oct 2026 (advert spec): salary beats the job-type line when synced.
+			$package = (string) get_post_meta( $post->ID, '_salary', true );
+			if ( '' === $package ) {
+				$package = (string) get_post_meta( $post->ID, '_package', true );
+			}
 			if ( '' === $package ) {
 				$package = (string) get_post_meta( $post->ID, '_job_type', true );
 			}

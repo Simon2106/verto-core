@@ -38,10 +38,16 @@ $verto_job_title   = get_the_title( $verto_job );
 $verto_job_brand   = (string) get_post_meta( $verto_job->ID, '_brand', true );
 $verto_job_loc     = (string) get_post_meta( $verto_job->ID, '_location', true );
 $verto_job_level   = (string) get_post_meta( $verto_job->ID, '_level', true );
-$verto_job_package = (string) get_post_meta( $verto_job->ID, '_package', true );
+// Oct 2026 (advert spec): the synced salary line beats the job-type line.
+$verto_job_package = (string) get_post_meta( $verto_job->ID, '_salary', true );
+if ( '' === $verto_job_package ) {
+	$verto_job_package = (string) get_post_meta( $verto_job->ID, '_package', true );
+}
 if ( '' === $verto_job_package ) {
 	$verto_job_package = (string) get_post_meta( $verto_job->ID, '_job_type', true );
 }
+// Oct 2026 (advert spec): "maybe the consultant for it".
+$verto_job_owner = (string) get_post_meta( $verto_job->ID, '_owner_name', true );
 if ( '' === $verto_job_package ) {
 	$verto_job_package = 'Competitive package';
 }
@@ -160,6 +166,10 @@ get_header();
 				<span class="line-mask"><span class="line-inner"><?php echo esc_html( $verto_job_title ); ?></span></span>
 			</h1>
 			<p class="verto-jobhero__package"><?php echo esc_html( $verto_job_package ); ?></p>
+			<?php if ( '' !== $verto_job_owner ) : ?>
+				<?php // Oct 2026 (advert spec): the consultant running the search. ?>
+				<p class="verto-jobhero__owner">Your consultant: <?php echo esc_html( $verto_job_owner ); ?></p>
+			<?php endif; ?>
 			<div class="verto-jobhero__ctas">
 				<?php if ( $verto_job_open ) : ?>
 					<a class="btn-base verto-jobhero__apply" href="#apply">Apply for this role</a>
