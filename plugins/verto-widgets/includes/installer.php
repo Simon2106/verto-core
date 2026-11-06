@@ -2357,13 +2357,7 @@ class Verto_Installer {
 					[ 'title' => 'Product knowledge, non-negotiable.',
 					  'body'  => "Every consultant specialises in a product area. We don't generalise across engineering because our clients and candidates don't – and neither should we." ],
 				],
-				'journey' => [
-					[ 'year' => '2011', 'title' => 'Founded in technical sales – the roots of the Verto Group' ],
-					[ 'year' => '2020', 'title' => 'Vertek brand established for sales, service and engineering search' ],
-					[ 'year' => '2022', 'title' => 'US expansion into fluid power, HVAC and rotating equipment' ],
-					[ 'year' => '2024', 'title' => 'Advanced manufacturing practice launched – defence, aerospace, semiconductor, robotics' ],
-					[ 'year' => '2026', 'title' => 'Micro-niche desks across the USA and Europe – and counting' ],
-				],
+				// Nov 2026 (Alex): journey timeline removed from the Vertek About.
 				// Round 10: the prototype's invented 'testimonials' array is GONE –
 				// the real curated client_quotes / candidate_quotes above feed the
 				// Clients and Candidates page bands for every brand now.
@@ -2451,9 +2445,11 @@ class Verto_Installer {
 			'cta_link'  => [ 'url' => '/clients#contact' ],
 			'side_text' => '',
 			'items'     => [
+				// Nov 2026 (Alex): Engage card carries the same selling points
+				// as the brand tiles – guarantee + fee offset up front.
 				[ '_id' => self::eid(), 'title' => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
-				  'body' => 'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement.',
-				  'bullets' => "Maximum visibility\nBetter fill rates\nFewer offer rejections" ],
+				  'body' => 'Our flagship model, with a 100% success rate. An exclusive engagement, a fully managed process tailored to your systems, and co-branded adverts promoted to our 35,000 LinkedIn followers.',
+				  'bullets' => "Extended candidate guarantee\nInitial fee taken off on a successful hire\nBetter fill rates, fewer offer rejections" ],
 				[ '_id' => self::eid(), 'title' => 'Exclusive', 'kicker' => 'One search, one partner',
 				  'body' => 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.',
 				  'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage" ],
@@ -2738,8 +2734,8 @@ class Verto_Installer {
 		// Round 9, item 13: Edison's "What we do today" drops the stock
 		// clouds/office photo for sector (plant) imagery from the licensed set.
 		// Oct 2026 (Alex, ModulR round): ModulR's clouds photo → data centre.
-		$wwd_img = [ 'edison-lux' => 'spec_edison_02', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? 'about_image';
-		$wwd_alt = [ 'edison-lux' => 'A combined-cycle gas plant – the market Edison Lux staffs', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? 'A specialist team at work';
+		$wwd_img = [ 'edison-lux' => 'spec_edison_02', 'modulr' => 'modulr_datacentre', 'vertek' => 'insight_manufacturing' ][ $brand ] ?? 'about_image';
+		$wwd_alt = [ 'edison-lux' => 'A combined-cycle gas plant – the market Edison Lux staffs', 'modulr' => 'Data centre corridor lined with server racks', 'vertek' => 'Precision machinery on an advanced manufacturing line' ][ $brand ] ?? 'A specialist team at work';
 		$about_tail = [
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',

@@ -3,14 +3,14 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.22.23
+ * Version: 0.22.24
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.22.23' );
+define( 'VERTO_WIDGETS_VERSION', '0.22.24' );
 
 /**
  * Compact services band for the brand sites: the FOUR Verto engagement
@@ -22,7 +22,7 @@ define( 'VERTO_WIDGETS_VERSION', '0.22.23' );
  */
 function verto_services_band_html(): string {
 	$models = [
-		[ 'Verto Engage', 'A true partnership',           'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement. Maximum visibility, better fill rates, fewer offer rejections.', 'Our flagship' ],
+		[ 'Verto Engage', 'A true partnership',           'Our flagship model, with a 100% success rate: an exclusive engagement, a fully managed process, co-branded adverts to our 35,000 LinkedIn followers, an extended candidate guarantee, and the initial fee taken off on a successful hire.', 'Our flagship' ],
 		[ 'Exclusive',    'One search, one partner',      'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.', '' ],
 		[ 'Contingent',   'The classic model',            'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.', '' ],
 		[ 'Contract',     'Interim & project specialists','Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.', '' ],
