@@ -70,7 +70,8 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 				return 'team' === $tier ? in_array( $t, [ 'team', 'ops' ], true ) : $t === $tier;
 			} ) );
 		}
-		$rank = [ 'leadership' => 0, 'management' => 1, 'ops' => 2, 'team' => 2 ];
+		// Nov 2026 (Alex): ops sit AFTER the consultants in The team section.
+		$rank = [ 'leadership' => 0, 'management' => 1, 'team' => 2, 'ops' => 3 ];
 		usort( $posts, static function ( $a, $b ) use ( $rank, $tier_of ) {
 			$d = ( $rank[ $tier_of( $a->ID ) ] ?? 2 ) <=> ( $rank[ $tier_of( $b->ID ) ] ?? 2 );
 			if ( $d ) return $d;
@@ -116,6 +117,8 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 								<div class="vbs-team__overlay" style="background:linear-gradient(180deg, color-mix(in oklab, var(--brand) 0%, transparent) 30%, color-mix(in oklab, var(--brand) 85%, #000) 100%);color:var(--brand-foreground, #fff);">
 									<div class="vbs-team__name"><?php the_title(); ?></div>
 									<div class="vbs-team__role"><?php echo esc_html( $role ); ?></div>
+									<?php $vbs_li = (string) get_post_meta( get_the_ID(), '_verto_linkedin', true ); ?>
+									<?php if ( '' !== $vbs_li ) : ?><a class="vbs-team__linkedin" href="<?php echo esc_url( $vbs_li ); ?>" target="_blank" rel="noopener">LinkedIn &rarr;</a><?php endif; ?>
 									<?php if ( $s['focus_text'] ) : ?><p class="vbs-team__focus"><?php echo esc_html( $s['focus_text'] ); ?></p><?php endif; ?>
 								</div>
 							</div>

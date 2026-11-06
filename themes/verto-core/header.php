@@ -57,7 +57,8 @@ if ( $verto_is_brand_site ) {
 		<?php if ( $verto_is_brand_site ) : ?>
 			<a class="verto-header__cta verto-header__cta--brand" href="<?php echo esc_url( home_url( '/clients' ) ); ?>">Our Solutions</a>
 		<?php else : ?>
-			<a class="verto-header__cta" href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Join us</a>
+			<?php // Nov 2026 (Alex): the group header button goes to Careers. ?>
+		<a class="verto-header__cta" href="<?php echo esc_url( home_url( '/careers' ) ); ?>">Join us</a>
 		<?php endif; ?>
 		<button class="verto-header__burger" aria-label="Toggle menu" aria-expanded="false" onclick="document.body.classList.toggle('verto-nav-open');this.setAttribute('aria-expanded',document.body.classList.contains('verto-nav-open'))">
 			<span></span><span></span><span></span>

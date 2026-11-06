@@ -200,3 +200,20 @@ confidence – short descriptions so Alex can name them by reply:
   schema change; flag if wanted.
 - Edison specialism images: Power Generation -> turbine machinery close-up,
   Biomass/EFW -> dusk plant chimney (both from the existing licensed set).
+
+## Round 15 notes (Nov 2026)
+
+- Martin's ModulR photo examples include a branded Sabey data centre facility:
+  unknown licence + a third-party logo on the building. Treated as DIRECTION
+  only; chase licensed construction/data-centre-build photography (or crop-safe
+  originals) before using.
+- ModulR hero film: Alex wants a construction/crane alternative - Simon
+  sourcing.
+- Team LinkedIn links: support is live (custom field _verto_linkedin on each
+  Team post). Need the actual profile URLs from Alex to populate.
+- Verto feedback email item "Change [screenshot]" came with an image too small
+  to read - ask Alex what that first item referred to.
+- Footprint email said "Remove the US ... Add" and the sentence was cut off -
+  US suffixes removed; ask Alex what he wanted to ADD.
+- Megan Grant + Louis Fuller retired from the roster per Alex (unpublished on
+  next Rebuild, not deleted).

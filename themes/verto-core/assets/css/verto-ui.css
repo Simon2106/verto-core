@@ -2274,3 +2274,63 @@ body.verto-brand-edison-lux .vbs-team .vbs-team__card {
 
 /* Job detail: consultant line under the package (Oct 2026 advert spec). */
 .verto-jobhero__owner { margin-top: 0.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.75; }
+
+/* ── Round 15 (Nov 2026): ModulR deep round + group/Edison fixes ── */
+/* Dark brands: sections that contain a muted band paint the whole section,
+   killing the "black line" slivers of body background around them – and
+   doubling as the colour-blocking Alex asked for (vacancies / four models /
+   team / services sit on the deeper panel navy). */
+body.verto-brand-modulr section:has(.verto-jobs-compact),
+body.verto-brand-vertek section:has(.verto-jobs-compact),
+body.verto-brand-modulr section:has(.vbs-team),
+body.verto-brand-vertek section:has(.vbs-team),
+body.verto-brand-modulr section:has(.vbs-proof),
+body.verto-brand-vertek section:has(.vbs-proof),
+body.verto-brand-modulr section:has(.vbs-rail),
+body.verto-brand-vertek section:has(.vbs-rail),
+body.verto-brand-modulr section:has(.verto-services),
+body.verto-brand-vertek section:has(.verto-services) { background: var(--muted); }
+/* Feedback cards: stronger lift off the dark ground. */
+body.verto-brand-modulr .vbs-quote-l,
+body.verto-brand-vertek .vbs-quote-l { background: color-mix(in oklab, #fff 11%, var(--background)); box-shadow: inset 2px 0 0 var(--brand), 0 18px 40px -22px rgba(0,0,0,0.6); }
+/* ModulR about hero: stat card tops align with the copy, and the hero image
+   shows the subject rather than sky. */
+@media (min-width: 1024px) {
+	body.verto-brand-modulr .vbs-band__inner:has(.vbs-band__stat--lg) { align-items: flex-start; }
+	body.verto-brand-modulr .vbs-band__inner:has(.vbs-band__stat--lg) .vbs-band__stat--lg { margin-top: 0.5rem; }
+}
+body.verto-brand-modulr .vbs-band .verto-parallax img { object-position: center 70%; }
+/* Team strip hover: type scales with the smaller one-line cards. */
+body.verto-brand-modulr .vbs-team__overlay .vbs-team__name { font-size: 0.9375rem; line-height: 1.3; }
+body.verto-brand-modulr .vbs-team__overlay .vbs-team__role { font-size: 9px; letter-spacing: 0.14em; }
+body.verto-brand-modulr .vbs-team__overlay .vbs-team__focus { display: none; }
+/* Team LinkedIn link (renders when _verto_linkedin is set on the person). */
+.vbs-team__linkedin { display: inline-block; margin-top: 0.5rem; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+/* Subpage hero images drift slowly (the "movement like Edison" ask) –
+   a gentle Ken Burns on the quote-band heroes, brand sites only. */
+@media (prefers-reduced-motion: no-preference) {
+	body[class*="verto-brand-"] .vbs-band__inner--hero ~ * {}
+	body.verto-brand-modulr .vbs-band > .verto-parallax img,
+	body.verto-brand-vertek .vbs-band > .verto-parallax img,
+	body.verto-brand-edison-lux .vbs-band > .verto-parallax img { animation: vbsDrift 26s ease-in-out infinite alternate; }
+}
+@keyframes vbsDrift { from { transform: scale(1); } to { transform: scale(1.07); } }
+/* Four-models CTA under the cards. */
+.vbs-rail__cta { margin-top: 2.5rem; text-align: center; }
+/* ModulR what-we-do panel: logo above the headline. */
+.vbs-asplit__logo { height: 2.25rem; width: auto; margin-bottom: 1.25rem; display: block; }
+/* Edison "One industry. Energy.": the intro sits on the shared content grid
+   so the heading lines up with every other headline. */
+@media (min-width: 1024px) {
+	body.verto-brand-edison-lux .vbs-desks .verto-intro { max-width: 80rem; margin-inline: auto; }
+}
+/* Group About opening: the two paragraphs sit side by side, filling the dead
+   space to the right. */
+body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body { display: inline-block; width: 46%; vertical-align: top; margin-right: 3%; }
+/* Group About thesis: a touch more air between the text blocks, lead line up. */
+.verto-prose p { margin-bottom: 1.5em; }
+.verto-prose p:first-child { font-size: 1.125em; }
+
+/* ModulR hero film (Nov 2026): a touch more ink on the left so the headline
+   reads over the aerial footage. */
+body.verto-brand-modulr .vbs-hero__wash { background: linear-gradient(90deg, var(--ink) 18%, color-mix(in oklab, var(--ink) 72%, transparent) 46%, transparent 78%); }

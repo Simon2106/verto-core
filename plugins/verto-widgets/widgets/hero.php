@@ -57,8 +57,8 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 			'label' => 'Stats', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $srep->get_controls(), 'title_field' => '{{{ value }}}{{{ suffix }}} – {{{ label }}}',
 			'default' => [
-				[ 'value' => '40', 'suffix' => '%', 'label' => "Commission – one of the market's best splits" ],
-				[ 'value' => 'Equity', 'suffix' => '', 'label' => 'Share scheme – everyone owns a piece' ],
+				[ 'value' => '40', 'suffix' => '%', 'label' => "Commission, one of the market's best splits" ],
+				[ 'value' => 'Equity', 'suffix' => '', 'label' => 'Share scheme' ],
 				[ 'value' => '2', 'suffix' => '×', 'label' => 'Holiday incentives every year' ],
 				// Round 5, item 9: client wants "US" only (was "UK · US").
 				[ 'value' => 'US', 'suffix' => '', 'label' => 'International relocation opportunities' ],

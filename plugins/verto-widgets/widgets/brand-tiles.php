@@ -44,7 +44,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 			'label' => 'Tiles', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ name }}}',
 			'default' => [
-				[ 'name' => 'Edison Lux', 'focus' => 'US Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
+				[ 'name' => 'Edison Lux', 'focus' => 'Energy Staffing', 'color' => '#2B8EE5', 'bg' => '#0B1A2B',
 				  // Round 9, item 9: Edison tile runs on the brand navy with
 				  // Electric Blue accents (guidelines) – the white face is gone.
 				  'face_gradient' => 'radial-gradient(58% 52% at 88% 8%, rgba(60,199,55,0.38), transparent 66%), radial-gradient(62% 56% at 6% 94%, rgba(43,142,229,0.42), transparent 66%), #0B1A2B',
@@ -108,7 +108,8 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 					</div>
 					<div class="verto-tile__face verto-tile__face--back" style="background:<?php echo esc_attr( $bg ); ?>;">
 						<div class="verto-tile__stripe" style="background:<?php echo esc_attr( $color ); ?>;"></div>
-						<div class="verto-tile__kicker" style="color:<?php echo esc_attr( $color ); ?>;"><?php echo esc_html( $t['focus'] ); ?></div>
+						<?php // Nov 2026 (Alex): the hover face no longer repeats the
+					// focus line – the front face carries it. ?>
 						<?php if ( ! empty( $t['logo']['url'] ) ) : /* round 9, item 9 – the brand LOGO heads the hover face too */ ?>
 							<img class="verto-tile__namelogo<?php echo ( $t['invert_logo'] ?? '' ) === 'yes' ? ' verto-tile__logo--invert' : ''; ?>" src="<?php echo esc_url( $t['logo']['url'] ); ?>" alt="<?php echo esc_attr( $t['name'] ); ?>" loading="lazy" />
 						<?php elseif ( ! empty( $t['name_gradient'] ) ) : /* round 4, item 4 */ ?>

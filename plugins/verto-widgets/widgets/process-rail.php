@@ -41,6 +41,8 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 		] );
 		$this->add_control( 'eyebrow', [ 'label' => 'Eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Hiring solutions' ] );
 		$this->add_control( 'heading', [ 'label' => 'Heading (line breaks kept)', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'rows' => 2, 'default' => "Sized to the project.\nBuilt for the market." ] );
+		$this->add_control( 'cta_text', [ 'label' => 'CTA under the cards (row4, optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'cta_link', [ 'label' => 'CTA link', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->add_control( 'side_text', [ 'label' => 'Right-hand intro paragraph (optional)', 'type' => \Elementor\Controls_Manager::TEXTAREA,
 			'default' => "We construct a tailored hiring plan to meet your requirements – whether you're filling one role or building an entire commercial team." ] );
 		$rep = new \Elementor\Repeater();
@@ -162,6 +164,10 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 							</div>
 						<?php endforeach; ?>
 					</div>
+					<?php // Nov 2026 (Alex): optional CTA under the four models. ?>
+					<?php if ( $flat && ! empty( $s['cta_text'] ) ) : ?>
+						<div class="vbs-rail__cta"><a class="btn-base btn-primary" href="<?php echo esc_url( $s['cta_link']['url'] ?? '#' ); ?>"><?php echo esc_html( $s['cta_text'] ); ?></a></div>
+					<?php endif; ?>
 				<?php endif; ?>
 			</div>
 		</div>

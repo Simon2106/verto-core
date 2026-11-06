@@ -124,6 +124,10 @@ class Verto_Widget_About_Split extends \Elementor\Widget_Base {
 			?>
 			<div class="vbs-asplit__copywrap"<?php echo $is_panel && $s['panel_bg'] ? ' style="background:' . esc_attr( $s['panel_bg'] ) . ';"' : ''; ?>>
 				<div class="vbs-asplit__copy">
+					<?php // Nov 2026 (ModulR): panel variant can carry the brand logo. ?>
+					<?php if ( $is_panel && ! empty( $s['logo']['url'] ) ) : ?>
+						<img class="vbs-asplit__logo" src="<?php echo esc_url( $s['logo']['url'] ); ?>" alt="" loading="lazy" />
+					<?php endif; ?>
 					<?php if ( $s['eyebrow'] ) : ?>
 						<div class="vbs-asplit__kick">
 							<span class="vbs-dash" style="background:var(--brand);"></span>
