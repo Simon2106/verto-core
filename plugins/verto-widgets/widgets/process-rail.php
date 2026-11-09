@@ -51,14 +51,22 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 		$rep->add_control( 'badge', [ 'label' => 'Badge (e.g. "Our flagship" – marks the lead card)', 'type' => \Elementor\Controls_Manager::TEXT ] );
 		$rep->add_control( 'body', [ 'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
 		$rep->add_control( 'bullets', [ 'label' => 'Bullets (one per line)', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
+		// Round 17 (Nov 2026, Alex/Dan): headed USP pairs – "Label | text" per
+		// line, rendered as a bold label with its own description underneath
+		// (the Engage / Contract service-table breakdown).
+		$rep->add_control( 'usps', [ 'label' => 'USPs ("Label | text" per line)', 'type' => \Elementor\Controls_Manager::TEXTAREA ] );
 		$this->add_control( 'items', [
 			'label' => 'Steps', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ title }}}',
+			// Round 17 (Nov 2026, Alex/Dan): Engage carries the USP breakdown,
+			// Contract the generic contractor copy, Contingent drops "The
+			// classic model" and moves to the end.
 			'default' => [
 				[
 					'title'   => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
-					'body'    => 'Engage puts your business in the spotlight: co-branded adverts promoted to our 35,000 LinkedIn followers, a fully structured and managed recruitment process tailored to your systems, and a six-month candidate guarantee with free replacement.',
-					'bullets' => "Maximum visibility\nBetter fill rates\nFewer offer rejections",
+					'body'    => '',
+					'bullets' => '',
+					'usps'    => "Performance Guarantee | We commit to delivering qualified, interview-ready talent. 100% success rate – our most certain hiring option.\nReplacement Guarantee | 6 months of protection on every successful placement.\nShared Commitment | An upfront engagement secures dedicated resources, priority delivery and a committed search partnership.\nCo-Branded Adverts | Leverage our network with your branding. Wider reach with quality results.",
 				],
 				[
 					'title'   => 'Exclusive', 'kicker' => 'One search, one partner',
@@ -66,14 +74,15 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 					'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage",
 				],
 				[
-					'title'   => 'Contingent', 'kicker' => 'The classic model',
-					'body'    => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
-					'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on",
+					'title'   => 'Contract', 'kicker' => 'Interim & project specialists',
+					'body'    => 'Providing skilled contractors and interim professionals to support business-critical operations, project delivery and changing workforce demands.',
+					'bullets' => '',
+					'usps'    => "Rapid Deployment | Skilled professionals ready when you need them.\nSpecialist Expertise | Access to experienced technical, engineering and commercial talent.\nFlexible Solutions | Supporting projects, interim cover and peaks in demand.\nCompliant Engagement | Reliable contractor management and payroll solutions.",
 				],
 				[
-					'title'   => 'Contract', 'kicker' => 'Interim & project specialists',
-					'body'    => 'Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.',
-					'bullets' => "Compliantly engaged\nReady fast\nProjects, cover and peaks",
+					'title'   => 'Contingent', 'kicker' => '',
+					'body'    => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
+					'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on",
 				],
 			],
 		] );
@@ -148,10 +157,28 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 										<div class="<?php echo $is3 ? 'vbs-rail__num3' : 'vbs-rail__num'; ?>" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></div>
 									<?php endif; ?>
 								<?php endif; ?>
+								<?php // Round 17 (Nov 2026, Alex): row4 wraps the title/badge/kicker in a
+								// fixed-height head so the paragraphs below all start in line. ?>
+								<?php if ( $row4 ) : ?><div class="vbs-card__head"><?php endif; ?>
 								<h3 class="<?php echo $is3 ? 'vbs-rail__title3' : 'vbs-rail__title4'; ?>"><?php echo esc_html( $it['title'] ); ?></h3>
 								<?php if ( $badge && $row4 ) : ?><span class="vbs-card__badge vbs-card__badge--inline"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
 								<?php if ( $it['kicker'] ) : ?><p class="vbs-rail__kicker"><?php echo esc_html( $it['kicker'] ); ?></p><?php endif; ?>
-								<p class="<?php echo $is3 ? 'vbs-rail__body3' : 'vbs-rail__body'; ?>"><?php echo esc_html( $it['body'] ); ?></p>
+								<?php if ( $row4 ) : ?></div><?php endif; ?>
+								<?php if ( trim( (string) $it['body'] ) ) : ?><p class="<?php echo $is3 ? 'vbs-rail__body3' : 'vbs-rail__body'; ?>"><?php echo esc_html( $it['body'] ); ?></p><?php endif; ?>
+								<?php
+								// Round 17: headed USPs ("Label | text" per line).
+								$usps = array_filter( array_map( 'trim', explode( "\n", (string) ( $it['usps'] ?? '' ) ) ) );
+								if ( $usps ) : ?>
+									<div class="vbs-rail__usps">
+										<?php foreach ( $usps as $u ) :
+											$parts = array_map( 'trim', explode( '|', $u, 2 ) ); ?>
+											<div class="vbs-usp">
+												<strong class="vbs-usp__label"><?php echo esc_html( $parts[0] ); ?></strong>
+												<?php if ( ! empty( $parts[1] ) ) : ?><span class="vbs-usp__text"><?php echo esc_html( $parts[1] ); ?></span><?php endif; ?>
+											</div>
+										<?php endforeach; ?>
+									</div>
+								<?php endif; ?>
 								<?php
 								$bullets = array_filter( array_map( 'trim', explode( "\n", (string) $it['bullets'] ) ) );
 								if ( $bullets ) : ?>

@@ -2301,8 +2301,10 @@ class Verto_Installer {
 					'company' => [
 						'headline' => 'Straightforward. No overpromising. Just the right hire.',
 						'body'     => "Tell us the product, the patch and the profile. We'll tell you honestly whether we can deliver – and then we will. Every consultant specialises by product because our clients and candidates don't generalise either.",
-						'bullets'  => "Verto Engage – our flagship model, 100% success rate\nDirect hire through deep product-specialist networks\nTeam builds – land one hire, then scale the function\nFrequent updates, structured briefings, no surprises",
-						'cta'      => 'Build your team',
+						// Nov 2026 (Alex): "Not building anything in vertek – it's
+						// sales, service and manufacturing" – no "build" wording.
+						'bullets'  => "Verto Engage – our flagship model, 100% success rate\nDirect hire through deep product-specialist networks\nSales, service and engineering hires – one role or a whole function\nFrequent updates, structured briefings, no surprises",
+						'cta'      => 'Hire with Vertek',
 					],
 					'candidate' => [
 						'headline' => 'Options, not applications.',
@@ -2434,7 +2436,19 @@ class Verto_Installer {
 	 * --brand token drives the accents; light 'default' background).
 	 * No fees or percentages on the site (CLIENT-NEEDS.md).
 	 */
-	private static function four_models_section( string $bg = 'muted', bool $cta = false ): array {
+	private static function four_models_section( string $bg = 'muted', bool $cta = false, string $brand = 'verto', string $name = 'Verto' ): array {
+		// Round 17 (Nov 2026, Alex/Dan): Engage becomes the four-USP breakdown
+		// (badge "Our flagship" kept); Contract gets Dan's new copy – the
+		// energy-specific version on Edison Lux, the generic one everywhere
+		// else; Contingent loses "The classic model" and moves to the end, so
+		// the order is Engage / Exclusive / Contract / Contingent on all sites.
+		$contract = 'edison-lux' === $brand ? [
+			'body' => 'Providing experienced technical contractors and interim specialists to keep critical power generation assets operating and projects moving.',
+			'usps' => "Rapid Deployment | Specialist talent mobilised to meet critical project timelines.\nIndustry Expertise | Contractors across operations, maintenance, engineering, construction and commissioning.\nFlexible Workforce Solutions | Supporting outages, project delivery, interim leadership and fluctuating workforce demands.\nCompliant Engagement | W2 / 1099 solutions with appropriate employment and payroll arrangements.",
+		] : [
+			'body' => "Providing skilled contractors and interim professionals to support business-critical operations, project delivery and changing workforce demands. From short-term assignments to long-term projects, $name connects businesses with proven talent, quickly and efficiently.",
+			'usps' => "Rapid Deployment | Skilled professionals ready when you need them.\nSpecialist Expertise | Access to experienced technical, engineering and commercial talent.\nFlexible Solutions | Supporting projects, interim cover and peaks in demand.\nCompliant Engagement | Reliable contractor management and payroll solutions.",
+		];
 		return self::section( [ self::widget( 'verto-process-rail', [
 			'layout'    => 'row4',
 			'bg'        => $bg,
@@ -2445,20 +2459,17 @@ class Verto_Installer {
 			'cta_link'  => [ 'url' => '/clients#contact' ],
 			'side_text' => '',
 			'items'     => [
-				// Nov 2026 (Alex): Engage card carries the same selling points
-				// as the brand tiles – guarantee + fee offset up front.
 				[ '_id' => self::eid(), 'title' => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
-				  'body' => 'Our flagship model, with a 100% success rate. An exclusive engagement, a fully managed process tailored to your systems, and co-branded adverts promoted to our 35,000 LinkedIn followers.',
-				  'bullets' => "Extended candidate guarantee\nInitial fee taken off on a successful hire\nBetter fill rates, fewer offer rejections" ],
+				  'body' => '', 'bullets' => '',
+				  'usps' => "Performance Guarantee | We commit to delivering qualified, interview-ready talent. 100% success rate – our most certain hiring option.\nReplacement Guarantee | 6 months of protection on every successful placement.\nShared Commitment | An upfront engagement secures dedicated resources, priority delivery and a committed search partnership.\nCo-Branded Adverts | Leverage our network with your branding. Wider reach with quality results." ],
 				[ '_id' => self::eid(), 'title' => 'Exclusive', 'kicker' => 'One search, one partner',
 				  'body' => 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.',
 				  'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage" ],
-				[ '_id' => self::eid(), 'title' => 'Contingent', 'kicker' => 'The classic model',
+				[ '_id' => self::eid(), 'title' => 'Contract', 'kicker' => 'Interim & project specialists',
+				  'body' => $contract['body'], 'bullets' => '', 'usps' => $contract['usps'] ],
+				[ '_id' => self::eid(), 'title' => 'Contingent', 'kicker' => '',
 				  'body' => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
 				  'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on" ],
-				[ '_id' => self::eid(), 'title' => 'Contract', 'kicker' => 'Interim & project specialists',
-				  'body' => 'Contractors and interim specialists, compliantly engaged and ready fast, for projects, cover and peaks in demand.',
-				  'bullets' => "Compliantly engaged\nReady fast\nProjects, cover and peaks" ],
 			],
 		] ) ], 'verto-bs' );
 	}
@@ -2574,7 +2585,8 @@ class Verto_Installer {
 				'image'     => self::media_setting( $media, 'vertek' === $brand ? 'insight_manufacturing' : $c['about_image'] ),
 				'image_alt' => 'vertek' === $brand ? 'Precision machinery on an advanced manufacturing line' : $c['about_image_alt'],
 				'stats'     => $stats,
-			], 'edison-lux' === $brand ? [
+			// Nov 2026 (Alex): ModulR gets the "Talk to us" button too.
+			], in_array( $brand, [ 'edison-lux', 'modulr' ], true ) ? [
 				'cta_text'  => 'Talk to us',
 				'cta_link'  => [ 'url' => '/clients#contact' ],
 				'cta_style' => 'gradient',
@@ -2646,7 +2658,7 @@ class Verto_Installer {
 			// v0.22.4 (client): the HOME page now carries the FULL four-models
 			// section (replacing the round-6 compact services band here –
 			// About / Candidates / Insights keep the compact band).
-			self::four_models_section( 'muted', true ),
+			self::four_models_section( 'muted', true, $brand, $name ),
 			self::section( [ self::widget( 'verto-audience-cards', [ 'items' => [
 				[ '_id' => self::eid(), 'style' => 'ink', 'kicker' => 'For companies',
 				  'headline' => $c['audiences']['company']['headline'], 'body' => $c['audiences']['company']['body'],
@@ -2808,7 +2820,7 @@ class Verto_Installer {
 		// Oct 2026 (Alex, ModulR round): ModulR's ABOUT carries the full
 		// four-models section ("use what's on the home page services section").
 		if ( 'modulr' === $brand ) {
-			$about[] = self::four_models_section( 'muted', true );
+			$about[] = self::four_models_section( 'muted', true, $brand, $name );
 		} elseif ( 'edison-lux' !== $brand ) {
 			$about[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
 		}
@@ -2881,7 +2893,7 @@ class Verto_Installer {
 			// height, no stagger, accent bars in the brand gradient (row4
 			// layout; --brand-gradient falls back to the flat brand colour).
 			// v0.22.4 (client): simplified head + cards – see four_models_section().
-			self::four_models_section( 'muted', true ),
+			self::four_models_section( 'muted', true, $brand, $name ),
 		];
 		$clients = array_values( array_filter( $clients ) );
 		// Process – horizontal rail with connector line (Vertek-only data).
@@ -2957,7 +2969,9 @@ class Verto_Installer {
 			'brand'    => $brand,
 			'cta_link' => [ 'url' => '#contact' ],
 		] ) ], 'verto-bs' );
-		$clients[] = $contact( 'Talk to us', 'Tell us what you need to build.', $co['bullets'] );
+		// Nov 2026 (Alex): Vertek doesn't "build" anything – sales, service and
+		// manufacturing wording there; the build line stays for ModulR / Edison.
+		$clients[] = $contact( 'Talk to us', 'vertek' === $brand ? 'Tell us who you need to hire.' : 'Tell us what you need to build.', $co['bullets'] );
 		self::upsert_page( 'clients', 'Clients', $clients );
 
 		/* ── CANDIDATES (prototype for-candidates) ── */
