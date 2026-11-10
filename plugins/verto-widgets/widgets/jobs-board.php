@@ -78,12 +78,15 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 	 * no sync has run yet – the placeholder JOBS const is the fallback, so
 	 * the board never renders empty.
 	 */
-	private function live_jobs( string $source = 'internal' ) {
+	private function live_jobs( string $source = 'internal', string $brand = '' ) {
 		$fn = 'client' === $source ? 'verto_vincere_get_client_jobs' : 'verto_vincere_get_jobs';
 		if ( ! function_exists( $fn ) ) {
 			return [];
 		}
-		$jobs = $fn();
+		// Nov 2026: client jobs are brand-scoped in the QUERY – the tenant
+		// holds 2,000+ open client jobs, so filtering after a 100-row window
+		// was silently dropping the tagged ones.
+		$jobs = 'client' === $source ? $fn( $brand ) : $fn();
 		if ( ! is_array( $jobs ) || ! $jobs ) {
 			return [];
 		}
@@ -148,13 +151,13 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$apply = $s['apply_url']['url'] ?? '/contact';
 
 		$source = ( $s['source'] ?? 'internal' ) ?: 'internal';
-		$live   = $this->live_jobs( $source );
 		// Client mode never falls back to the internal placeholders – an empty
 		// board renders nothing until Edison-tagged client jobs exist.
 		$client = 'client' === $source;
 		// Round 9, item 1: optional brand scope (live rows and the
 		// placeholder fallback alike).
 		$brand_scope = sanitize_key( (string) ( $s['brand'] ?? '' ) );
+		$live        = $this->live_jobs( $source, $client ? $brand_scope : '' );
 		if ( '' !== $brand_scope ) {
 			$scope = fn( $rows ) => array_values( array_filter( $rows, fn( $j ) => $brand_scope === ( $j['brand'] ?? '' ) ) );
 			$live  = $scope( $live );

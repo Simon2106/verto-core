@@ -1299,20 +1299,29 @@ class Verto_Vincere {
 	 * behalf of clients (Oct 2026: surfaced on the Edison candidates page).
 	 * Rows shaped exactly like get_jobs().
 	 */
-	public static function get_client_jobs() {
-		static $cache = null;
-		if ( null !== $cache ) {
-			return $cache;
+	public static function get_client_jobs( $brand = '' ) {
+		// Nov 2026 (live data): the tenant holds 2,000+ open client jobs, so
+		// the 100-row window MUST be scoped to the requested brand in the
+		// query itself – filtering after the cut silently dropped tagged jobs.
+		$brand = sanitize_key( (string) $brand );
+		static $cache = [];
+		if ( isset( $cache[ $brand ] ) ) {
+			return $cache[ $brand ];
 		}
-		$cache = [];
+		$meta_query = [
+				[ 'key' => '_active', 'value' => '1' ],
+		];
+		if ( '' !== $brand ) {
+			$meta_query[] = [ 'key' => '_brand', 'value' => $brand ];
+		}
+		$cache[ $brand ] = [];
 		$posts = get_posts( [
 			'post_type'      => self::CPT,
 			'post_status'    => 'publish',
 			'posts_per_page' => 100,
 			'orderby'        => 'date',
 			'order'          => 'DESC',
-			'meta_query'     => [
-				[ 'key' => '_active', 'value' => '1' ],
+			'meta_query'     => array_merge( $meta_query, [
 				[
 					'relation' => 'OR',
 					[ 'key' => '_internal', 'compare' => 'NOT EXISTS' ],
@@ -1323,7 +1332,7 @@ class Verto_Vincere {
 					[ 'key' => '_manual', 'compare' => 'NOT EXISTS' ],
 					[ 'key' => '_manual', 'value' => '1', 'compare' => '!=' ],
 				],
-			],
+			] ),
 			'no_found_rows'  => true,
 		] );
 		foreach ( $posts as $post ) {
@@ -1335,7 +1344,7 @@ class Verto_Vincere {
 			if ( '' === $package ) {
 				$package = (string) get_post_meta( $post->ID, '_job_type', true );
 			}
-			$cache[] = [
+			$cache[ $brand ][] = [
 				'id'          => (int) $post->ID,
 				'title'       => get_the_title( $post ),
 				'brand'       => (string) get_post_meta( $post->ID, '_brand', true ),
@@ -1348,7 +1357,7 @@ class Verto_Vincere {
 				'owner_email' => (string) get_post_meta( $post->ID, '_owner_email', true ),
 			];
 		}
-		return $cache;
+		return $cache[ $brand ];
 	}
 
 	/* ── Admin: page, actions, notices ─────────────────────────────────── */
@@ -1686,8 +1695,8 @@ function verto_vincere_get_jobs() {
  * NOT internal Verto seats and NOT installer-seeded manual roles – the
  * vacancies we advertise on behalf of clients. Same row shape as get_jobs().
  */
-function verto_vincere_get_client_jobs() {
-	return Verto_Vincere::get_client_jobs();
+function verto_vincere_get_client_jobs( $brand = '' ) {
+	return Verto_Vincere::get_client_jobs( $brand );
 }
 
 Verto_Vincere::boot();
