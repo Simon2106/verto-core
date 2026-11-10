@@ -64,3 +64,4 @@ design spec this recreates.
 - Vincere plugin choice + licence, field mapping, internal-vs-client tagging
 - Elementor Pro licence tier
 - Forms plugin for non-job contact forms
+
