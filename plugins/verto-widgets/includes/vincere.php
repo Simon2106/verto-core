@@ -1081,16 +1081,49 @@ class Verto_Vincere {
 		if ( is_wp_error( $json ) || ! is_array( $json ) ) {
 			return;
 		}
+		// Nov 2026 (live data): Vincere returns dropdown selections as option
+		// IDs (field_value_ids like "2"), NOT text – and the loose name match
+		// was also catching unrelated fields. Resolve the "website sector"
+		// definition once (key + id→label map, cached) and translate.
+		$def  = self::sector_field_def();
 		$rows = $json['data'] ?? ( $json['items'] ?? $json );
 		foreach ( (array) $rows as $row ) {
 			if ( ! is_array( $row ) ) {
 				continue;
 			}
-			$name = strtolower( self::field_text( $row['name'] ?? ( $row['key'] ?? ( $row['field_name'] ?? '' ) ) ) );
-			if ( false === strpos( $name, 'sector' ) && false === strpos( $name, 'website' ) ) {
-				continue;
+			if ( '' !== $def['key'] ) {
+				// Exact match on the definition's key – no more false positives.
+				if ( (string) ( $row['key'] ?? '' ) !== $def['key'] ) {
+					continue;
+				}
+			} else {
+				// No definition available: fall back to the old name heuristic.
+				$name = strtolower( self::field_text( $row['name'] ?? ( $row['key'] ?? ( $row['field_name'] ?? '' ) ) ) );
+				if ( false === strpos( $name, 'sector' ) && false === strpos( $name, 'website' ) ) {
+					continue;
+				}
 			}
-			$value = self::field_text( $row['field_value'] ?? ( $row['field_values'] ?? ( $row['value'] ?? ( $row['values'] ?? '' ) ) ) );
+			// Collect the selected value(s) – ids or text, scalar or array –
+			// and translate option ids to their labels where we can.
+			$vals = [];
+			foreach ( [ 'field_value_ids', 'field_values', 'field_value', 'values', 'value' ] as $vk ) {
+				if ( ! isset( $row[ $vk ] ) ) {
+					continue;
+				}
+				foreach ( (array) $row[ $vk ] as $v ) {
+					if ( is_array( $v ) ) {
+						$v = $v['value'] ?? ( $v['label'] ?? ( $v['id'] ?? '' ) );
+					}
+					$v = trim( (string) $v );
+					if ( '' !== $v ) {
+						$vals[] = $def['options'][ $v ] ?? $v;
+					}
+				}
+				if ( $vals ) {
+					break;
+				}
+			}
+			$value = implode( ', ', array_unique( $vals ) );
 			if ( '' === $value ) {
 				continue;
 			}
@@ -1099,6 +1132,53 @@ class Verto_Vincere {
 			update_post_meta( $post_id, '_brand_raw', $value );
 			break;
 		}
+	}
+
+	/**
+	 * Nov 2026: tenant-level definition of the "website sector" position
+	 * custom field – its key plus an option-id → label map, so the per-job
+	 * lookups above can translate numeric selections into text like
+	 * 'edison lux'. Tries the known definition endpoints, caches 12h
+	 * (a short negative cache retries within the hour if none found).
+	 */
+	private static function sector_field_def() {
+		$cached = get_transient( 'verto_vincere_sector_def' );
+		if ( is_array( $cached ) && isset( $cached['key'], $cached['options'] ) ) {
+			return $cached;
+		}
+		foreach ( [ 'customfields/position', 'position/customfields', 'customfields?entity_type=POSITION' ] as $ep ) {
+			$json = self::api_get( $ep );
+			if ( is_wp_error( $json ) || ! is_array( $json ) ) {
+				continue;
+			}
+			$rows = $json['data'] ?? ( $json['items'] ?? $json );
+			foreach ( (array) $rows as $row ) {
+				if ( ! is_array( $row ) ) {
+					continue;
+				}
+				$name = strtolower( self::field_text( $row['name'] ?? ( $row['field_name'] ?? ( $row['label'] ?? '' ) ) ) );
+				if ( false === strpos( $name, 'website' ) && false === strpos( $name, 'sector' ) ) {
+					continue;
+				}
+				$options = [];
+				foreach ( [ 'field_values', 'options', 'values', 'choices' ] as $ok ) {
+					foreach ( (array) ( $row[ $ok ] ?? [] ) as $opt ) {
+						if ( is_array( $opt ) && isset( $opt['id'] ) ) {
+							$label = self::field_text( $opt['value'] ?? ( $opt['label'] ?? ( $opt['name'] ?? '' ) ) );
+							if ( '' !== $label ) {
+								$options[ (string) $opt['id'] ] = $label;
+							}
+						}
+					}
+				}
+				$def = [ 'key' => (string) ( $row['key'] ?? '' ), 'name' => $name, 'options' => $options ];
+				set_transient( 'verto_vincere_sector_def', $def, 12 * HOUR_IN_SECONDS );
+				return $def;
+			}
+		}
+		$def = [ 'key' => '', 'name' => '', 'options' => [] ];
+		set_transient( 'verto_vincere_sector_def', $def, 30 * MINUTE_IN_SECONDS );
+		return $def;
 	}
 
 	/** Draft + flag jobs no longer present in the feed. Returns count. */
