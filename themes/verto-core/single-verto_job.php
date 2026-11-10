@@ -154,9 +154,8 @@ get_header();
 			<?php if ( $verto_job_back ) : ?>
 				<a class="verto-jobhero__back" href="<?php echo esc_url( $verto_job_back ); ?>">&larr; All openings</a>
 			<?php endif; ?>
-			<?php if ( $verto_job_logo ) : ?>
-				<img class="verto-jobhero__logo" src="<?php echo esc_url( $verto_job_logo ); ?>" alt="<?php echo esc_attr( $verto_job_b['label'] ); ?>" />
-			<?php endif; ?>
+			<?php /* Nov 2026 (Alex): hero logo removed – the dark lockup was
+			   near-invisible on the ink hero and the kicker names the brand. */ ?>
 			<div class="verto-jobhero__kicker">
 				<?php echo esc_html( $verto_job_b['label'] ); ?>
 				<?php if ( $verto_job_loc ) : ?><span class="sep" aria-hidden="true">·</span> <?php echo esc_html( $verto_job_loc ); ?><?php endif; ?>
