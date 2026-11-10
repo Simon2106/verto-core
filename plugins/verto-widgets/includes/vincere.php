@@ -50,6 +50,17 @@ class Verto_Vincere {
 	const OPT_CURSOR     = 'verto_vincere_sync_cursor';
 	const RUN_HOOK       = 'verto_vincere_sync_run';
 	const TR_ID_TOKEN    = 'verto_vincere_id_token';
+
+	/**
+	 * Nov 2026 (live tenant): the client's brand tag is the position custom
+	 * field with key "website_sector" (a checkbox group; this tenant exposes
+	 * NO definitions endpoint, so option labels can't be fetched). Known
+	 * option ids, learned from tagged jobs – 11840 confirmed as "edison lux"
+	 * via test job 213734. Extend as the other brand options are confirmed,
+	 * or add id lines ("11841=modulr") to the Mapping settings instead.
+	 */
+	const SECTOR_FIELD_KEY     = 'website_sector';
+	const SECTOR_OPTION_LABELS = [ '11840' => 'edison lux' ];
 	const TR_OAUTH_STATE = 'verto_vincere_oauth_state';
 	// v2: verto_job became public with the /jobs/ rewrite slug (job detail
 	// pages) – bumping forces the one-time soft flush in register_rewrite().
@@ -1091,17 +1102,12 @@ class Verto_Vincere {
 			if ( ! is_array( $row ) ) {
 				continue;
 			}
-			if ( '' !== $def['key'] ) {
-				// Exact match on the definition's key – no more false positives.
-				if ( (string) ( $row['key'] ?? '' ) !== $def['key'] ) {
-					continue;
-				}
-			} else {
-				// No definition available: fall back to the old name heuristic.
-				$name = strtolower( self::field_text( $row['name'] ?? ( $row['key'] ?? ( $row['field_name'] ?? '' ) ) ) );
-				if ( false === strpos( $name, 'sector' ) && false === strpos( $name, 'website' ) ) {
-					continue;
-				}
+			// Nov 2026 (live tenant): the field's key is literally
+			// "website_sector" – match it exactly (a resolved definition key,
+			// if the tenant ever grows one, takes precedence).
+			$want = '' !== $def['key'] ? $def['key'] : self::SECTOR_FIELD_KEY;
+			if ( (string) ( $row['key'] ?? '' ) !== $want ) {
+				continue;
 			}
 			// Collect the selected value(s) – ids or text, scalar or array –
 			// and translate option ids to their labels where we can.
@@ -1116,7 +1122,10 @@ class Verto_Vincere {
 					}
 					$v = trim( (string) $v );
 					if ( '' !== $v ) {
-						$vals[] = $def['options'][ $v ] ?? $v;
+						// Option id → label: resolved definition first, then the
+						// built-in known ids; unknown ids pass through raw so an
+						// admin Mapping line ("11841=modulr") can still catch them.
+						$vals[] = $def['options'][ $v ] ?? ( self::SECTOR_OPTION_LABELS[ $v ] ?? $v );
 					}
 				}
 				if ( $vals ) {
