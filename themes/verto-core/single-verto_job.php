@@ -216,39 +216,6 @@ get_header();
 	</section>
 	<?php endif; ?>
 
-	<?php /* ── 3. TEAM – who you'd sit with ── */ ?>
-	<?php if ( $verto_job_team ) : ?>
-	<section class="verto-jobteam">
-		<div class="verto-container">
-			<span class="verto-jobs__eyebrow">The team</span>
-			<h2 class="verto-display-3 verto-jobteam__heading">Who you&rsquo;d sit with.</h2>
-			<div class="verto-jobteam__grid">
-				<?php foreach ( $verto_job_team as $verto_job_person ) :
-					$verto_job_role = get_post_meta( $verto_job_person->ID, '_verto_role', true );
-					$verto_job_role = $verto_job_role ? $verto_job_role : 'Consultant';
-					?>
-					<div class="verto-jobteam__card">
-						<div class="verto-jobteam__photo">
-							<?php if ( has_post_thumbnail( $verto_job_person ) ) : ?>
-								<?php echo get_the_post_thumbnail( $verto_job_person, 'medium', [ 'loading' => 'lazy' ] ); ?>
-							<?php else : ?>
-								<span class="verto-jobteam__initials"><?php
-									echo esc_html( strtoupper( implode( '', array_map(
-										static fn( $verto_job_np ) => mb_substr( $verto_job_np, 0, 1 ),
-										array_slice( preg_split( '/\s+/', $verto_job_person->post_title ), 0, 2 )
-									) ) ) );
-								?></span>
-							<?php endif; ?>
-						</div>
-						<div class="verto-jobteam__name"><?php echo esc_html( $verto_job_person->post_title ); ?></div>
-						<div class="verto-jobteam__role"><?php echo esc_html( $verto_job_role ); ?></div>
-					</div>
-				<?php endforeach; ?>
-			</div>
-		</div>
-	</section>
-	<?php endif; ?>
-
 	<?php /* ── 4. ADVERT – the job description ── */ ?>
 	<section class="verto-jobadvert" id="advert">
 		<div class="verto-container">
@@ -290,6 +257,40 @@ get_header();
 			<?php endif; ?>
 		</div>
 	</section>
+
+	<?php /* ── 6. TEAM – who you'd sit with (Nov 2026, Alex: sits UNDER the advert and the apply form) ── */ ?>
+	<?php if ( $verto_job_team ) : ?>
+	<section class="verto-jobteam">
+		<div class="verto-container">
+			<span class="verto-jobs__eyebrow">The team</span>
+			<h2 class="verto-display-3 verto-jobteam__heading">Who you&rsquo;d sit with.</h2>
+			<div class="verto-jobteam__grid">
+				<?php foreach ( $verto_job_team as $verto_job_person ) :
+					$verto_job_role = get_post_meta( $verto_job_person->ID, '_verto_role', true );
+					$verto_job_role = $verto_job_role ? $verto_job_role : 'Consultant';
+					?>
+					<div class="verto-jobteam__card">
+						<div class="verto-jobteam__photo">
+							<?php if ( has_post_thumbnail( $verto_job_person ) ) : ?>
+								<?php echo get_the_post_thumbnail( $verto_job_person, 'medium', [ 'loading' => 'lazy' ] ); ?>
+							<?php else : ?>
+								<span class="verto-jobteam__initials"><?php
+									echo esc_html( strtoupper( implode( '', array_map(
+										static fn( $verto_job_np ) => mb_substr( $verto_job_np, 0, 1 ),
+										array_slice( preg_split( '/\s+/', $verto_job_person->post_title ), 0, 2 )
+									) ) ) );
+								?></span>
+							<?php endif; ?>
+						</div>
+						<div class="verto-jobteam__name"><?php echo esc_html( $verto_job_person->post_title ); ?></div>
+						<div class="verto-jobteam__role"><?php echo esc_html( $verto_job_role ); ?></div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</section>
+	<?php endif; ?>
+
 
 </main>
 <?php

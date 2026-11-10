@@ -16,6 +16,15 @@ defined( 'ABSPATH' ) || exit;
  * which are prefilled with the prototype content.
  */
 
+// Nov 2026: `wp verto rebuild` – the Verto Setup → Rebuild button as a CLI
+// command, so the server's auto-deploy can rebuild every site after a pull.
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	\WP_CLI::add_command( 'verto rebuild', function () {
+		Verto_Installer::rebuild();
+		\WP_CLI::success( 'Verto rebuild complete (' . ( function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto' ) . ', v' . VERTO_WIDGETS_VERSION . ').' );
+	} );
+}
+
 class Verto_Installer {
 
 	const MEDIA_OPTION = 'verto_installer_media';
@@ -62,7 +71,17 @@ class Verto_Installer {
 	public static function handle_build() {
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Nope.' );
 		check_admin_referer( 'verto_build_site' );
+		self::rebuild();
+		wp_safe_redirect( admin_url( 'admin.php?page=verto-setup&built=1' ) );
+		exit;
+	}
 
+	/**
+	 * Nov 2026: the full build, callable from the admin button AND from
+	 * WP-CLI (`wp verto rebuild`) so the server's auto-deploy can run it
+	 * on every site after a git pull – no wp-admin click needed.
+	 */
+	public static function rebuild() {
 		$brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
 
 		if ( 'verto' !== $brand ) {
@@ -78,8 +97,7 @@ class Verto_Installer {
 			self::seed_brand_posts( $brand, $media );
 			self::create_brand_site_pages( $brand, $media );
 			self::setup_brand_menu( $brand );
-			wp_safe_redirect( admin_url( 'admin.php?page=verto-setup&built=1' ) );
-			exit;
+			return;
 		}
 
 		$media = self::import_media();
@@ -91,9 +109,6 @@ class Verto_Installer {
 		self::create_brand_pages();
 		self::sweep_em_dashes();
 		self::setup_menu();
-
-		wp_safe_redirect( admin_url( 'admin.php?page=verto-setup&built=1' ) );
-		exit;
 	}
 
 	/* ── Contact Form 7 ─────────────────────────────────────────────────
