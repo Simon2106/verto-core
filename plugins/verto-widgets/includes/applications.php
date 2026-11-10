@@ -74,6 +74,13 @@ class Verto_Applications {
 		add_action( 'admin_post_nopriv_' . self::ACTION, [ self::class, 'handle_submit' ] );
 		add_filter( 'manage_' . self::CPT . '_posts_columns', [ self::class, 'admin_columns' ] );
 		add_action( 'manage_' . self::CPT . '_posts_custom_column', [ self::class, 'admin_column' ], 10, 2 );
+		// GDPR retention sweep – daily (Nov 2026, Simon).
+		add_action( 'verto_applications_retention', [ self::class, 'retention_sweep' ] );
+		add_action( 'init', function () {
+			if ( ! wp_next_scheduled( 'verto_applications_retention' ) ) {
+				wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'verto_applications_retention' );
+			}
+		} );
 	}
 
 	/**
@@ -234,7 +241,45 @@ class Verto_Applications {
 		// ── Email the job owner either way ──
 		self::email_owner( $app_id, $data, $cv_path, (string) $push['status'] );
 
+		// ── GDPR (Nov 2026, Simon): WordPress is a buffer, not a store. The
+		// moment the candidate is safely IN Vincere, the local copy (CV
+		// included) is deleted – WP only retains the rare failed pushes, so
+		// no application is ever lost. Test-mode submissions stay stored
+		// (there is nowhere else they exist) until the retention sweep.
+		if ( $push['ok'] && ! self::test_mode() ) {
+			self::purge_application( $app_id );
+		}
+
 		self::respond( true, '', $async );
+	}
+
+	/** Delete an application post and its private CV attachment outright. */
+	private static function purge_application( int $app_id ): void {
+		$att_id = (int) get_post_meta( $app_id, '_cv_attachment', true );
+		if ( $att_id ) {
+			wp_delete_attachment( $att_id, true );
+		}
+		wp_delete_post( $app_id, true );
+	}
+
+	/**
+	 * GDPR retention sweep (daily cron): any application still stored after
+	 * 30 days is deleted, CV and all – covers test-mode submissions and
+	 * failed pushes the team has had ample time to action (the owner email
+	 * already carried the details the moment it arrived).
+	 */
+	public static function retention_sweep(): void {
+		$old = get_posts( [
+			'post_type'      => self::CPT,
+			'post_status'    => 'any',
+			'posts_per_page' => 200,
+			'fields'         => 'ids',
+			'date_query'     => [ [ 'before' => '30 days ago' ] ],
+			'no_found_rows'  => true,
+		] );
+		foreach ( $old as $app_id ) {
+			self::purge_application( (int) $app_id );
+		}
 	}
 
 	/**

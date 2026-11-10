@@ -2735,7 +2735,9 @@ class Verto_Installer {
 				'headline'        => $story['headline'] ?? 'The story behind',
 				'headline_italic' => $story['italic'] ?? "$name.",
 				'body'            => $story['body'] ?? ( $c['positioning'] . "\n\nWe started in technical sales in 2011 – the roots of the Verto Group. $name is the brand built specifically for the part of the market we know best: the engineers, operators and commercial leaders our sector runs on." ),
-				'logo'            => self::media_setting( $media, $logo_key ),
+				// Nov 2026 (Alex): Edison drops the story logo – the dark lockup
+				// was near-invisible on the dark panel.
+				'logo'            => 'edison-lux' === $brand ? [] : self::media_setting( $media, $logo_key ),
 				'stats'           => isset( $c['about_stats'] ) ? array_map( fn( $st ) => [ '_id' => self::eid() ] + $st, $c['about_stats'] ) : $stats,
 				'cta_text'        => '',
 			] ) ], 'verto-bs' ),
