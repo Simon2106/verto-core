@@ -2323,6 +2323,17 @@ body.verto-brand-vertek .vbs-team__overlay {
    card, so the copy below starts level across all four. */
 .vbs-rail__grid4--flat .vbs-card__head { display: flex; flex-direction: column; align-items: flex-start; }
 @media (min-width: 1024px) { .vbs-rail__grid4--flat .vbs-card__head { min-height: 6rem; } }
+/* ── LinkedIn posts in the Insights grid (Nov 2026, Alex/Simon) ── */
+/* Branded placeholder tile when a LinkedIn item carries no image. */
+.verto-post-card__liph {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%; min-height: 12rem;
+  background:
+    radial-gradient(70% 70% at 85% 10%, color-mix(in oklab, var(--brand) 30%, transparent), transparent 70%),
+    color-mix(in oklab, var(--brand) 10%, #0b0f1a);
+  color: #fff; font-family: var(--font-display); font-weight: 700;
+  font-size: 2.5rem; letter-spacing: -0.04em;
+}
 /* Team LinkedIn link (renders when _verto_linkedin is set on the person). */
 .vbs-team__linkedin { display: inline-block; margin-top: 0.5rem; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 /* Subpage hero images drift slowly (the "movement like Edison" ask) –

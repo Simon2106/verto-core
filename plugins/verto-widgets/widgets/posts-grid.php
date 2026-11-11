@@ -77,26 +77,39 @@ class Verto_Widget_Posts_Grid extends \Elementor\Widget_Base {
 			// Round 6, item 3: posts embedding a video ([video] shortcode or a
 			// <video> tag) read as video – play badge + "Video" type label.
 			$is_video = has_shortcode( $raw, 'video' ) || false !== stripos( $raw, '<video' );
+			// Nov 2026 (Alex/Simon): LinkedIn items synced into the Insights
+			// grid – the card links straight OUT to the LinkedIn post, badges
+			// itself "LinkedIn" and shows the consultant as the byline.
+			$li_url    = (string) get_post_meta( get_the_ID(), '_verto_external_url', true );
+			$li_author = (string) get_post_meta( get_the_ID(), '_verto_li_author', true );
+			$is_li     = '' !== $li_url;
+			$card_href = $is_li ? $li_url : get_permalink();
+			$card_tgt  = $is_li ? ' target="_blank" rel="noopener"' : '';
+			$type_lbl  = $is_li ? 'LinkedIn' : ( $is_video ? 'Video' : 'Article' );
 			?>
-			<article class="verto-post-card">
-				<a class="verto-post-card__media" href="<?php the_permalink(); ?>">
-					<?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'large' ); } ?>
-					<span class="verto-post-card__type"><span class="dot"></span><?php echo $is_video ? 'Video' : 'Article'; ?></span>
-					<?php if ( $is_video ) : ?>
+			<article class="verto-post-card<?php echo $is_li ? ' verto-post-card--li' : ''; ?>">
+				<a class="verto-post-card__media" href="<?php echo esc_url( $card_href ); ?>"<?php echo $card_tgt; ?>>
+					<?php if ( has_post_thumbnail() ) {
+						the_post_thumbnail( 'large' );
+					} elseif ( $is_li ) { ?>
+						<span class="verto-post-card__liph" aria-hidden="true">in</span>
+					<?php } ?>
+					<span class="verto-post-card__type"><span class="dot"></span><?php echo esc_html( $type_lbl ); ?></span>
+					<?php if ( $is_video && ! $is_li ) : ?>
 						<span class="verto-post-card__play" aria-hidden="true"></span>
 					<?php endif; ?>
-					<span class="verto-post-card__cat"><?php echo esc_html( $cat_name ); ?></span>
+					<span class="verto-post-card__cat"><?php echo esc_html( $is_li ? 'LinkedIn' : $cat_name ); ?></span>
 				</a>
 				<div class="verto-post-card__body">
 					<div class="verto-post-card__meta">
-						<span class="verto-post-card__kicker"><?php echo esc_html( $s['kicker'] ); ?></span>
+						<span class="verto-post-card__kicker"><?php echo esc_html( $is_li && $li_author ? $li_author : $s['kicker'] ); ?></span>
 						<span>·</span>
-						<span><?php echo esc_html( $cat_name ); ?></span>
+						<span><?php echo esc_html( $is_li ? 'LinkedIn' : $cat_name ); ?></span>
 					</div>
-					<h3 class="verto-post-card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<h3 class="verto-post-card__title"><a href="<?php echo esc_url( $card_href ); ?>"<?php echo $card_tgt; ?>><?php the_title(); ?></a></h3>
 					<p class="verto-post-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 26 ) ); ?></p>
 					<div class="verto-post-card__foot">
-						<span><?php echo esc_html( $mins ); ?> min read</span>
+						<span><?php echo $is_li ? 'View on LinkedIn' : esc_html( $mins . ' min read' ); ?></span>
 						<span aria-hidden="true">↗</span>
 					</div>
 				</div>

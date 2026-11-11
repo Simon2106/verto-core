@@ -3,14 +3,14 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.22.33
+ * Version: 0.22.34
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.22.33' );
+define( 'VERTO_WIDGETS_VERSION', '0.22.34' );
 
 /**
  * Compact services band for the brand sites: the FOUR Verto engagement
@@ -54,6 +54,7 @@ require_once __DIR__ . '/includes/icons.php';
 require_once __DIR__ . '/includes/installer.php';
 require_once __DIR__ . '/includes/vincere.php';
 require_once __DIR__ . '/includes/applications.php';
+require_once __DIR__ . '/includes/linkedin.php';
 
 add_action( 'elementor/widgets/register', function ( $widgets_manager ) {
 	require_once __DIR__ . '/widgets/title-reveal.php';
