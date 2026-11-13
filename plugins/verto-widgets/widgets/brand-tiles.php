@@ -57,7 +57,7 @@ class Verto_Widget_Brand_Tiles extends \Elementor\Widget_Base {
 				// Round 6, item 1: brighter royal-blue glows in the tile face.
 				[ 'name' => 'MODULR', 'focus' => 'Architecture, Data Centres & Built Environment', 'color' => '#0464FA', 'bg' => '#000724',
 				  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(4,100,250,0.5), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(4,100,250,0.32), transparent 65%), #000724',
-				  'sectors' => "Architecture\nData Centres\nMEP Engineering",
+				  'sectors' => "Architecture\nInterior Design\nData Centre Construction & Engineering\nData Centre Facilities Management & Operations\nStructural Engineering\nBuilding Services & FM",
 				  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the US and EU.' ],
 				// Round 4, item 12: Vertek now US + Europe, six client-named sectors.
 				// Round 6, item 2: stronger Signal Red glows in the tile face.

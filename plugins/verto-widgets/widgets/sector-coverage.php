@@ -56,7 +56,7 @@ class Verto_Widget_Sector_Coverage extends \Elementor\Widget_Base {
 				[ 'wordmark' => 'MODULR', 'descriptor' => 'Built Environment',
 				  'color' => '#0464FA',
 				  'link_text' => 'Enter Modulr', 'link' => [ 'url' => '#' ],
-				  'items' => "Architecture\nData Centres\nMEP Engineering" ],
+				  'items' => "Architecture\nInterior Design\nData Centre Construction & Engineering\nData Centre Facilities Management & Operations\nStructural Engineering\nBuilding Services & FM" ],
 				[ 'wordmark' => 'VERTO GROUP', 'descriptor' => 'Life Sciences',
 				  'color' => '#d19f2f',
 				  'link_text' => 'Talk to the group', 'link' => [ 'url' => '/contact' ],

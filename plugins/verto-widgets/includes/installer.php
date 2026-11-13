@@ -1809,7 +1809,7 @@ class Verto_Installer {
 			// royal-blue (#0464FA) glows in the face, logo contrast kept.
 			[ '_id' => self::eid(), 'name' => 'MODULR', 'focus' => 'Architecture, Data Centres & Built Environment', 'color' => '#0464FA', 'bg' => '#000724',
 			  'face_gradient' => 'radial-gradient(60% 55% at 85% 10%, rgba(4,100,250,0.5), transparent 65%), radial-gradient(55% 60% at 10% 90%, rgba(4,100,250,0.32), transparent 65%), #000724',
-			  'sectors' => "Architecture\nData Centres\nMEP Engineering",
+			  'sectors' => "Architecture\nInterior Design\nData Centre Construction & Engineering\nData Centre Facilities Management & Operations\nStructural Engineering\nBuilding Services & FM",
 			  'logo' => self::media_setting( $media, 'logo_modulr_png' ),
 			  'positioning' => 'ModulR connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the USA and Europe.',
 			  'link' => [ 'url' => verto_brand_url( 'modulr' ) ] ],
@@ -1904,14 +1904,15 @@ class Verto_Installer {
 					[ 'value' => 'Full lifecycle', 'label' => 'Concept design to commissioning' ],
 					[ 'value' => 'NDA-grade',      'label' => 'Discretion on every search' ],
 				],
-				// Round 4, item 13: Hyperscale/US prefixes dropped from the labels.
+				// Nov 2026 (Sade via Alex, "ModulR specialisms" email): the six
+				// agreed specialism headlines, in the agreed order.
 				'specialisms' => [
-					[ 'icon' => 'server',          'title' => 'Data Centres',            'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
-					[ 'icon' => 'network',         'title' => 'Colocation & Edge',       'description' => 'Delivery and operations talent for colo and edge programmes at every stage.' ],
-					[ 'icon' => 'building-2',      'title' => 'Architecture',            'description' => 'Registered architects, project architects, directors, principals and partners.' ],
-					[ 'icon' => 'zap',             'title' => 'MEP Engineering',         'description' => 'Mechanical, electrical and plumbing leadership across the USA project landscape.' ],
-					[ 'icon' => 'layers',          'title' => 'Project Lifecycle',       'description' => 'CD → SD → DD → CD → CA. Concept design through construction administration.' ],
-					[ 'icon' => 'heart-handshake', 'title' => 'Inclusion & EDI',         'description' => 'Championing women in architecture and EDI across technical built-environment roles.' ],
+					[ 'icon' => 'building-2', 'title' => 'Architecture',                                  'description' => 'Registered architects, project architects, directors, principals and partners.' ],
+					[ 'icon' => 'compass',    'title' => 'Interior Design',                               'description' => 'Interior designers through to design directors, across workplace, hospitality and residential studios.' ],
+					[ 'icon' => 'server',     'title' => 'Data Centre Construction & Engineering',        'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
+					[ 'icon' => 'gauge',      'title' => 'Data Centre Facilities Management & Operations', 'description' => 'Critical facilities managers, operations leadership and engineering teams keeping live environments running.' ],
+					[ 'icon' => 'hard-hat',   'title' => 'Structural Engineering',                        'description' => 'Structural engineers and engineering leadership across buildings and critical infrastructure.' ],
+					[ 'icon' => 'wrench',     'title' => 'Building Services & FM',                        'description' => 'Mechanical, electrical and building services talent, through to facilities management leadership.' ],
 				],
 				/* ── Round 10: REAL feedback (client's Canva doc + pasted extras,
 				      Sep 2026), curated + lightly cleaned (typos/spacing only,
