@@ -61,30 +61,61 @@ class Verto_LinkedIn {
 		}
 	}
 
+	/**
+	 * Nov 2026: LinkedIn walled off public hashtag pages, so the bridges
+	 * (rss.app etc.) only serve company pages / newsletters / profiles.
+	 * The constant therefore takes ONE OR MORE feed URLs (comma or
+	 * newline separated – typically one per consultant profile), and
+	 * VERTO_LINKEDIN_HASHTAG optionally filters the merged items down to
+	 * posts carrying the brand tag (e.g. '#techrecruitment').
+	 */
 	public static function feed_url(): string {
 		return defined( 'VERTO_LINKEDIN_FEED_URL' ) ? trim( (string) VERTO_LINKEDIN_FEED_URL ) : '';
 	}
 
-	/** Fetch the feed and upsert items as brand-category posts. Returns new-post count. */
+	public static function feed_urls(): array {
+		return array_values( array_filter( array_map( 'trim', preg_split( '/[,\n]+/', self::feed_url() ) ) ) );
+	}
+
+	public static function hashtag(): string {
+		$tag = defined( 'VERTO_LINKEDIN_HASHTAG' ) ? strtolower( trim( (string) VERTO_LINKEDIN_HASHTAG ) ) : '';
+		return '' !== $tag ? '#' . ltrim( $tag, '#' ) : '';
+	}
+
+	/** Fetch all feeds and upsert matching items as brand-category posts. Returns new-post count. */
 	public static function sync(): int {
-		$url = self::feed_url();
-		if ( '' === $url ) {
+		$urls = self::feed_urls();
+		if ( ! $urls ) {
 			return 0;
 		}
 		include_once ABSPATH . WPINC . '/feed.php';
 		add_filter( 'wp_feed_cache_transient_lifetime', $fresh = static fn() => 5 * MINUTE_IN_SECONDS );
-		$feed = fetch_feed( $url );
-		remove_filter( 'wp_feed_cache_transient_lifetime', $fresh );
-		if ( is_wp_error( $feed ) ) {
-			return 0;
+		$items = [];
+		foreach ( $urls as $url ) {
+			$feed = fetch_feed( $url );
+			if ( ! is_wp_error( $feed ) ) {
+				foreach ( $feed->get_items( 0, 20 ) as $it ) {
+					$items[] = $it;
+				}
+			}
 		}
+		remove_filter( 'wp_feed_cache_transient_lifetime', $fresh );
 
+		$tag    = self::hashtag();
 		$brand  = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
 		$cat    = get_category_by_slug( $brand );
 		$cat_id = $cat ? (int) $cat->term_id : (int) wp_create_category( $brand );
 		$new    = 0;
 
-		foreach ( $feed->get_items( 0, 20 ) as $item ) {
+		foreach ( $items as $item ) {
+			// Hashtag filter: only posts carrying the brand tag come through
+			// (checked against title + body, case-insensitive).
+			if ( '' !== $tag ) {
+				$hay = strtolower( (string) $item->get_title() . ' ' . (string) $item->get_description() );
+				if ( false === strpos( $hay, $tag ) ) {
+					continue;
+				}
+			}
 			$guid = (string) $item->get_id();
 			$link = (string) $item->get_permalink();
 			if ( '' === $guid ) {
