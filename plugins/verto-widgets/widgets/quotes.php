@@ -46,7 +46,7 @@ class Verto_Widget_Quotes extends \Elementor\Widget_Base {
 			// (see .verto-quote nth-child rules in verto-ui.css).
 			$wide = mb_strlen( (string) $q['quote'] ) > 380 ? ' verto-quote--wide' : '';
 			printf(
-				'<figure class="verto-quote%s"><blockquote class="verto-quote__text">%s</blockquote><figcaption><div class="verto-quote__who">%s</div></figcaption></figure>',
+				'<figure class="verto-quote%s"><div class="verto-quote__mark" aria-hidden="true">&ldquo;</div><blockquote class="verto-quote__text">%s</blockquote><figcaption><div class="verto-quote__who">%s</div></figcaption></figure>',
 				esc_attr( $wide ),
 				esc_html( $q['quote'] ),
 				esc_html( $q['who'] )

@@ -2334,6 +2334,40 @@ body.verto-brand-vertek .vbs-team__overlay {
   color: #fff; font-family: var(--font-display); font-weight: 700;
   font-size: 2.5rem; letter-spacing: -0.04em;
 }
+/* ── Round 18 (Nov 2026, Alex "website amendments") ── */
+/* 1. Services tables: ONE type size across all four cards – the Exclusive /
+   Contingent paragraphs and bullets drop to the USP size so nothing reads
+   bigger than its neighbours ("all the same font ... like the bulletpoints
+   font size, not the paragraph"). */
+.vbs-rail__grid4--flat .vbs-rail__body { font-size: 0.8125rem; line-height: 1.5; }
+.vbs-rail__grid4--flat .vbs-rail__bullets { font-size: 0.8125rem; }
+/* 2. About story: the gradient tail word rolls out from Edison to the other
+   brands (Vertek's gradient token resolves to its flat signal red). */
+body.verto-brand-modulr .vbs-story__headline .vbs-italic,
+body.verto-brand-vertek .vbs-story__headline .vbs-italic {
+	font-style: normal; font-family: inherit;
+	background: var(--brand-gradient, var(--brand));
+	-webkit-background-clip: text; background-clip: text; color: transparent;
+}
+/* 3. Story: vertical hairline off the right-hand stat box, and the body
+   type brought down a step so the column reads calmer. */
+.vbs-story__statcol { border-left: 0; padding-left: 0; }
+@media (min-width: 1024px) { .vbs-story__statcol { padding-left: 0; } }
+.vbs-story__paras { font-size: 1rem; gap: 1.5rem; }
+@media (min-width: 768px) { .vbs-story__paras { font-size: 1.0625rem; } }
+/* 4. Edison "One industry. Energy.": the paragraph column centres against
+   the heading so the tinted band reads symmetrical. */
+@media (min-width: 1024px) {
+	body.verto-brand-edison-lux .vbs-desks .verto-intro { align-items: center; }
+	body.verto-brand-edison-lux .vbs-desks .verto-intro .verto-intro__body:first-of-type { margin-top: 0; }
+}
+/* 5. Group voices strip: fuller cards – quote mark, soft corners, lift. */
+.verto-quote { border-radius: 1rem; box-shadow: inset 2px 0 0 var(--accent), 0 18px 36px -26px rgba(0,0,0,0.55); }
+.verto-quote__mark { margin-bottom: 0.25rem; }
+/* 6. Group About intro: the two columns stretch the full container width
+   (to the end of the photo collage below). */
+body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body { width: 48.5%; margin-right: 3%; max-width: none; }
+body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body:last-of-type { margin-right: 0; }
 /* Team LinkedIn link (renders when _verto_linkedin is set on the person). */
 .vbs-team__linkedin { display: inline-block; margin-top: 0.5rem; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 /* Subpage hero images drift slowly (the "movement like Edison" ask) –

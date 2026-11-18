@@ -340,6 +340,14 @@ class Verto_Installer {
 			'insight_fluidpower'    => 'insight-fluidpower.jpg',
 			'insight_manufacturing' => 'insight-manufacturing.jpg',
 			'insight_hvac'          => 'insight-hvac.jpg',
+			// Nov 2026 (Alex, round 18): Vertek "What we cover" sector tiles,
+			// cropped from the client's supplied mock (Vertek image.png).
+			'vertek_spec_fluidpower'  => 'vertek-spec-fluidpower.jpg',
+			'vertek_spec_hvac'        => 'vertek-spec-hvac.jpg',
+			'vertek_spec_defense'     => 'vertek-spec-defense.jpg',
+			'vertek_spec_automation'  => 'vertek-spec-automation.jpg',
+			'vertek_spec_cnc'         => 'vertek-spec-cnc.jpg',
+			'vertek_spec_compressors' => 'vertek-spec-compressors.jpg',
 			/* ── Client media drop, Aug 2026 – real event photography ──
 			   Sorted from the client's forwarded emails: Barcelona incentive,
 			   charity gala, Ibiza incentive (continues ibiza8/9), summer summit
@@ -517,7 +525,7 @@ class Verto_Installer {
 	// Principal Consultant | Power & Energy).
 	// 0.22.22 (Alex): Simon/Gary/Charlotte into the team tranche, Megan and
 	// Louis retired, ops ordered after the consultants.
-	const TEAM_STRUCTURE = 'structure-0.22.22';
+	const TEAM_STRUCTURE = 'structure-0.22.37';
 
 	/**
 	 * The client's definitive team structure (Alex Hatfield, Aug 2026).
@@ -537,59 +545,58 @@ class Verto_Installer {
 		      Simon Cottenham, Louis Fuller, Hannah Gresses, Jake Price. ── */
 		return [
 			/* ── The Directors ── */
-			'Alex Hatfield'   => [ 'brands' => [ 'verto', 'vertek' ], 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'alex-hatfield-v4.png', 'leader' => true ],
-			'Martin Doig'     => [ 'brands' => [ 'verto', 'modulr' ], 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig-v4.png', 'leader' => true ],
-			'Robbie Sturgess' => [ 'brands' => [ 'verto', 'vertek' ], 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'robbie-sturgess-v4.png', 'leader' => true ],
+			'Alex Hatfield'   => [ 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'alex-hatfield-v4.png', 'leader' => true ],
+			'Martin Doig'     => [ 'brands' => [ 'verto', 'modulr' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig-v4.png', 'leader' => true ],
+			'Robbie Sturgess' => [ 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'robbie-sturgess-v4.png', 'leader' => true ],
 			/* ── Management ── */
-			'Dan Bisset'        => [ 'brands' => [ 'edison-lux' ], 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'edison-dan-bisset-v4.png' ],
+			'Dan Bisset'        => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'edison-dan-bisset-v4.png' ],
 			
-			'George East'       => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-george-east-v4.png' ],
-			'Ben Tiffin'        => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin-v4.png' ],
+			'George East'       => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-george-east-v4.png' ],
+			'Ben Tiffin'        => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin-v4.png' ],
 			
-			'Ben Cranston'      => [ 'brands' => [ 'vertek' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-cranston.png' ],
-			'Sade Kendall'      => [ 'brands' => [ 'modulr' ], 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'modulr-sade-kendall-v4.png' ],
+			'Ben Cranston'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-cranston.png' ],
+			'Sade Kendall'      => [ 'brands' => [ 'modulr' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'modulr-sade-kendall-v4.png' ],
 			
 			/* ── Ops (Verto group pages only – fold into "The team" section) ── */
-			'Karabo Mothopeng' => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-karabo-mothopeng-v4.png' ],
-			'Angel Ndlovu'     => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-angel-ndlovu-v4.png' ],
-			'Alice Fryer'      => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Talent Acquisition & Operations Lead', 'photo' => 'verto-alice-fryer.png' ],
-			'Jake Price'       => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Finance & Administration Lead', 'photo' => 'verto-jake-price.png' ],
-			'Alfie Gray'       => [ 'brands' => [ 'verto' ], 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => 'verto-alfie-gray.png' ],
+			'Karabo Mothopeng' => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-karabo-mothopeng-v4.png' ],
+			'Angel Ndlovu'     => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-angel-ndlovu-v4.png' ],
+			'Alice Fryer'      => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Talent Acquisition & Operations Lead', 'photo' => 'verto-alice-fryer.png' ],
+			'Jake Price'       => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Finance & Administration Lead', 'photo' => 'verto-jake-price.png' ],
+			'Alfie Gray'       => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => 'verto-alfie-gray.png' ],
 			/* ── The team – Vertek ──
 			   Nov 2026 (Alex): Gary moves out of the Management tranche. ── */
-			'Gary Hunt'        => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'vertek-gary-hunt-v4.png' ],
-			'Alice Schofield'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-alice-schofield-v4.png' ],
+			'Gary Hunt'        => [ 'brands' => [ 'vertek' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'vertek-gary-hunt-v4.png' ],
+			'Alice Schofield'  => [ 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-alice-schofield-v4.png' ],
 			"Harley O'Connell" => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-harley-oconnell-v4.png' ],
-			'Sam Parnell'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-sam-parnell-v4.png' ],
-			'Frank Warner'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-frank-warner-v4.png' ],
-			'Harvey Earl'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-harvey-earl-v4.png' ],
-			'Lewis Mason'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-lewis-mason-v4.png' ],
-			'Alex Wright'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-alex-wright-v4.png' ],
-			'Lewis Sullivan'   => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-lewis-sullivan-v4.png' ],
-			'Saman Akbari'     => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-saman-akbari.png' ],
-			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-rex-reavley-v4.png' ],
-			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-olivia-pinhorne-v4.png' ],
-			'Hannah Gresses'   => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-hannah-gresses.png' ],
-			'Lethu Zwane'      => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-lethu-zwane-v4.png' ],
+			'Sam Parnell'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-sam-parnell-v4.png' ],
+			'Frank Warner'     => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-frank-warner-v4.png' ],
+			'Harvey Earl'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-harvey-earl-v4.png' ],
+			'Lewis Mason'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-lewis-mason-v4.png' ],
+			'Alex Wright'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-alex-wright-v4.png' ],
+			'Lewis Sullivan'   => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-lewis-sullivan-v4.png' ],
+			'Saman Akbari'     => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-saman-akbari.png' ],
+			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-rex-reavley-v4.png' ],
+			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-olivia-pinhorne-v4.png' ],
+			'Hannah Gresses'   => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-hannah-gresses.png' ],
 			/* ── The team – Verto Life Sciences (sits with the group) ── */
-			'Martyn Jamieson'  => [ 'brands' => [ 'verto' ], 'tier' => 'team', 'role' => 'VP of Life Sciences', 'photo' => 'verto-martyn-jamieson.png' ],
+			'Martyn Jamieson'  => [ 'brands' => [ 'verto' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Life Sciences', 'photo' => 'verto-martyn-jamieson.png' ],
 			/* ── The team – ModulR (PDF: Jake now sits on ModulR only) ──
 			   Nov 2026 (Alex): Charlotte moves out of the Management tranche. ── */
-			'Charlotte Northam' => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'VP of Architecture', 'photo' => 'modulr-charlotte-northam-v4.png' ],
-			'Natasha Sykes'     => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'modulr-natasha-sykes-v4.png' ],
-			'Monira Akter'      => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-monira-aktar-v4.png' ],
-			'Lewis Wright'      => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-lewis-wright-v4.png' ],
-			'Forough Rezaei'    => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-forough-rezaei.png' ],
-			'Jake Massingham'   => [ 'brands' => [ 'modulr' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-jake-massingham.png' ],
+			'Charlotte Northam' => [ 'brands' => [ 'modulr' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Architecture', 'photo' => 'modulr-charlotte-northam-v4.png' ],
+			'Natasha Sykes'     => [ 'brands' => [ 'modulr' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'modulr-natasha-sykes-v4.png' ],
+			'Monira Akter'      => [ 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-monira-aktar-v4.png' ],
+			'Lewis Wright'      => [ 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-lewis-wright-v4.png' ],
+			'Forough Rezaei'    => [ 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-forough-rezaei.png' ],
+			'Jake Massingham'   => [ 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-jake-massingham.png' ],
 			/* ── The team – Edison Lux ──
 			   Nov 2026 (Alex): Simon moves out of the Management tranche. ── */
-			'Simon Cottenham'    => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'edison-simon-cottenham.png' ],
-			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-v4.png' ],
-			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-joe-williams-v4.png' ],
-			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-noah-ward-v4.png' ],
-			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-v4.png' ],
-			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-oliver-hesmondhalgh.png' ],
-			'Matthew Pearce'     => [ 'brands' => [ 'edison-lux' ], 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-matthew-pearce-v4.png' ],
+			'Simon Cottenham'    => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'edison-simon-cottenham.png' ],
+			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-v4.png' ],
+			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-joe-williams-v4.png' ],
+			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-noah-ward-v4.png' ],
+			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-v4.png' ],
+			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-oliver-hesmondhalgh.png' ],
+			'Matthew Pearce'     => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-matthew-pearce-v4.png' ],
 		];
 	}
 
@@ -616,7 +623,7 @@ class Verto_Installer {
 		];
 		// Previously seeded people who are NOT in the client's official
 		// structure – unpublished on migration (kept as drafts, not deleted).
-		$retired = [ 'Abi Ward', 'Cj Edwards', 'CJ Edwards', 'Chris J Simmons', 'Chris J. Simmons', 'Megan Grant', 'Louis Fuller' ];
+		$retired = [ 'Abi Ward', 'Cj Edwards', 'CJ Edwards', 'Chris J Simmons', 'Chris J. Simmons', 'Megan Grant', 'Louis Fuller', 'Lethu Zwane' ];
 
 		$existing = [];
 		foreach ( get_posts( [ 'post_type' => 'verto_team', 'numberposts' => -1, 'post_status' => 'any' ] ) as $p ) {
@@ -650,6 +657,7 @@ class Verto_Installer {
 			update_post_meta( $id, '_verto_role', $m['role'] );
 			update_post_meta( $id, '_verto_brand', implode( ',', $m['brands'] ) );
 			update_post_meta( $id, '_verto_tier', $m['tier'] );
+			update_post_meta( $id, '_verto_tier2', $m['tier2'] ?? '' );
 			if ( ! empty( $m['leader'] ) ) {
 				update_post_meta( $id, '_verto_leader', '1' );
 			} else {
@@ -1602,20 +1610,40 @@ class Verto_Installer {
 					'body'    => "Verto Group is founder-owned and independently financed. Every leader across the group has come up through the desk, either as a recruiter inside their sector, or as an operator hired by one of ours.",
 				] ),
 				self::widget( 'verto-team-grid', [ 'mode' => 'leaders' ] ),
-				// Client's official structure: Leadership → Management → The team
-				// (ops fold into the team section on the group pages).
-				self::widget( 'verto-section-intro', [
-					'eyebrow' => 'Management',
-					'size'    => 'verto-display-3',
-					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Management.' ] ],
-				] ),
-				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier' => 'management' ] ),
+				// Nov 2026 (Alex, round 18): below the Directors the group team
+				// is grouped by SENIORITY – VPs / Team Leads / Senior /
+				// Recruitment Consultants / Operations (matching the current
+				// vertopeople.com), driven by the _verto_tier2 meta.
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'The team',
 					'size'    => 'verto-display-3',
-					'lines'   => [ [ '_id' => self::eid(), 'line' => 'The team.' ] ],
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'VPs.' ] ],
 				] ),
-				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier' => 'team' ] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'vp' ] ),
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => '',
+					'size'  => 'verto-display-3',
+					'lines' => [ [ '_id' => self::eid(), 'line' => 'Team Leads.' ] ],
+				] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'lead' ] ),
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => '',
+					'size'  => 'verto-display-3',
+					'lines' => [ [ '_id' => self::eid(), 'line' => 'Senior Consultants.' ] ],
+				] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'senior' ] ),
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => '',
+					'size'  => 'verto-display-3',
+					'lines' => [ [ '_id' => self::eid(), 'line' => 'Recruitment Consultants.' ] ],
+				] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'rec' ] ),
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => '',
+					'size'  => 'verto-display-3',
+					'lines' => [ [ '_id' => self::eid(), 'line' => 'Operations.' ] ],
+				] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'ops' ] ),
 			], 'verto-container-pad' ),
 			// Community & DE&I – gala cards now carry the client's real charity-
 			// gala photography; the DE&I card stays a placeholder until the
@@ -1989,8 +2017,10 @@ class Verto_Installer {
 				// Team strip: no paragraph, whole desk in one line (leaders
 				// excluded – the strip is the working desk).
 				'team_body'    => '',
+				// Nov 2026 (Alex): "add martin doig to the team page" – the
+				// leadership exclusion comes off (Martin is the only
+				// modulr-tagged leader, so this adds exactly him).
 				'team_limit'   => 12,
-				'team_no_leaders' => 'yes',
 				// About hero: US & EU box enlarged with a gradient CTA (same
 				// treatment Alex approved on Edison).
 				'about_hero_stat_cta' => [ 'text' => 'Our solutions', 'url' => '/clients' ],
@@ -2270,13 +2300,15 @@ class Verto_Installer {
 					[ 'value' => '94%',     'label' => 'Of clients partner with us again' ],
 				],
 				// Round 4, item 12: the client's six named sectors.
+				// Nov 2026 (Alex, round 18): the client's own sector photos on
+				// the cards (Edison-style), cropped from their supplied mock.
 				'specialisms' => [
-					[ 'icon' => 'gauge',       'title' => 'Fluid Power',                      'description' => 'Pumps, seals, valves and hydraulics – plus pneumatics, actuation, filtration and flow control.' ],
-					[ 'icon' => 'cog',         'title' => 'HVAC',                             'description' => 'Air handlers, ventilation, refrigeration, heat pumps, boilers, plumbing and aftermarket.' ],
-					[ 'icon' => 'line-chart',  'title' => 'Defense & Advanced Manufacturing', 'description' => 'Defence, aerospace, space, semiconductor and robotics – ITAR and clearance handled.' ],
-					[ 'icon' => 'cpu',         'title' => 'Industrial Automation',            'description' => 'Sensors, PLCs, HMI, connectors, automated machinery and conveyors.' ],
-					[ 'icon' => 'factory',     'title' => 'CNC & Metalworking',               'description' => 'Cutting tools, workholding, toolholding, metrology, CMM and metalworking.' ],
-					[ 'icon' => 'thermometer', 'title' => 'Compressors',                      'description' => 'Air and gas compression – rotary screw, centrifugal and reciprocating – sales, service and engineering.' ],
+					[ 'icon' => 'gauge',       'image' => 'vertek_spec_fluidpower',  'title' => 'Fluid Power',                      'description' => 'Pumps, seals, valves and hydraulics – plus pneumatics, actuation, filtration and flow control.' ],
+					[ 'icon' => 'cog',         'image' => 'vertek_spec_hvac',        'title' => 'HVAC',                             'description' => 'Air handlers, ventilation, refrigeration, heat pumps, boilers, plumbing and aftermarket.' ],
+					[ 'icon' => 'line-chart',  'image' => 'vertek_spec_defense',     'title' => 'Defense & Advanced Manufacturing', 'description' => 'Defence, aerospace, space, semiconductor and robotics – ITAR and clearance handled.' ],
+					[ 'icon' => 'cpu',         'image' => 'vertek_spec_automation',  'title' => 'Industrial Automation',            'description' => 'Sensors, PLCs, HMI, connectors, automated machinery and conveyors.' ],
+					[ 'icon' => 'factory',     'image' => 'vertek_spec_cnc',         'title' => 'CNC & Metalworking',               'description' => 'Cutting tools, workholding, toolholding, metrology, CMM and metalworking.' ],
+					[ 'icon' => 'thermometer', 'image' => 'vertek_spec_compressors', 'title' => 'Compressors',                      'description' => 'Air and gas compression – rotary screw, centrifugal and reciprocating – sales, service and engineering.' ],
 				],
 				/* ── Round 10: curated real feedback (client's Canva doc, Sep
 				      2026), lightly cleaned only (typos/spacing, meaning
@@ -2330,6 +2362,12 @@ class Verto_Installer {
 					],
 				],
 				'about_hero' => [ 'pre' => 'Product knowledge,', 'accent' => 'one desk at a time.', 'post' => 'Never generalist.' ],
+				// Nov 2026 (Alex): "only showing 4 people - add everyone else".
+				'team_limit'  => 20,
+				// Nov 2026 (Alex): the bridge comes off the About/Clients page
+				// heroes – "we do nothing in structural engineering".
+				'subhero_image' => 'insight_manufacturing',
+				'subhero_alt'   => 'Precision machinery on an advanced manufacturing line',
 				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns one product area. That's why it works.",
 				'what_we_do' => [
 					'headline'   => 'Embedded in the industries that build the world.',
@@ -2503,7 +2541,8 @@ class Verto_Installer {
 		$vacancies = self::section( [ self::widget( 'verto-jobs-board', [
 			'layout'  => 'compact',
 			'brand'   => $brand,
-			'heading' => "Open roles at $name.",
+			// Nov 2026 (Alex): "Current vacancies" on every brand site.
+			'heading' => 'Current vacancies.',
 			'intro'   => "Seats on the $name desk itself – live now, with more to come as the team grows.",
 		] ) ], 'verto-bs vbs-vacancies' );
 		// Round 9, item 2 → round 10: candidate reviews – now the full curated
@@ -2615,6 +2654,19 @@ class Verto_Installer {
 				] + $sp, $c['specialisms'] ),
 			] ) ], 'verto-bs' ),
 		];
+		// Nov 2026 (Alex): Edison's HOME shows the client ADVERTS (Vincere),
+		// close to the top – right under the about split; the internal desk
+		// board comes off the home page (the merge below skips it).
+		if ( 'edison-lux' === $brand ) {
+			array_splice( $home, 3, 0, [ self::section( [ self::widget( 'verto-jobs-board', [
+				'layout'       => 'compact',
+				'brand'        => $brand,
+				'source'       => 'client',
+				'list_eyebrow' => 'Live roles',
+				'heading'      => 'Current vacancies.',
+				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Apply direct, or start a conversation below.',
+			] ) ], 'verto-bs vbs-vacancies' ) ] );
+		}
 		// Round 5, item 4 (Edison) → Edison copy doc (Oct 2026), page 5:
 		// "Two desks. One market." becomes "One industry. Energy." – the
 		// Sales & Service desk and the On site staffing desk, side by side.
@@ -2670,7 +2722,7 @@ class Verto_Installer {
 			// Round 9, item 1: brand vacancies – directly after the
 			// testimonials carousel. Nov 2026 (Alex): ModulR flips the order,
 			// vacancies first (handled below).
-			'modulr' === $brand ? null : $vacancies,
+			in_array( $brand, [ 'modulr', 'edison-lux' ], true ) ? null : $vacancies,
 			// v0.22.4 (client): the HOME page now carries the FULL four-models
 			// section (replacing the round-6 compact services band here –
 			// About / Candidates / Insights keep the compact band).
@@ -2837,10 +2889,11 @@ class Verto_Installer {
 		// the full four-models section; /clients is the services page itself).
 		// Oct 2026 (Alex, ModulR round): ModulR's ABOUT carries the full
 		// four-models section ("use what's on the home page services section").
-		if ( 'modulr' === $brand ) {
+		// Nov 2026 (Alex): "services table needs to be the same on all sites
+		// and pages" – every ABOUT now carries the full four-models section
+		// (Edison keeps its deliberate skip: home/about duplication flag).
+		if ( 'edison-lux' !== $brand ) {
 			$about[] = self::four_models_section( 'muted', true, $brand, $name );
-		} elseif ( 'edison-lux' !== $brand ) {
-			$about[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
 		}
 		$about[] = self::section( [ $team_strip ], 'verto-bs' );
 		$about[] = self::section( [ self::widget( 'verto-cta-band', [
@@ -2884,9 +2937,10 @@ class Verto_Installer {
 				// EPC construction asset instead of a third run of pylons.
 				'headline'  => $c['clients_split']['headline'] ?? 'A partnership, not a placement.',
 				'body'      => $c['clients_split']['body'] ?? "We exist to find you the best technical commercial talent on the market – and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
-				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_06', 'vertek' => 'insight_fluidpower', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
-				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Hydraulic componentry on a fluid power line', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
-				'grayscale' => 'yes',
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_06', 'vertek' => 'vertek_spec_automation', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
+				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Robotic arm on an automated production line', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
+				// Nov 2026 (Alex): colour beats black-and-white on Vertek.
+				'grayscale' => 'vertek' === $brand ? '' : 'yes',
 				'panel_bg'  => '#ffffff',
 				'stats'     => [
 					[ '_id' => self::eid(), 'value' => '94%', 'label' => 'Clients hire with us a second time' ],
@@ -2915,16 +2969,22 @@ class Verto_Installer {
 		];
 		$clients = array_values( array_filter( $clients ) );
 		// Process – horizontal rail with connector line (Vertek-only data).
+		// Nov 2026 (Alex): the process sits ABOVE the four models, on the
+		// darker panel (bg muted + the dark-brand section painting).
 		if ( ! empty( $c['process'] ) ) {
 			$clients[] = self::section( [ self::widget( 'verto-process-rail', [
 				'layout'     => 'line',
 				'line_style' => 'process',
-				'bg'         => 'default',
+				'bg'         => 'muted',
 				'eyebrow'    => 'How we work',
 				'heading'    => 'A process built to remove chance.',
 				'side_text'  => '',
 				'items'      => array_map( fn( $st ) => [ '_id' => self::eid(), 'kicker' => '', 'bullets' => '' ] + $st, $c['process'] ),
 			] ) ], 'verto-bs' );
+			// Splice it from the end of the list to just before the four
+			// models (the literal's last element).
+			$proc = array_pop( $clients );
+			array_splice( $clients, count( $clients ) - 1, 0, [ $proc ] );
 		}
 		// Case study – dark parallax band, Client/Sector meta + C/S/R grid.
 		if ( ! empty( $c['case_study'] ) ) {
@@ -3106,11 +3166,12 @@ class Verto_Installer {
 		// Oct 2026 (Alex): Edison's and ModulR's candidates pages swap the
 		// (client-facing) services band for the candidate process above.
 		if ( ! in_array( $brand, [ 'edison-lux', 'modulr' ], true ) ) {
-			$candidates[] = self::section( [ self::widget( 'html', [ 'html' => verto_services_band_html() ] ) ], 'verto-bs' );
+			// Nov 2026 (Alex): no services band on CANDIDATES – "services aren't
+		// relevant to them".
 		}
 		$candidates[] = self::section( [ $team_strip ], 'verto-bs' );
 		// Oct 2026 (Alex): Edison gets a more consultative line.
-		$candidates[] = $contact( 'Start a conversation', 'edison-lux' === $brand ? 'A confidential conversation about your next move.' : 'A confidential chat. No spam, no fluff.', $ca['bullets'] );
+		$candidates[] = $contact( 'Start a conversation', 'edison-lux' === $brand ? 'A confidential conversation about your next move.' : 'Your next move, discussed in confidence.', $ca['bullets'] );
 		self::upsert_page( 'candidates', 'Candidates', $candidates );
 
 		/* ── INSIGHTS (posts archive page) ── */

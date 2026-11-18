@@ -23,6 +23,13 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 			'default' => 'all',
 		] );
 		$this->add_control( 'brand', [ 'label' => 'Filter by brand (_verto_brand meta, e.g. modulr – matches any brand in the comma list)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		// Nov 2026 (round 18): group About groups the team by SENIORITY via
+		// the _verto_tier2 meta (vp / lead / senior / rec / ops).
+		$this->add_control( 'tier2', [
+			'label' => 'Filter by seniority (_verto_tier2 meta)', 'type' => \Elementor\Controls_Manager::SELECT,
+			'options' => [ '' => 'Off', 'vp' => 'VPs', 'lead' => 'Team Leads', 'senior' => 'Senior Consultants', 'rec' => 'Recruitment Consultants', 'ops' => 'Operations' ],
+			'default' => '',
+		] );
 		$this->add_control( 'tier', [
 			'label' => 'Filter by tier (_verto_tier meta)', 'type' => \Elementor\Controls_Manager::SELECT,
 			'options' => [ '' => 'All tiers', 'leadership' => 'Leadership', 'management' => 'Management', 'team' => 'The team (incl. ops)', 'ops' => 'Ops only' ],
@@ -33,7 +40,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 		$this->add_control( 'body', [ 'label' => 'Strip body', 'type' => \Elementor\Controls_Manager::TEXTAREA,
 			'default' => "Operators, engineers and market specialists. The people you'll actually talk to when you engage Modulr." ] );
 		$this->add_control( 'focus_text', [ 'label' => 'Card focus line', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Built environment search.' ] );
-		$this->add_control( 'limit', [ 'label' => 'Strip card count', 'type' => \Elementor\Controls_Manager::NUMBER, 'default' => 4, 'min' => 1, 'max' => 12 ] );
+		$this->add_control( 'limit', [ 'label' => 'Strip card count', 'type' => \Elementor\Controls_Manager::NUMBER, 'default' => 4, 'min' => 1, 'max' => 24 ] );
 		// Oct 2026 (ModulR): the strip can exclude leadership – it shows the
 		// working desk, not the founders.
 		$this->add_control( 'no_leaders', [ 'label' => 'Strip: exclude leadership tier', 'type' => \Elementor\Controls_Manager::SWITCHER, 'default' => '' ] );
@@ -69,6 +76,12 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 				$t = $tier_of( $p->ID );
 				return 'team' === $tier ? in_array( $t, [ 'team', 'ops' ], true ) : $t === $tier;
 			} ) );
+		}
+		// Nov 2026 (round 18): seniority filter – the group About's
+		// VPs / Team Leads / Senior / Consultants / Operations sections.
+		$tier2 = $s['tier2'] ?? '';
+		if ( $tier2 ) {
+			$posts = array_values( array_filter( $posts, static fn( $p ) => $tier2 === (string) get_post_meta( $p->ID, '_verto_tier2', true ) ) );
 		}
 		// Nov 2026 (Alex): ops sit AFTER the consultants in The team section.
 		$rank = [ 'leadership' => 0, 'management' => 1, 'team' => 2, 'ops' => 3 ];

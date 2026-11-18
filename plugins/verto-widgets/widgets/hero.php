@@ -56,12 +56,14 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 		$this->add_control( 'stat_items', [
 			'label' => 'Stats', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $srep->get_controls(), 'title_field' => '{{{ value }}}{{{ suffix }}} – {{{ label }}}',
+			// Nov 2026 (Alex, "Verto banner change" + amendments email): new
+			// equity line, US dropped from relocation, 2x dropped from the
+			// holiday incentives with the destinations named instead.
 			'default' => [
 				[ 'value' => '40', 'suffix' => '%', 'label' => "Commission, one of the market's best splits" ],
-				[ 'value' => 'Equity', 'suffix' => '', 'label' => 'Share scheme' ],
-				[ 'value' => '2', 'suffix' => '×', 'label' => 'Holiday incentives every year' ],
-				// Round 5, item 9: client wants "US" only (was "UK · US").
-				[ 'value' => 'US', 'suffix' => '', 'label' => 'International relocation opportunities' ],
+				[ 'value' => 'Equity', 'suffix' => '', 'label' => 'Those who built it are rewarded' ],
+				[ 'value' => 'Incentives', 'suffix' => '', 'label' => 'Ibiza, Vegas, Prague, Barcelona' ],
+				[ 'value' => 'International', 'suffix' => '', 'label' => 'Relocation opportunities' ],
 			],
 		] );
 		$this->end_controls_section();

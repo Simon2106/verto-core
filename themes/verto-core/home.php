@@ -105,22 +105,9 @@ get_header();
 		<?php the_posts_pagination(); ?>
 	<?php endif; ?>
 
-	<?php if ( 'verto' !== $verto_brand && function_exists( 'verto_services_band_html' ) ) : ?>
-		<!-- Round 5, item 5: the compact services band (three engagement
-		     models → /clients) appears on every brand-site page, including
-		     this Insights listing. -->
-		<div class="verto-bs"><?php echo verto_services_band_html(); // phpcs:ignore ?></div>
-		<!-- Oct 2026 (Alex): a contact route at the end of the Insights page. -->
-		<section class="verto-bs verto-insights-contact">
-			<div class="vbs-ctaband" style="background:var(--ink);color:var(--ink-foreground);">
-				<h2 class="display-3">Ready to talk?</h2>
-				<div class="verto-insights-contact__ctas">
-					<a class="btn-base btn-primary" href="/clients#contact">Hire with us</a>
-					<a class="btn-base btn-ghost-outline" style="color:var(--ink-foreground);border-color:color-mix(in oklab, var(--ink-foreground) 30%, transparent);" href="/candidates#contact">Start a conversation</a>
-				</div>
-			</div>
-		</section>
-	<?php endif; ?>
+	<?php /* Nov 2026 (Alex): services band removed from the Insights
+	   listing on every brand site ("remove how we work on the insights
+	   page for all brand sites"). */ ?>
 
 	<?php if ( 'verto' === $verto_brand ) : ?>
 		<!-- RECENT EVENTS – a compact rail of the client's event films
