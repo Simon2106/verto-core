@@ -60,7 +60,15 @@ class Verto_Vincere {
 	 * or add id lines ("11841=modulr") to the Mapping settings instead.
 	 */
 	const SECTOR_FIELD_KEY     = 'website_sector';
-	const SECTOR_OPTION_LABELS = [ '11840' => 'edison lux' ];
+	// Nov 2026: 11873/11874 confirmed from Alex's test postings ("sales
+	// engineer test" / "Sales Manager", created for vertek and modulr in
+	// that order). Legacy options 11423/11424/11602 predate the brand
+	// tagging and intentionally stay unmapped (brand 'verto').
+	const SECTOR_OPTION_LABELS = [
+		'11840' => 'edison lux',
+		'11873' => 'vertek',
+		'11874' => 'modulr',
+	];
 	const TR_OAUTH_STATE = 'verto_vincere_oauth_state';
 	// v2: verto_job became public with the /jobs/ rewrite slug (job detail
 	// pages) – bumping forces the one-time soft flush in register_rewrite().
