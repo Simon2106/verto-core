@@ -348,6 +348,13 @@ class Verto_Installer {
 			// cards – 16:9 crops of the existing licensed energy assets.
 			'spec_edison_01' => 'spec-edison-01.jpg',
 			'spec_edison_02' => 'spec-edison-02.jpg',
+			// Nov 2026 (Alex, "Edison lux images to change"): client-supplied
+			// sector photos – power gen keeps its existing tile.
+			'edison_cc_v2'         => 'edison-cc-v2.jpg',
+			'edison_renewables_v2' => 'edison-renewables-v2.jpg',
+			'edison_biomass_v2'    => 'edison-biomass-v2.jpg',
+			'edison_nuclear_v2'    => 'edison-nuclear-v2.jpg',
+			'edison_epc_v2'        => 'edison-epc-v2.jpg',
 			'spec_edison_03' => 'spec-edison-03.jpg',
 			'spec_edison_04' => 'spec-edison-04.jpg',
 			'spec_edison_05' => 'spec-edison-05.jpg',
@@ -2157,13 +2164,13 @@ class Verto_Installer {
 					// Oct 2026 (Alex): pylon swapped for the turbine-machinery close-up
 				// (gensets/turbines fit the Power Generation copy, same palette).
 				[ 'icon' => 'flame',     'image' => 'insight_fluidpower', 'title' => 'Power Generation',                'description' => 'Generator OEMs, rental fleets and service providers, covering gensets, engines, turbines, switchgear and controls, from standard packages to custom builds.' ],
-					[ 'icon' => 'wind',      'image' => 'spec_edison_02', 'title' => 'Combined Cycle & Gas Generation',     'description' => 'Our experience spans combined cycle, simple cycle, reciprocating engines, and gas compression, supporting outages, upgrades, and ongoing operations.' ],
-					[ 'icon' => 'hard-hat',  'image' => 'spec_edison_03', 'title' => 'Renewables & Energy Transition',      'description' => 'Solar, wind, battery storage, hydrogen, and RNG, supporting construction, commissioning, and operational phases.' ],
+					[ 'icon' => 'wind',      'image' => 'edison_cc_v2', 'title' => 'Combined Cycle & Gas Generation',     'description' => 'Our experience spans combined cycle, simple cycle, reciprocating engines, and gas compression, supporting outages, upgrades, and ongoing operations.' ],
+					[ 'icon' => 'hard-hat',  'image' => 'edison_renewables_v2', 'title' => 'Renewables & Energy Transition',      'description' => 'Solar, wind, battery storage, hydrogen, and RNG, supporting construction, commissioning, and operational phases.' ],
 					// Oct 2026 (Alex): turbine-fan crop swapped for the dusk plant/
 				// chimney shot (reads as an EFW plant, keeps the dark-gold palette).
-				[ 'icon' => 'wrench',    'image' => 'insight_power',  'title' => 'Biomass, EFW & Waste-to-Energy',     'description' => 'Biomass, EFW and coal, our teams bring knowledge of the fuel, the plant, and the regulatory environment.' ],
-					[ 'icon' => 'atom',      'image' => 'spec_edison_05', 'title' => 'Nuclear',                             'description' => 'For new build, SMR, fusion and decommissioning. We provide expertise in engineering, operations, and maintenance.' ],
-					[ 'icon' => 'briefcase', 'image' => 'spec_edison_06', 'title' => 'EPC – Construction & Commissioning',  'description' => 'Our support covers FEED, construction, commissioning, and project delivery.' ],
+				[ 'icon' => 'wrench',    'image' => 'edison_biomass_v2',  'title' => 'Biomass, EFW & Waste-to-Energy',     'description' => 'Biomass, EFW and coal, our teams bring knowledge of the fuel, the plant, and the regulatory environment.' ],
+					[ 'icon' => 'atom',      'image' => 'edison_nuclear_v2', 'title' => 'Nuclear',                             'description' => 'For new build, SMR, fusion and decommissioning. We provide expertise in engineering, operations, and maintenance.' ],
+					[ 'icon' => 'briefcase', 'image' => 'edison_epc_v2', 'title' => 'EPC – Construction & Commissioning',  'description' => 'Our support covers FEED, construction, commissioning, and project delivery.' ],
 				],
 				/* ── Round 10: curated real feedback (client's Canva doc, Sep
 				      2026), lightly cleaned only (typos/spacing, meaning
@@ -2877,7 +2884,7 @@ class Verto_Installer {
 		// Oct 2026 (Alex, ModulR round): ModulR's clouds photo → data centre.
 		// Nov 2026 (Alex, round 19): "show a variety of the markets we cover" –
 		// Vertek's panel takes the CNC tile from the What-we-cover set.
-		$wwd_img = [ 'edison-lux' => 'spec_edison_02', 'modulr' => 'modulr_datacentre', 'vertek' => 'vertek_spec_cnc' ][ $brand ] ?? 'about_image';
+		$wwd_img = [ 'edison-lux' => 'edison_cc_v2', 'modulr' => 'modulr_datacentre', 'vertek' => 'vertek_spec_cnc' ][ $brand ] ?? 'about_image';
 		$wwd_alt = [ 'edison-lux' => 'A combined-cycle gas plant – the market Edison Lux staffs', 'modulr' => 'Data centre corridor lined with server racks', 'vertek' => 'CNC machining centre cutting a precision component' ][ $brand ] ?? 'A specialist team at work';
 		$about_tail = [
 			self::section( [ self::widget( 'verto-about-split', [
@@ -3003,7 +3010,7 @@ class Verto_Installer {
 				// EPC construction asset instead of a third run of pylons.
 				'headline'  => $c['clients_split']['headline'] ?? 'A partnership, not a placement.',
 				'body'      => $c['clients_split']['body'] ?? "We exist to find you the best technical commercial talent on the market – and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
-				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_06', 'vertek' => 'insight_hvac', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'edison_epc_v2', 'vertek' => 'insight_hvac', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
 				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Rooftop HVAC plant units under a broken sky', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
 				// Nov 2026 (Alex): colour beats black-and-white on Vertek.
 				'grayscale' => 'vertek' === $brand ? '' : 'yes',
