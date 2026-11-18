@@ -27,7 +27,7 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 		// the _verto_tier2 meta (vp / lead / senior / rec / ops).
 		$this->add_control( 'tier2', [
 			'label' => 'Filter by seniority (_verto_tier2 meta)', 'type' => \Elementor\Controls_Manager::SELECT,
-			'options' => [ '' => 'Off', 'vp' => 'VPs', 'lead' => 'Team Leads', 'senior' => 'Senior Consultants', 'rec' => 'Recruitment Consultants', 'ops' => 'Operations' ],
+			'options' => [ '' => 'Off', 'vp' => 'VPs', 'tl' => 'Team Leaders', 'principal' => 'Principal Recruitment Consultants', 'lead' => 'Lead Consultants', 'senior' => 'Senior Consultants', 'rec' => 'Recruitment Consultants', 'ops' => 'Operations' ],
 			'default' => '',
 		] );
 		$this->add_control( 'tier', [

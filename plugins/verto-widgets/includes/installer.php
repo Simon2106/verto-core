@@ -525,7 +525,7 @@ class Verto_Installer {
 	// Principal Consultant | Power & Energy).
 	// 0.22.22 (Alex): Simon/Gary/Charlotte into the team tranche, Megan and
 	// Louis retired, ops ordered after the consultants.
-	const TEAM_STRUCTURE = 'structure-0.22.37';
+	const TEAM_STRUCTURE = 'structure-0.22.39';
 
 	/**
 	 * The client's definitive team structure (Alex Hatfield, Aug 2026).
@@ -551,23 +551,24 @@ class Verto_Installer {
 			/* ── Management ── */
 			'Dan Bisset'        => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'edison-dan-bisset-v4.png' ],
 			
-			'George East'       => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-george-east-v4.png' ],
-			'Ben Tiffin'        => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin-v4.png' ],
+			'George East'       => [ 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-george-east-v4.png' ],
+			'Ben Tiffin'        => [ 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin-v4.png' ],
 			
-			'Ben Cranston'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-cranston.png' ],
-			'Sade Kendall'      => [ 'brands' => [ 'modulr' ], 'tier2' => 'lead', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'modulr-sade-kendall-v4.png' ],
+			'Ben Cranston'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-cranston.png' ],
+			'Sade Kendall'      => [ 'brands' => [ 'modulr' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'modulr-sade-kendall-v4.png' ],
 			
 			/* ── Ops (Verto group pages only – fold into "The team" section) ── */
 			'Karabo Mothopeng' => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-karabo-mothopeng-v4.png' ],
 			'Angel Ndlovu'     => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-angel-ndlovu-v4.png' ],
-			'Alice Fryer'      => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Talent Acquisition & Operations Lead', 'photo' => 'verto-alice-fryer.png' ],
-			'Jake Price'       => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Finance & Administration Lead', 'photo' => 'verto-jake-price.png' ],
 			'Alfie Gray'       => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => 'verto-alfie-gray.png' ],
+			// Nov 2026 (Alex, "changes 3"): new starters – no photos yet
+			// (initials tiles until they arrive); roles TBC with Alex.
+			'Lucy Claydon'     => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Operations', 'photo' => '' ],
 			/* ── The team – Vertek ──
 			   Nov 2026 (Alex): Gary moves out of the Management tranche. ── */
 			'Gary Hunt'        => [ 'brands' => [ 'vertek' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'vertek-gary-hunt-v4.png' ],
 			'Alice Schofield'  => [ 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-alice-schofield-v4.png' ],
-			"Harley O'Connell" => [ 'brands' => [ 'vertek' ], 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-harley-oconnell-v4.png' ],
+			"Harley O'Connell" => [ 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-harley-oconnell-v4.png' ],
 			'Sam Parnell'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-sam-parnell-v4.png' ],
 			'Frank Warner'     => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-frank-warner-v4.png' ],
 			'Harvey Earl'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-harvey-earl-v4.png' ],
@@ -578,6 +579,8 @@ class Verto_Installer {
 			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-rex-reavley-v4.png' ],
 			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-olivia-pinhorne-v4.png' ],
 			'Hannah Gresses'   => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-hannah-gresses.png' ],
+			'Hannah Benneyworth' => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => '' ],
+			'Nolan Escover'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => '' ],
 			/* ── The team – Verto Life Sciences (sits with the group) ── */
 			'Martyn Jamieson'  => [ 'brands' => [ 'verto' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Life Sciences', 'photo' => 'verto-martyn-jamieson.png' ],
 			/* ── The team – ModulR (PDF: Jake now sits on ModulR only) ──
@@ -591,12 +594,13 @@ class Verto_Installer {
 			/* ── The team – Edison Lux ──
 			   Nov 2026 (Alex): Simon moves out of the Management tranche. ── */
 			'Simon Cottenham'    => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'edison-simon-cottenham.png' ],
-			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-v4.png' ],
+			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'principal', 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-v4.png' ],
 			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-joe-williams-v4.png' ],
 			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-noah-ward-v4.png' ],
 			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-v4.png' ],
 			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-oliver-hesmondhalgh.png' ],
 			'Matthew Pearce'     => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-matthew-pearce-v4.png' ],
+			'Justice Conley'     => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => '' ],
 		];
 	}
 
@@ -623,7 +627,7 @@ class Verto_Installer {
 		];
 		// Previously seeded people who are NOT in the client's official
 		// structure – unpublished on migration (kept as drafts, not deleted).
-		$retired = [ 'Abi Ward', 'Cj Edwards', 'CJ Edwards', 'Chris J Simmons', 'Chris J. Simmons', 'Megan Grant', 'Louis Fuller', 'Lethu Zwane' ];
+		$retired = [ 'Abi Ward', 'Cj Edwards', 'CJ Edwards', 'Chris J Simmons', 'Chris J. Simmons', 'Megan Grant', 'Louis Fuller', 'Lethu Zwane', 'Alice Fryer', 'Jake Price' ];
 
 		$existing = [];
 		foreach ( get_posts( [ 'post_type' => 'verto_team', 'numberposts' => -1, 'post_status' => 'any' ] ) as $p ) {
@@ -1623,7 +1627,19 @@ class Verto_Installer {
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => '',
 					'size'  => 'verto-display-3',
-					'lines' => [ [ '_id' => self::eid(), 'line' => 'Team Leads.' ] ],
+					'lines' => [ [ '_id' => self::eid(), 'line' => 'Team Leaders.' ] ],
+				] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'tl' ] ),
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => '',
+					'size'  => 'verto-display-3',
+					'lines' => [ [ '_id' => self::eid(), 'line' => 'Principal Recruitment Consultants.' ] ],
+				] ),
+				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'principal' ] ),
+				self::widget( 'verto-section-intro', [
+					'eyebrow' => '',
+					'size'  => 'verto-display-3',
+					'lines' => [ [ '_id' => self::eid(), 'line' => 'Lead Consultants.' ] ],
 				] ),
 				self::widget( 'verto-team-grid', [ 'mode' => 'all', 'tier2' => 'lead' ] ),
 				self::widget( 'verto-section-intro', [
