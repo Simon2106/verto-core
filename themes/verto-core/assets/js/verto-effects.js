@@ -101,6 +101,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("[data-verto-jobs]").forEach(function (board) {
       var state = { brand: "all", location: "all", level: "all" };
+      var q = ""; // round 22: keyword search (title match)
       var rows = board.querySelectorAll(".verto-jobs__row");
       var empty = board.querySelector(".verto-jobs__empty");
       var count = board.querySelector("[data-jobs-count]");
@@ -109,10 +110,12 @@
       function apply() {
         var shown = 0;
         rows.forEach(function (r) {
+          var title = (r.querySelector(".verto-jobs__title") || r).textContent.toLowerCase();
           var ok =
             (state.brand === "all" || r.dataset.brand === state.brand) &&
             (state.location === "all" || r.dataset.location === state.location) &&
-            (state.level === "all" || r.dataset.level === state.level);
+            (state.level === "all" || r.dataset.level === state.level) &&
+            (q === "" || title.indexOf(q) !== -1);
           r.hidden = !ok;
           if (ok) shown++;
         });
@@ -137,8 +140,16 @@
         });
       });
 
+      var search = board.querySelector("[data-jobs-search]");
+      if (search) search.addEventListener("input", function () {
+        q = search.value.trim().toLowerCase();
+        apply();
+      });
+
       if (clear) clear.addEventListener("click", function () {
         state = { brand: "all", location: "all", level: "all" };
+        q = "";
+        if (search) search.value = "";
         board.querySelectorAll("[data-filter-group]").forEach(function (group) {
           group.querySelectorAll(".verto-chip").forEach(function (c) {
             c.classList.toggle("is-active", c.dataset.value === "all");

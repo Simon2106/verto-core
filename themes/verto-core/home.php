@@ -14,7 +14,7 @@
  */
 $verto_brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
 $verto_hub   = [
-	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Incentive trips, awards, promotions and the occasional market note – straight from the team.' ],
+	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Sales days, incentive trips, awards, promotions and the occasional market note – straight from the team.' ],
 	'modulr'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'architecture & data centres.', 'body' => 'The thinking from the consultants closest to the architecture & data centres market.' ],
 	'vertek'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'technical sales, service & engineering.', 'body' => 'The thinking from the consultants closest to the technical sales, service & engineering market.' ],
 	// Edison copy doc (Oct 2026), page 13: "Inside the industry."

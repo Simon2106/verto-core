@@ -68,6 +68,12 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		// Round 4, item 5: catchier heading, and no word "roles" in the section.
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Your next desk is here.' ] );
 		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks – not client vacancies. And if your desk isn't listed yet, we still want to hear from experienced consultants." ] );
+		// Round 22 (Nov 2026, Alex): dedicated brand jobs pages + capped
+		// compact boards ("could have 30, 50 or even more at any one time").
+		$this->add_control( 'full_eyebrow', [ 'label' => 'Full-board eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join Verto' ] );
+		$this->add_control( 'limit', [ 'label' => 'Compact: max rows (0 = all)', 'type' => \Elementor\Controls_Manager::NUMBER, 'default' => 0, 'min' => 0, 'max' => 50 ] );
+		$this->add_control( 'view_all_text', [ 'label' => 'Compact: view-all button text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
+		$this->add_control( 'view_all_link', [ 'label' => 'Compact: view-all link', 'type' => \Elementor\Controls_Manager::URL ] );
 		$this->add_control( 'apply_url', [ 'label' => 'Job click-through URL', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/contact' ] ] );
 		$this->add_control( 'vincere_shortcode', [ 'label' => 'Vincere shortcode (optional)', 'type' => \Elementor\Controls_Manager::TEXT, 'description' => 'Once the Vincere plugin is installed, paste its shortcode – it replaces the placeholder roles.' ] );
 		$this->end_controls_section();
@@ -117,6 +123,16 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 	 *  sits correctly on light (Edison) and dark (Vertek/ModulR) grounds. */
 	private function render_compact( array $s, array $jobs ): void {
 		if ( ! $jobs ) return; // nothing seeded yet – render nothing
+		// Round 22: cap the rows and offer "View all jobs" through to the
+		// dedicated jobs page when more exist.
+		$cap      = max( 0, (int) ( $s['limit'] ?? 0 ) );
+		$total    = count( $jobs );
+		$view_url = (string) ( $s['view_all_link']['url'] ?? '' );
+		$view_txt = trim( (string) ( $s['view_all_text'] ?? '' ) );
+		if ( $cap > 0 && $total > $cap ) {
+			$jobs = array_slice( $jobs, 0, $cap );
+		}
+		$show_view_all = '' !== $view_txt && '' !== $view_url && ( 0 === $cap || $total > $cap );
 		?>
 		<div class="verto-jobs-compact">
 			<div class="container-wide">
@@ -141,6 +157,11 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 						</div>
 					<?php endforeach; ?>
 				</div>
+				<?php if ( $show_view_all ) : ?>
+					<div class="verto-jobs-compact__viewall">
+						<a class="btn-base btn-primary" href="<?php echo esc_url( $view_url ); ?>"><?php echo esc_html( $view_txt ); ?><?php if ( $cap > 0 && $total > $cap ) : ?> (<?php echo (int) $total; ?>)<?php endif; ?></a>
+					</div>
+				<?php endif; ?>
 			</div>
 		</div>
 		<?php
@@ -167,6 +188,23 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 			}
 		} elseif ( 'compact' === ( $s['layout'] ?? 'full' ) ) {
 			$this->render_compact( $s, $live ? $live : ( $client ? [] : self::JOBS ) );
+			return;
+		}
+		// Round 22: the client-mode FULL board never shows placeholders – a
+		// friendly empty state renders until tagged jobs sync in.
+		if ( $client && ! $live ) {
+			?>
+			<div class="verto-jobs" data-verto-jobs>
+				<div class="verto-intro">
+					<div class="verto-jobs__eyebrow"><?php echo esc_html( ( $s['full_eyebrow'] ?? '' ) ?: 'Live roles' ); ?></div>
+					<h2 class="verto-title-reveal verto-display-2" style="margin-top:1.25rem;">
+						<span class="line-mask"><span class="line-inner"><?php echo esc_html( $s['heading'] ); ?></span></span>
+					</h2>
+					<p class="verto-intro__body">No live roles right now. New positions land here the moment they open – or start a conversation and we'll come to you first.</p>
+					<p style="margin-top:2rem;"><a class="btn-base btn-primary" href="/clients#contact">Start a conversation</a></p>
+				</div>
+			</div>
+			<?php
 			return;
 		}
 		$jobs      = $live ? $live : self::JOBS;
@@ -196,7 +234,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 				<div class="verto-apply-banner <?php echo $flash_ok ? 'is-ok' : 'is-error'; ?>" role="status"><?php echo esc_html( $flash ); ?></div>
 			<?php endif; ?>
 			<div class="verto-intro">
-				<div class="verto-jobs__eyebrow">Join Verto</div>
+				<div class="verto-jobs__eyebrow"><?php echo esc_html( ( $s['full_eyebrow'] ?? '' ) ?: 'Join Verto' ); ?></div>
 				<h2 class="verto-title-reveal verto-display-2" style="margin-top:1.25rem;">
 					<span class="line-mask"><span class="line-inner"><?php echo esc_html( $s['heading'] ); ?></span></span>
 				</h2>
@@ -276,6 +314,12 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							<span class="verto-jobs__panellabel">Filter</span>
 							<button type="button" class="verto-jobs__clear" data-jobs-clear hidden>Clear</button>
 						</div>
+						<?php // Round 22: keyword search (title match, JS §5). ?>
+						<div class="verto-jobs__group">
+							<div class="verto-jobs__grouplabel">Search</div>
+							<input type="search" class="verto-jobs__search" data-jobs-search placeholder="Search roles&hellip;" aria-label="Search roles" />
+						</div>
+						<?php if ( '' === $brand_scope ) : // single-brand boards skip the brand chips ?>
 						<div class="verto-jobs__group">
 							<div class="verto-jobs__grouplabel">Brand</div>
 							<div class="verto-jobs__chips" data-filter-group="brand">
@@ -285,6 +329,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 								<?php endforeach; ?>
 							</div>
 						</div>
+						<?php endif; ?>
 						<div class="verto-jobs__group">
 							<div class="verto-jobs__grouplabel">Location</div>
 							<div class="verto-jobs__chips" data-filter-group="location">
