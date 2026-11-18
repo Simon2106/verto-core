@@ -2737,7 +2737,12 @@ class Verto_Installer {
 				  'bullets' => $c['audiences']['candidate']['bullets'], 'cta_text' => $c['audiences']['candidate']['cta'],
 				  'cta_link' => [ 'url' => '/candidates' ] ],
 			] ] ) ], 'verto-bs' ),
-			self::section( [ $team_strip ], 'verto-bs' ),
+			// Nov 2026 (Alex, round 19): the team strip comes OFF the home
+			// page – the rotating "Speak to a specialist" band replaces it.
+			self::section( [ self::widget( 'verto-specialist-band', [
+				'brand'    => $brand,
+				'cta_link' => [ 'url' => '/clients#contact' ],
+			] ) ], 'verto-bs' ),
 			self::section( [ self::widget( 'verto-posts-grid', [
 				'count'            => 3,
 				'kicker'           => $name,
@@ -2816,8 +2821,10 @@ class Verto_Installer {
 		// Round 9, item 13: Edison's "What we do today" drops the stock
 		// clouds/office photo for sector (plant) imagery from the licensed set.
 		// Oct 2026 (Alex, ModulR round): ModulR's clouds photo → data centre.
-		$wwd_img = [ 'edison-lux' => 'spec_edison_02', 'modulr' => 'modulr_datacentre', 'vertek' => 'insight_manufacturing' ][ $brand ] ?? 'about_image';
-		$wwd_alt = [ 'edison-lux' => 'A combined-cycle gas plant – the market Edison Lux staffs', 'modulr' => 'Data centre corridor lined with server racks', 'vertek' => 'Precision machinery on an advanced manufacturing line' ][ $brand ] ?? 'A specialist team at work';
+		// Nov 2026 (Alex, round 19): "show a variety of the markets we cover" –
+		// Vertek's panel takes the CNC tile from the What-we-cover set.
+		$wwd_img = [ 'edison-lux' => 'spec_edison_02', 'modulr' => 'modulr_datacentre', 'vertek' => 'vertek_spec_cnc' ][ $brand ] ?? 'about_image';
+		$wwd_alt = [ 'edison-lux' => 'A combined-cycle gas plant – the market Edison Lux staffs', 'modulr' => 'Data centre corridor lined with server racks', 'vertek' => 'CNC machining centre cutting a precision component' ][ $brand ] ?? 'A specialist team at work';
 		$about_tail = [
 			self::section( [ self::widget( 'verto-about-split', [
 				'variant'   => 'panel',
@@ -2895,7 +2902,12 @@ class Verto_Installer {
 		if ( 'edison-lux' !== $brand ) {
 			$about[] = self::four_models_section( 'muted', true, $brand, $name );
 		}
-		$about[] = self::section( [ $team_strip ], 'verto-bs' );
+		// Nov 2026 (Alex, round 19): the whole-team grid on ABOUT becomes
+		// the "Speak to a specialist" band – one rotating photo at a time.
+		$about[] = self::section( [ self::widget( 'verto-specialist-band', [
+				'brand'    => $brand,
+				'cta_link' => [ 'url' => '/clients#contact' ],
+			] ) ], 'verto-bs' );
 		$about[] = self::section( [ self::widget( 'verto-cta-band', [
 			'heading'   => 'Ready to talk?',
 			'cta1_text' => "Hire with $name",
@@ -2937,8 +2949,8 @@ class Verto_Installer {
 				// EPC construction asset instead of a third run of pylons.
 				'headline'  => $c['clients_split']['headline'] ?? 'A partnership, not a placement.',
 				'body'      => $c['clients_split']['body'] ?? "We exist to find you the best technical commercial talent on the market – and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
-				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_06', 'vertek' => 'vertek_spec_automation', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
-				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Robotic arm on an automated production line', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_06', 'vertek' => 'vertek_spec_compressors', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
+				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Industrial air compressors in a plant room', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
 				// Nov 2026 (Alex): colour beats black-and-white on Vertek.
 				'grayscale' => 'vertek' === $brand ? '' : 'yes',
 				'panel_bg'  => '#ffffff',

@@ -117,9 +117,20 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 					</div>
 					<div class="vbs-team__grid">
 						<?php while ( $q->have_posts() ) : $q->the_post();
-							$role = get_post_meta( get_the_ID(), '_verto_role', true ) ?: 'Consultant';
+							$role   = get_post_meta( get_the_ID(), '_verto_role', true ) ?: 'Consultant';
+							// Nov 2026 (Alex, round 19): the focus line becomes the
+							// person's EMAIL (meta override, else firstname@), and
+							// the whole card clicks through to their LinkedIn when
+							// the _verto_linkedin meta is set.
+							$vbs_li    = (string) get_post_meta( get_the_ID(), '_verto_linkedin', true );
+							$vbs_email = (string) get_post_meta( get_the_ID(), '_verto_email', true );
+							if ( '' === $vbs_email ) {
+								$vbs_first = strtolower( (string) strtok( trim( get_the_title() ), ' ' ) );
+								$vbs_email = preg_replace( '/[^a-z]/', '', $vbs_first ) . '@vertopeople.com';
+							}
+							$vbs_tag = '' !== $vbs_li ? 'a' : 'div';
 							?>
-							<div class="vbs-team__card" style="background:color-mix(in oklab, var(--brand) 6%, var(--muted));">
+							<<?php echo $vbs_tag; ?> class="vbs-team__card" style="background:color-mix(in oklab, var(--brand) 6%, var(--muted));"<?php echo '' !== $vbs_li ? ' href="' . esc_url( $vbs_li ) . '" target="_blank" rel="noopener" aria-label="' . esc_attr( get_the_title() . ' on LinkedIn' ) . '"' : ''; ?>>
 								<?php if ( has_post_thumbnail() ) : ?>
 									<?php the_post_thumbnail( 'medium_large', [ 'class' => 'vbs-team__photo', 'loading' => 'lazy' ] ); ?>
 								<?php else : ?>
@@ -130,11 +141,9 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 								<div class="vbs-team__overlay" style="background:linear-gradient(180deg, color-mix(in oklab, var(--brand) 0%, transparent) 30%, color-mix(in oklab, var(--brand) 85%, #000) 100%);color:var(--brand-foreground, #fff);">
 									<div class="vbs-team__name"><?php the_title(); ?></div>
 									<div class="vbs-team__role"><?php echo esc_html( $role ); ?></div>
-									<?php $vbs_li = (string) get_post_meta( get_the_ID(), '_verto_linkedin', true ); ?>
-									<?php if ( '' !== $vbs_li ) : ?><a class="vbs-team__linkedin" href="<?php echo esc_url( $vbs_li ); ?>" target="_blank" rel="noopener">LinkedIn &rarr;</a><?php endif; ?>
-									<?php if ( $s['focus_text'] ) : ?><p class="vbs-team__focus"><?php echo esc_html( $s['focus_text'] ); ?></p><?php endif; ?>
+									<a class="vbs-team__email" href="mailto:<?php echo esc_attr( $vbs_email ); ?>"><?php echo esc_html( $vbs_email ); ?></a>
 								</div>
-							</div>
+							</<?php echo $vbs_tag; ?>>
 						<?php endwhile; ?>
 					</div>
 				</div>

@@ -52,10 +52,14 @@ class Verto_Widget_Chip_Grid extends \Elementor\Widget_Base {
 				<div class="vbs-chips__frame" style="background:color-mix(in oklab, var(--brand) 18%, transparent);">
 					<div class="vbs-chips__grid">
 						<?php foreach ( $s['items'] as $i => $it ) : ?>
-							<div class="vbs-chips__cell" style="background:var(--background);">
-								<span class="vbs-chips__num">0<?php echo (int) $i + 1; ?></span>
+							<?php // Nov 2026 (Alex, round 19): chips stand out more and click
+							// through to the specialists (true per-sector consultant pages
+							// need a sector-per-consultant mapping - CLIENT-NEEDS). ?>
+							<a class="vbs-chips__cell" style="background:var(--background);" href="/clients#contact">
+								<span class="vbs-chips__num" style="color:var(--brand);">0<?php echo (int) $i + 1; ?></span>
 								<span><?php echo esc_html( $it['label'] ); ?></span>
-							</div>
+								<span class="vbs-chips__arrow" aria-hidden="true">&rarr;</span>
+							</a>
 						<?php endforeach; ?>
 					</div>
 				</div>

@@ -3,14 +3,14 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.22.37
+ * Version: 0.22.38
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.22.37' );
+define( 'VERTO_WIDGETS_VERSION', '0.22.38' );
 
 /**
  * Compact services band for the brand sites: the FOUR Verto engagement
@@ -153,12 +153,19 @@ add_action( 'add_meta_boxes', function () {
 		wp_nonce_field( 'verto_team_details', 'verto_team_nonce' );
 		$role   = get_post_meta( $post->ID, '_verto_role', true );
 		$leader = get_post_meta( $post->ID, '_verto_leader', true );
+		$email  = get_post_meta( $post->ID, '_verto_email', true );
+		$li     = get_post_meta( $post->ID, '_verto_linkedin', true );
 		printf( '<p><label>Role<br/><input type="text" name="verto_role" value="%s" class="widefat"/></label></p>', esc_attr( $role ) );
+		// Nov 2026 (round 19): cards show the email and click through to LinkedIn.
+		printf( '<p><label>Email (blank = firstname@vertopeople.com)<br/><input type="email" name="verto_email" value="%s" class="widefat"/></label></p>', esc_attr( $email ) );
+		printf( '<p><label>LinkedIn URL<br/><input type="url" name="verto_linkedin" value="%s" class="widefat"/></label></p>', esc_attr( $li ) );
 		printf( '<p><label><input type="checkbox" name="verto_leader" value="1" %s/> Show in Leadership</label></p>', checked( $leader, '1', false ) );
 	}, 'verto_team', 'side' );
 } );
 add_action( 'save_post_verto_team', function ( $post_id ) {
 	if ( ! isset( $_POST['verto_team_nonce'] ) || ! wp_verify_nonce( $_POST['verto_team_nonce'], 'verto_team_details' ) ) return;
 	update_post_meta( $post_id, '_verto_role', sanitize_text_field( $_POST['verto_role'] ?? '' ) );
+	update_post_meta( $post_id, '_verto_email', sanitize_email( $_POST['verto_email'] ?? '' ) );
+	update_post_meta( $post_id, '_verto_linkedin', esc_url_raw( $_POST['verto_linkedin'] ?? '' ) );
 	update_post_meta( $post_id, '_verto_leader', isset( $_POST['verto_leader'] ) ? '1' : '' );
 } );
