@@ -33,6 +33,41 @@ get_header();
 		</h1>
 		<p class="verto-intro__body"><?php echo esc_html( $verto_head['body'] ); ?></p>
 	</div>
+	<?php
+	// Nov 2026 (Alex, round 21): "I love the sales day videos and tiles –
+	// duplicate and add to the top of whats going on page". Same markup and
+	// classes as the verto-salesdays-mosaic widget, so the hover-play JS
+	// (verto-effects.js) and CSS pick it up automatically. Group site only;
+	// the films resolve from the installer's imported-media map.
+	if ( 'verto' === $verto_brand && ! is_paged() ) :
+		$verto_sd_media = (array) get_option( 'verto_installer_media', [] );
+		$verto_sd_first = true;
+		$verto_sd_out   = '';
+		for ( $verto_sd_i = 1; $verto_sd_i <= 10; $verto_sd_i++ ) {
+			$verto_sd_key = sprintf( 'salesday_%02d', $verto_sd_i );
+			$verto_sd_url = (string) ( $verto_sd_media[ $verto_sd_key ]['url'] ?? '' );
+			if ( '' === $verto_sd_url ) {
+				continue;
+			}
+			$verto_sd_poster = (string) ( $verto_sd_media[ $verto_sd_key . '_poster' ]['url'] ?? '' );
+			$verto_sd_label  = sprintf( 'Sales day film %d of 10', $verto_sd_i );
+			$verto_sd_out   .= '<figure class="verto-salesdays__tile" data-salesday-tile>';
+			if ( '' !== $verto_sd_poster ) {
+				$verto_sd_out .= '<img class="verto-salesdays__poster" src="' . esc_url( $verto_sd_poster ) . '" alt="' . esc_attr( $verto_sd_label ) . '" loading="lazy" />';
+			}
+			$verto_sd_out .= '<video class="verto-salesdays__video" muted playsinline loop preload="none"' . ( '' !== $verto_sd_poster ? ' poster="' . esc_url( $verto_sd_poster ) . '"' : '' ) . ' data-src="' . esc_url( $verto_sd_url ) . '" aria-label="' . esc_attr( $verto_sd_label ) . '" tabindex="-1"></video>';
+			if ( $verto_sd_first ) {
+				$verto_sd_out  .= '<span class="verto-salesdays__hint" data-salesday-hint aria-hidden="true">Hover to play</span>';
+				$verto_sd_first = false;
+			}
+			$verto_sd_out .= '</figure>';
+		}
+		if ( '' !== $verto_sd_out ) : ?>
+			<div class="verto-salesdays verto-hub-salesdays" data-verto-salesdays>
+				<div class="verto-salesdays__grid"><?php echo $verto_sd_out; // phpcs:ignore WordPress.Security.EscapeOutput -- built above with esc_url/esc_attr ?></div>
+			</div>
+		<?php endif; ?>
+	<?php endif; ?>
 	<?php if ( have_posts() ) : ?>
 		<?php $verto_first = ! is_paged(); // featured slot only on page 1 ?>
 		<?php if ( $verto_first ) : the_post();

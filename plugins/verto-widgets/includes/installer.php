@@ -525,7 +525,7 @@ class Verto_Installer {
 	// Principal Consultant | Power & Energy).
 	// 0.22.22 (Alex): Simon/Gary/Charlotte into the team tranche, Megan and
 	// Louis retired, ops ordered after the consultants.
-	const TEAM_STRUCTURE = 'structure-0.22.39';
+	const TEAM_STRUCTURE = 'structure-0.22.40';
 
 	/**
 	 * The client's definitive team structure (Alex Hatfield, Aug 2026).
@@ -545,9 +545,9 @@ class Verto_Installer {
 		      Simon Cottenham, Louis Fuller, Hannah Gresses, Jake Price. ── */
 		return [
 			/* ── The Directors ── */
-			'Alex Hatfield'   => [ 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'alex-hatfield-v4.png', 'leader' => true ],
-			'Martin Doig'     => [ 'brands' => [ 'verto', 'modulr' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig-v4.png', 'leader' => true ],
-			'Robbie Sturgess' => [ 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'robbie-sturgess-v4.png', 'leader' => true ],
+			'Alex Hatfield'   => [ 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'alex-hatfield-v4.png', 'photo_vertek' => 'vertek-alex-hatfield.png', 'leader' => true ],
+			'Martin Doig'     => [ 'brands' => [ 'verto', 'modulr' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig-v4.png', 'photo_modulr' => 'modulr-martin-doig.png', 'leader' => true ],
+			'Robbie Sturgess' => [ 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'robbie-sturgess-v4.png', 'photo_vertek' => 'vertek-robbie-sturgess.png', 'leader' => true ],
 			/* ── Management ── */
 			'Dan Bisset'        => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'edison-dan-bisset-v4.png' ],
 			
@@ -563,7 +563,7 @@ class Verto_Installer {
 			'Alfie Gray'       => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => 'verto-alfie-gray.png' ],
 			// Nov 2026 (Alex, "changes 3"): new starters – no photos yet
 			// (initials tiles until they arrive); roles TBC with Alex.
-			'Lucy Claydon'     => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Operations', 'photo' => '' ],
+			'Lucy Claydon'     => [ 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Marketing Executive', 'photo' => 'verto-lucy-claydon.png' ],
 			/* ── The team – Vertek ──
 			   Nov 2026 (Alex): Gary moves out of the Management tranche. ── */
 			'Gary Hunt'        => [ 'brands' => [ 'vertek' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'vertek-gary-hunt-v4.png' ],
@@ -579,8 +579,8 @@ class Verto_Installer {
 			'Rex Reavley'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-rex-reavley-v4.png' ],
 			'Olivia Pinhorne'  => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-olivia-pinhorne-v4.png' ],
 			'Hannah Gresses'   => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-hannah-gresses.png' ],
-			'Hannah Benneyworth' => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => '' ],
-			'Nolan Escover'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => '' ],
+			'Hannah Benneyworth' => [ 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-hannah-benneyworth.png' ],
+			'Nolan Escover'      => [ 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-nolan-escover.png' ],
 			/* ── The team – Verto Life Sciences (sits with the group) ── */
 			'Martyn Jamieson'  => [ 'brands' => [ 'verto' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Life Sciences', 'photo' => 'verto-martyn-jamieson.png' ],
 			/* ── The team – ModulR (PDF: Jake now sits on ModulR only) ──
@@ -593,14 +593,14 @@ class Verto_Installer {
 			'Jake Massingham'   => [ 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-jake-massingham.png' ],
 			/* ── The team – Edison Lux ──
 			   Nov 2026 (Alex): Simon moves out of the Management tranche. ── */
-			'Simon Cottenham'    => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'edison-simon-cottenham.png' ],
+			'Simon Cottenham'    => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'edison-simon-cottenham-v5.png' ],
 			'Milly Compton'      => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'principal', 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-v4.png' ],
 			'Joe Williams'       => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-joe-williams-v4.png' ],
 			'Noah Ward'          => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-noah-ward-v4.png' ],
 			'Lewis Dominy'       => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-v4.png' ],
-			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-oliver-hesmondhalgh.png' ],
+			'Ollie Hesmondhalgh' => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-oliver-hesmondhalgh-v5.png' ],
 			'Matthew Pearce'     => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-matthew-pearce-v4.png' ],
-			'Justice Conley'     => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => '' ],
+			'Justice Conley'     => [ 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-justice-conley.png' ],
 		];
 	}
 
@@ -612,6 +612,17 @@ class Verto_Installer {
 	 * (brands / tier / role / leader), missing people created, and people no
 	 * longer in the official structure unpublished (drafted, never deleted).
 	 */
+	/**
+	 * Nov 2026 (Alex): some people carry BRAND-SPECIFIC photo treatments
+	 * (photo_vertek / photo_modulr / photo_edison) – each site resolves its
+	 * own version, everything else falls back to the shared photo.
+	 */
+	private static function person_photo( array $m ): string {
+		$brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
+		$key   = [ 'vertek' => 'photo_vertek', 'modulr' => 'photo_modulr', 'edison-lux' => 'photo_edison' ][ $brand ] ?? '';
+		return (string) ( ( '' !== $key && ! empty( $m[ $key ] ) ) ? $m[ $key ] : ( $m['photo'] ?? '' ) );
+	}
+
 	private static function seed_team(): void {
 		if ( self::TEAM_STRUCTURE === get_option( 'verto_installer_team' ) ) return;
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -667,14 +678,15 @@ class Verto_Installer {
 			} else {
 				delete_post_meta( $id, '_verto_leader' );
 			}
-			if ( empty( $m['photo'] ) || ! file_exists( $dir . $m['photo'] ) ) {
+			$photo = self::person_photo( $m );
+			if ( '' === $photo || ! file_exists( $dir . $photo ) ) {
 				if ( ! has_post_thumbnail( $id ) ) $missing[] = $name; // initials placeholder renders instead
 				continue;
 			}
 			if ( has_post_thumbnail( $id ) ) continue; // photo already attached
-			$tmp = wp_tempnam( $m['photo'] );
-			copy( $dir . $m['photo'], $tmp );
-			$att = media_handle_sideload( [ 'name' => $m['photo'], 'tmp_name' => $tmp ], $id );
+			$tmp = wp_tempnam( $photo );
+			copy( $dir . $photo, $tmp );
+			$att = media_handle_sideload( [ 'name' => $photo, 'tmp_name' => $tmp ], $id );
 			if ( ! is_wp_error( $att ) ) set_post_thumbnail( $id, $att );
 		}
 		// Draft ANY published team entry not in the official structure –
@@ -692,7 +704,7 @@ class Verto_Installer {
 
 	/** Team-photo batch version – bump when the client sends new treated
 	 *  headshots so existing installs swap them in on their next Rebuild. */
-	const TEAM_PHOTOS = 'photos-0.22.15';
+	const TEAM_PHOTOS = 'photos-0.22.40';
 
 	/**
 	 * Versioned team-photo migration. Round 9, item 22 (photos-0.21.0): the
@@ -723,7 +735,7 @@ class Verto_Installer {
 		// all earlier batches; Megan Grant is the only person still without
 		// a photo.
 		$updates = array_filter( array_map(
-			static fn( $row ) => $row['photo'],
+			static fn( $row ) => self::person_photo( $row ),
 			self::team_map()
 		) );
 		foreach ( $updates as $name => $file ) {

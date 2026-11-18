@@ -2391,6 +2391,9 @@ a.vbs-chips__cell .vbs-chips__num { font-family: var(--font-display); font-weigh
 a.vbs-chips__cell .vbs-chips__arrow { margin-left: auto; opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; color: var(--brand); }
 a.vbs-chips__cell:hover { background: color-mix(in oklab, var(--brand) 10%, var(--background)) !important; transform: translateY(-2px); }
 a.vbs-chips__cell:hover .vbs-chips__arrow { opacity: 1; transform: none; }
+/* Round 21: sales-day mosaic duplicated at the top of What's Going On - a
+   little breathing room between the header and the grid. */
+.verto-hub-salesdays { margin: 3rem 0 4rem; }
 /* Team LinkedIn link (renders when _verto_linkedin is set on the person). */
 .vbs-team__linkedin { display: inline-block; margin-top: 0.5rem; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 /* Subpage hero images drift slowly (the "movement like Edison" ask) –
