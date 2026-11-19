@@ -948,7 +948,11 @@ class Verto_Vincere {
 		$sal_to   = self::field_text( $item['salary_to'] ?? '' );
 		$currency = self::field_text( $item['currency'] ?? '' );
 		$sal_type = self::field_text( $item['salary_type'] ?? '' );
-		if ( '' !== $sal_from || '' !== $sal_to ) {
+		// Nov 2026 (live data): jobs with no pay entered come back as 0–0 –
+		// suppress the line entirely so the boards fall back to the job type
+		// / "Competitive package" instead of "usd 0–0 annual".
+		$sal_zero = ( ! (float) $sal_from && ! (float) $sal_to );
+		if ( ( '' !== $sal_from || '' !== $sal_to ) && ! $sal_zero ) {
 			$fmt    = static fn( $n ) => is_numeric( $n ) ? number_format( (float) $n ) : $n;
 			$salary = trim(
 				( $currency ? $currency . ' ' : '' )
@@ -965,7 +969,12 @@ class Verto_Vincere {
 		return [
 			'vincere_id'  => (string) $item['id'],
 			'title'       => $title,
-			'description' => wp_kses_post( (string) self::field_text( $item['public_description'] ?? '' ) ),
+			// Nov 2026 (live data): Vincere returns the literal placeholder
+			// "No job description added" for advert-less jobs – treat it as
+			// empty so the detail page shows our own fallback copy instead.
+			'description' => ( static function ( $d ) {
+				return 'no job description added' === strtolower( trim( wp_strip_all_tags( $d ) ) ) ? '' : $d;
+			} )( wp_kses_post( (string) self::field_text( $item['public_description'] ?? '' ) ) ),
 			'brand'       => self::map_brand( $brand_raw, (string) $settings['brand_map'], $internal ),
 			'brand_raw'   => $brand_raw,
 			'location'    => $location,
