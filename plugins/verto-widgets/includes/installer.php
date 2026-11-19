@@ -373,6 +373,13 @@ class Verto_Installer {
 			'vertek_spec_automation'  => 'vertek-spec-automation.jpg',
 			'vertek_spec_cnc'         => 'vertek-spec-cnc.jpg',
 			'vertek_spec_compressors' => 'vertek-spec-compressors.jpg',
+			// Nov 2026 (Alex, "modulr will confirm the last 2"): ModulR sector
+			// photos – the two data-centre tiles run licensed interims until
+			// ModulR confirms their picks.
+			'modulr_spec_architecture' => 'modulr-spec-architecture.jpg',
+			'modulr_spec_interior'     => 'modulr-spec-interior.jpg',
+			'modulr_spec_structural'   => 'modulr-spec-structural.jpg',
+			'modulr_spec_services'     => 'modulr-spec-services.jpg',
 			/* ── Client media drop, Aug 2026 – real event photography ──
 			   Sorted from the client's forwarded emails: Barcelona incentive,
 			   charity gala, Ibiza incentive (continues ibiza8/9), summer summit
@@ -1991,13 +1998,14 @@ class Verto_Installer {
 				],
 				// Nov 2026 (Sade via Alex, "ModulR specialisms" email): the six
 				// agreed specialism headlines, in the agreed order.
+				// Nov 2026 (Alex): photos on the cards, Edison-style.
 				'specialisms' => [
-					[ 'icon' => 'building-2', 'title' => 'Architecture',                                  'description' => 'Registered architects, project architects, directors, principals and partners.' ],
-					[ 'icon' => 'compass',    'title' => 'Interior Design',                               'description' => 'Interior designers through to design directors, across workplace, hospitality and residential studios.' ],
-					[ 'icon' => 'server',     'title' => 'Data Centre Construction & Engineering',        'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
-					[ 'icon' => 'gauge',      'title' => 'Data Centre Facilities Management & Operations', 'description' => 'Critical facilities managers, operations leadership and engineering teams keeping live environments running.' ],
-					[ 'icon' => 'hard-hat',   'title' => 'Structural Engineering',                        'description' => 'Structural engineers and engineering leadership across buildings and critical infrastructure.' ],
-					[ 'icon' => 'wrench',     'title' => 'Building Services & FM',                        'description' => 'Mechanical, electrical and building services talent, through to facilities management leadership.' ],
+					[ 'icon' => 'building-2', 'image' => 'modulr_spec_architecture', 'title' => 'Architecture',                                  'description' => 'Registered architects, project architects, directors, principals and partners.' ],
+					[ 'icon' => 'compass',    'image' => 'modulr_spec_interior',     'title' => 'Interior Design',                               'description' => 'Interior designers through to design directors, across workplace, hospitality and residential studios.' ],
+					[ 'icon' => 'server',     'image' => 'insight_datacentre',       'title' => 'Data Centre Construction & Engineering',        'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
+					[ 'icon' => 'gauge',      'image' => 'modulr_datacentre',        'title' => 'Data Centre Facilities Management & Operations', 'description' => 'Critical facilities managers, operations leadership and engineering teams keeping live environments running.' ],
+					[ 'icon' => 'hard-hat',   'image' => 'modulr_spec_structural',   'title' => 'Structural Engineering',                        'description' => 'Structural engineers and engineering leadership across buildings and critical infrastructure.' ],
+					[ 'icon' => 'wrench',     'image' => 'modulr_spec_services',     'title' => 'Building Services & FM',                        'description' => 'Mechanical, electrical and building services talent, through to facilities management leadership.' ],
 				],
 				/* ── Round 10: REAL feedback (client's Canva doc + pasted extras,
 				      Sep 2026), curated + lightly cleaned (typos/spacing only,
