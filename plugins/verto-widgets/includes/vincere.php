@@ -900,8 +900,27 @@ class Verto_Vincere {
 		// internal filter. Brand/group field + company only.
 		$internal = self::is_internal( [ $brand_raw, $company ], (string) $settings['internal_marker'] );
 
-		// Location: whichever shape the tenant returns.
+		// Location: whichever shape the tenant returns. Nov 2026 (live
+		// data): the location object flattens to things like
+		// "22565, Sheffield, UK, Sheffield" – drop Vincere's numeric ids
+		// and duplicate parts so it reads "Sheffield, UK".
 		$location = self::field_text( $item['location'] ?? '' );
+		if ( '' !== $location ) {
+			$parts = [];
+			$seen  = [];
+			foreach ( array_map( 'trim', explode( ',', $location ) ) as $part ) {
+				if ( '' === $part || preg_match( '/^\d+$/', $part ) ) {
+					continue; // internal id / bare number
+				}
+				$k = strtolower( $part );
+				if ( isset( $seen[ $k ] ) ) {
+					continue; // duplicate (e.g. city twice)
+				}
+				$seen[ $k ] = true;
+				$parts[]    = $part;
+			}
+			$location = implode( ', ', $parts );
+		}
 		if ( '' === $location ) {
 			$bits = [];
 			foreach ( [ 'city', 'state', 'country' ] as $key ) {

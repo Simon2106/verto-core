@@ -150,12 +150,20 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 						$href      = '' !== $permalink ? $permalink : ( $job['url'] ?? ( $s['apply_url']['url'] ?? '/contact' ) );
 						?>
 						<div class="verto-jobs-compact__row">
+							<?php // Nov 2026 (Alex): same layout as the jobs-page rows -
+							// product kicker, title, package underneath; location sits on
+							// the right beside Apply. ?>
 							<a class="verto-jobs-compact__main" href="<?php echo esc_url( $href ); ?>">
+								<?php if ( '' !== ( $job['product'] ?? '' ) ) : ?>
+									<span class="verto-jobs-compact__kicker"><?php echo esc_html( $job['product'] ); ?></span>
+								<?php endif; ?>
 								<span class="verto-jobs-compact__title"><?php echo esc_html( $job['title'] ); ?></span>
-								<?php // Nov 2026 (Alex): location + salary only – no guessed level. ?>
-							<span class="verto-jobs-compact__meta"><?php echo '' !== ( $job['product'] ?? '' ) ? esc_html( $job['product'] ) . ' · ' : ''; ?><?php echo esc_html( $job['location'] ); ?> · <?php echo esc_html( $job['package'] ); ?></span>
+								<span class="verto-jobs-compact__meta"><?php echo esc_html( $job['package'] ); ?></span>
 							</a>
-							<a class="verto-jobs-compact__apply" href="<?php echo esc_url( '' !== $permalink ? $permalink . '#apply' : $href ); ?>">Apply <span aria-hidden="true">↗</span></a>
+							<span class="verto-jobs-compact__side">
+								<span class="verto-jobs-compact__loc"><?php echo esc_html( $job['location'] ); ?></span>
+								<a class="verto-jobs-compact__apply" href="<?php echo esc_url( '' !== $permalink ? $permalink . '#apply' : $href ); ?>">Apply <span aria-hidden="true">&#8599;</span></a>
+							</span>
 						</div>
 					<?php endforeach; ?>
 				</div>

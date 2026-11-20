@@ -2225,6 +2225,12 @@ body.verto-brand-vertek .vbs-spec { background: var(--muted) !important; }
   transition: all 0.2s;
 }
 .verto-jobs-compact__apply:hover { background: var(--brand); color: var(--brand-foreground); }
+/* Nov 2026 (Alex): compact rows match the jobs-page layout – location on
+   the right beside Apply, optional product-area kicker above the title. */
+.verto-jobs-compact__side { display: flex; align-items: center; gap: 1.25rem; flex-shrink: 0; }
+.verto-jobs-compact__loc { font-size: 0.875rem; color: var(--muted-foreground); white-space: nowrap; }
+.verto-jobs-compact__kicker { display: block; margin-bottom: 0.25rem; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: var(--brand); }
+@media (max-width: 640px) { .verto-jobs-compact__loc { display: none; } }
 body.verto-brand-vertek .verto-jobs-compact__title { font-weight: 600; letter-spacing: 0.01em; text-transform: uppercase; }
 
 /* ── Item 25: footprint tiles as links (About → careers locations) ── */
