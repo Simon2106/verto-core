@@ -128,9 +128,13 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 								$vbs_first = strtolower( (string) strtok( trim( get_the_title() ), ' ' ) );
 								$vbs_email = preg_replace( '/[^a-z]/', '', $vbs_first ) . '@vertopeople.com';
 							}
-							$vbs_tag = '' !== $vbs_li ? 'a' : 'div';
+							// Nov 2026 (round 32): the card was an <a> wrapping the
+							// mailto <a> – nested anchors are invalid HTML, so the
+							// parser split the cards into duplicate full-width
+							// shells (Alex's pink-block screenshot). The card is a
+							// <div> again with a stretched LinkedIn link inside.
 							?>
-							<<?php echo $vbs_tag; ?> class="vbs-team__card" style="background:color-mix(in oklab, var(--brand) 6%, var(--muted));"<?php echo '' !== $vbs_li ? ' href="' . esc_url( $vbs_li ) . '" target="_blank" rel="noopener" aria-label="' . esc_attr( get_the_title() . ' on LinkedIn' ) . '"' : ''; ?>>
+							<div class="vbs-team__card" style="background:color-mix(in oklab, var(--brand) 6%, var(--muted));">
 								<?php if ( has_post_thumbnail() ) : ?>
 									<?php the_post_thumbnail( 'medium_large', [ 'class' => 'vbs-team__photo', 'loading' => 'lazy' ] ); ?>
 								<?php else : ?>
@@ -143,7 +147,10 @@ class Verto_Widget_Team_Grid extends \Elementor\Widget_Base {
 									<div class="vbs-team__role"><?php echo esc_html( $role ); ?></div>
 									<a class="vbs-team__email" href="mailto:<?php echo esc_attr( $vbs_email ); ?>"><?php echo esc_html( $vbs_email ); ?></a>
 								</div>
-							</<?php echo $vbs_tag; ?>>
+								<?php if ( '' !== $vbs_li ) : ?>
+									<a class="vbs-team__link" href="<?php echo esc_url( $vbs_li ); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr( get_the_title() . ' on LinkedIn' ); ?>"></a>
+								<?php endif; ?>
+							</div>
 						<?php endwhile; ?>
 					</div>
 				</div>

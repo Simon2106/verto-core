@@ -220,6 +220,11 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$jobs      = $live ? $live : self::JOBS;
 		$locations = $live ? array_values( array_unique( array_column( $live, 'location' ) ) ) : self::LOCATIONS;
 		$levels    = $live ? array_values( array_unique( array_column( $live, 'level' ) ) ) : self::LEVELS;
+		// Nov 2026 (Alex): product-area filter replaces the Senior/Manager
+		// level chips (teams like HVAC / CNC / Automation).
+		$products  = $live ? array_values( array_filter( array_unique( array_column( $live, 'product' ) ) ) ) : [];
+		sort( $locations );
+		sort( $products );
 
 		// Live (Vincere-synced) rows open the inline Apply modal instead of the
 		// click-through URL; placeholder rows keep the old behaviour. A row
@@ -291,7 +296,8 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							   <?php endif; ?>
 							   data-brand="<?php echo esc_attr( $job['brand'] ); ?>"
 							   data-location="<?php echo esc_attr( $job['location'] ); ?>"
-							   data-level="<?php echo esc_attr( $job['level'] ); ?>">
+							   data-level="<?php echo esc_attr( $job['level'] ); ?>"
+							   data-product="<?php echo esc_attr( $job['product'] ?? '' ); ?>">
 								<div class="verto-jobs__rowmain">
 									<div class="verto-jobs__meta">
 										<?php // Nov 2026 (Alex): kicker shows the brand only – the
@@ -354,15 +360,20 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 								<?php endforeach; ?>
 							</div>
 						</div>
+						<?php // Nov 2026 (Alex): no Senior/Manager chips – the product/
+						// team filter takes the slot (renders once jobs carry the
+						// website_product_area field). ?>
+						<?php if ( $products ) : ?>
 						<div class="verto-jobs__group">
-							<div class="verto-jobs__grouplabel">Level</div>
-							<div class="verto-jobs__chips" data-filter-group="level">
+							<div class="verto-jobs__grouplabel">Product / team</div>
+							<div class="verto-jobs__chips" data-filter-group="product">
 								<button type="button" class="verto-chip is-active" data-value="all">All</button>
-								<?php foreach ( $levels as $lvl ) : ?>
-									<button type="button" class="verto-chip" data-value="<?php echo esc_attr( $lvl ); ?>"><?php echo esc_html( $lvl ); ?></button>
+								<?php foreach ( $products as $prod ) : ?>
+									<button type="button" class="verto-chip" data-value="<?php echo esc_attr( $prod ); ?>"><?php echo esc_html( $prod ); ?></button>
 								<?php endforeach; ?>
 							</div>
 						</div>
+						<?php endif; ?>
 					</div>
 					<p class="verto-jobs__count"><span data-jobs-count><?php echo count( $jobs ); ?></span> openings shown · Can't see your desk? <?php if ( $has_modal ) : ?><a href="#verto-apply-modal" data-apply-open data-job-id="" data-job-title="">Send a general application →</a><?php else : ?><a href="<?php echo esc_url( $apply ); ?>">Write to us anyway →</a><?php endif; ?></p>
 				</aside>

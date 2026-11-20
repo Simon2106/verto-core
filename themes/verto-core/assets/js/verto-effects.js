@@ -100,7 +100,7 @@
   "use strict";
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("[data-verto-jobs]").forEach(function (board) {
-      var state = { brand: "all", location: "all", level: "all" };
+      var state = { brand: "all", location: "all", level: "all", product: "all" };
       var q = ""; // round 22: keyword search (title match)
       var rows = board.querySelectorAll(".verto-jobs__row");
       var empty = board.querySelector(".verto-jobs__empty");
@@ -115,6 +115,7 @@
             (state.brand === "all" || r.dataset.brand === state.brand) &&
             (state.location === "all" || r.dataset.location === state.location) &&
             (state.level === "all" || r.dataset.level === state.level) &&
+            (state.product === "all" || r.dataset.product === state.product) &&
             (q === "" || title.indexOf(q) !== -1);
           r.hidden = !ok;
           if (ok) shown++;
@@ -147,7 +148,7 @@
       });
 
       if (clear) clear.addEventListener("click", function () {
-        state = { brand: "all", location: "all", level: "all" };
+        state = { brand: "all", location: "all", level: "all", product: "all" };
         q = "";
         if (search) search.value = "";
         board.querySelectorAll("[data-filter-group]").forEach(function (group) {

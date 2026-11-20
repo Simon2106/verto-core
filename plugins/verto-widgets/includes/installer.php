@@ -99,10 +99,11 @@ class Verto_Installer {
 			/* ── JOBS (round 22, Alex: pipermaddox.com/jobs reference) – the
 		      dedicated, searchable/filterable board for the brand's client
 		      vacancies; compact boards elsewhere cap at 8 and link here. ── */
+		// Nov 2026 (Alex): sector names capitalised in the heading.
 		$jobs_focus = [
-			'edison-lux' => 'USA & European energy',
-			'modulr'     => 'architecture & data centres',
-			'vertek'     => 'technical sales, service & engineering',
+			'edison-lux' => 'USA & European Energy',
+			'modulr'     => 'Architecture & Data Centres',
+			'vertek'     => 'Technical Sales, Service & Engineering',
 		][ $brand ] ?? 'our markets';
 		self::upsert_page( 'jobs', 'Jobs', [
 			self::section( [ self::widget( 'verto-jobs-board', [
@@ -377,6 +378,9 @@ class Verto_Installer {
 			// photos – the two data-centre tiles run licensed interims until
 			// ModulR confirms their picks.
 			'modulr_spec_architecture' => 'modulr-spec-architecture.jpg',
+			// Nov 2026 (round 32, Alex 19 Nov): tiles 03/04 – his two aerials.
+			'modulr_dc_construction'   => 'modulr-dc-construction.jpg',
+			'modulr_dc_campus'         => 'modulr-dc-campus.jpg',
 			'modulr_spec_interior'     => 'modulr-spec-interior.jpg',
 			'modulr_spec_structural'   => 'modulr-spec-structural.jpg',
 			'modulr_spec_services'     => 'modulr-spec-services.jpg',
@@ -604,9 +608,9 @@ class Verto_Installer {
 			'Sam Parnell'      => [ 'linkedin' => 'https://www.linkedin.com/in/sam-parnell-636885aa/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-sam-parnell-v4.png' ],
 			'Frank Warner'     => [ 'linkedin' => 'https://www.linkedin.com/in/frank-warner-1422272b0/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-frank-warner-v4.png' ],
 			'Harvey Earl'      => [ 'linkedin' => 'https://www.linkedin.com/in/harvey-earl-890589211/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-harvey-earl-v4.png' ],
-			'Lewis Mason'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-mason-mep-recruiter/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-lewis-mason-v4.png' ],
+			'Lewis Mason'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-mason-mep-recruiter/', 'email' => 'lewis@vertopeople.com', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-lewis-mason-v4.png' ],
 			'Alex Wright'      => [ 'linkedin' => 'https://www.linkedin.com/in/alex-wright-546823245/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-alex-wright-v4.png' ],
-			'Lewis Sullivan'   => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-sullivan-1a7096321/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-lewis-sullivan-v4.png' ],
+			'Lewis Sullivan'   => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-sullivan-1a7096321/', 'email' => 'lewiss@vertopeople.com', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-lewis-sullivan-v4.png' ],
 			'Saman Akbari'     => [ 'linkedin' => 'https://www.linkedin.com/in/saman-a-38b888196/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-saman-akbari.png' ],
 			'Rex Reavley'      => [ 'linkedin' => 'https://www.linkedin.com/in/rex-reavley-3791b7253/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-rex-reavley-v4.png' ],
 			'Olivia Pinhorne'  => [ 'linkedin' => 'https://uk.linkedin.com/in/olivia-pinhorne-6277aa334', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-olivia-pinhorne-v4.png' ],
@@ -620,7 +624,7 @@ class Verto_Installer {
 			'Charlotte Northam' => [ 'linkedin' => 'https://www.linkedin.com/in/charlotte-northam-cmgr-mcmi-64208011a/', 'brands' => [ 'modulr' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Architecture', 'photo' => 'modulr-charlotte-northam-v4.png' ],
 			'Natasha Sykes'     => [ 'linkedin' => 'https://www.linkedin.com/in/natashasykes1/', 'brands' => [ 'modulr' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'modulr-natasha-sykes-v4.png' ],
 			'Monira Akter'      => [ 'linkedin' => 'https://www.linkedin.com/in/moniraaktar/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-monira-aktar-v4.png' ],
-			'Lewis Wright'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-wright-27b5a4235/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-lewis-wright-v4.png' ],
+			'Lewis Wright'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-wright-27b5a4235/', 'email' => 'lewisw@vertopeople.com', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-lewis-wright-v4.png' ],
 			'Forough Rezaei'    => [ 'linkedin' => 'https://www.linkedin.com/in/forough-rezaei7898/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-forough-rezaei.png' ],
 			'Jake Massingham'   => [ 'linkedin' => 'https://www.linkedin.com/in/jake-hoare-572a55355/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-jake-massingham.png' ],
 			/* ── The team – Edison Lux ──
@@ -629,7 +633,7 @@ class Verto_Installer {
 			'Milly Compton'      => [ 'linkedin' => 'https://www.linkedin.com/in/milly-compton-bb00a2228/', 'brands' => [ 'edison-lux' ], 'tier2' => 'principal', 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-v4.png' ],
 			'Joe Williams'       => [ 'linkedin' => 'https://www.linkedin.com/in/joe-williams-300431189/', 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-joe-williams-v4.png' ],
 			'Noah Ward'          => [ 'linkedin' => 'https://www.linkedin.com/in/noah-ward-certrp-548781210/', 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-noah-ward-v4.png' ],
-			'Lewis Dominy'       => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-dominy-66280b21a/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-v4.png' ],
+			'Lewis Dominy'       => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-dominy-66280b21a/', 'email' => 'lewisd@vertopeople.com', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-v4.png' ],
 			'Ollie Hesmondhalgh' => [ 'linkedin' => 'https://www.linkedin.com/in/oliver-hesmondhalgh-7992a3376/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-oliver-hesmondhalgh-v5.png' ],
 			'Matthew Pearce'     => [ 'linkedin' => 'https://www.linkedin.com/in/matthew-pearce-recruitment/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-matthew-pearce-v4.png' ],
 			'Justice Conley'     => [ 'linkedin' => 'https://www.linkedin.com/in/jlconley/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-justice-conley.png' ],
@@ -708,6 +712,11 @@ class Verto_Installer {
 			// Nov 2026 (Alfie's list): LinkedIn per person – cards click through.
 			if ( ! empty( $m['linkedin'] ) ) {
 				update_post_meta( $id, '_verto_linkedin', $m['linkedin'] );
+			}
+			// Nov 2026 (Alex): email overrides where firstname@ collides
+			// (the four Lewises) – everyone else keeps the auto pattern.
+			if ( ! empty( $m['email'] ) ) {
+				update_post_meta( $id, '_verto_email', $m['email'] );
 			}
 			if ( ! empty( $m['leader'] ) ) {
 				update_post_meta( $id, '_verto_leader', '1' );
@@ -2002,8 +2011,8 @@ class Verto_Installer {
 				'specialisms' => [
 					[ 'icon' => 'building-2', 'image' => 'modulr_spec_architecture', 'title' => 'Architecture',                                  'description' => 'Registered architects, project architects, directors, principals and partners.' ],
 					[ 'icon' => 'compass',    'image' => 'modulr_spec_interior',     'title' => 'Interior Design',                               'description' => 'Interior designers through to design directors, across workplace, hospitality and residential studios.' ],
-					[ 'icon' => 'server',     'image' => 'insight_datacentre',       'title' => 'Data Centre Construction & Engineering',        'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
-					[ 'icon' => 'gauge',      'image' => 'modulr_datacentre',        'title' => 'Data Centre Facilities Management & Operations', 'description' => 'Critical facilities managers, operations leadership and engineering teams keeping live environments running.' ],
+					[ 'icon' => 'server',     'image' => 'modulr_dc_construction',   'title' => 'Data Centre Construction & Engineering',        'description' => 'Construction directors, regional heads and project leadership across operators, developers and contractors.' ],
+					[ 'icon' => 'gauge',      'image' => 'modulr_dc_campus',         'title' => 'Data Centre Facilities Management & Operations', 'description' => 'Critical facilities managers, operations leadership and engineering teams keeping live environments running.' ],
 					[ 'icon' => 'hard-hat',   'image' => 'modulr_spec_structural',   'title' => 'Structural Engineering',                        'description' => 'Structural engineers and engineering leadership across buildings and critical infrastructure.' ],
 					[ 'icon' => 'wrench',     'image' => 'modulr_spec_services',     'title' => 'Building Services & FM',                        'description' => 'Mechanical, electrical and building services talent, through to facilities management leadership.' ],
 				],
@@ -2078,6 +2087,10 @@ class Verto_Installer {
 				'subhero_alt'   => 'Tower cranes over a steel-frame construction site at dusk',
 				// Nov 2026 (Alex): candidates page gets its own picture.
 				'candidates_hero_image' => 'modulr_datacentre',
+				// Nov 2026 (round 32, Alex 20 Nov): clients imagery from the
+				// What-we-cover set instead of a second run of the EPC shot.
+				'clients_hero_image'    => 'modulr_dc_campus',
+				'clients_hero_alt'      => 'Aerial view of a completed data centre campus',
 				/* ── Oct 2026 ModulR design round (Alex) ── */
 				// Team strip: no paragraph, whole desk in one line (leaders
 				// excluded – the strip is the working desk).
@@ -2155,8 +2168,15 @@ class Verto_Installer {
 					'vision'   => 'To be the staffing partner the US & European energy sector turns to first.',
 					'purpose'  => 'Named for the man who lit up the world, Edison Lux brings visibility to the talent that powers the industry, bridging the energy skills gap before it becomes a crisis.',
 				],
-				'about_image'     => 'edison_pylon',
-				'about_image_alt' => 'Silhouetted electricity transmission pylons at sunset with a substation on the horizon',
+				// Nov 2026 (round 32, Alex): "these images are much more relevant"
+				// – the pylon repeats give way to the sector photography. The
+				// home hero keeps the pylon dawn FILM (not flagged).
+				'about_image'     => 'edison_cc_v2',
+				'about_image_alt' => 'A combined-cycle gas plant at dusk',
+				'subhero_image'   => 'edison_nuclear_v2',
+				'subhero_alt'     => 'Aerial view of a nuclear generating station',
+				'candidates_hero_image' => 'edison_renewables_v2',
+				'candidates_hero_alt'   => 'Solar panels, wind turbines and battery storage on a renewables site',
 				'stats' => [
 					[ 'value' => '100%',                     'label' => 'Success rate on engaged search' ],
 					[ 'value' => 'Control room → Boardroom', 'label' => 'Operator to C-suite coverage' ],
@@ -2432,6 +2452,10 @@ class Verto_Installer {
 				// Nov 2026 (Alex): the bridge comes off the About/Clients page
 				// heroes – "we do nothing in structural engineering".
 				'subhero_image' => 'insight_manufacturing',
+				// Nov 2026 (round 32, Alex): "we do defense, fluid power and
+				// hvac" + the rooftop-HVAC reference he pasted.
+				'clients_hero_image' => 'insight_hvac',
+				'clients_hero_alt'   => 'Rooftop HVAC plant units under a broken sky',
 				'subhero_alt'   => 'Precision machinery on an advanced manufacturing line',
 				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns one product area. That's why it works.",
 				'what_we_do' => [
@@ -2488,13 +2512,8 @@ class Verto_Installer {
 					[ 'title' => 'Engage',   'body' => 'Every approach is briefed properly – your product, your culture, the opportunity. No mass outreach. No resumes into the void.' ],
 					[ 'title' => 'Deliver',  'body' => "Structured shortlist, candidate context resumes can't capture, offer management and post-placement check-ins. Frequent updates throughout. No surprises." ],
 				],
-				'case_study' => [
-					'client'    => 'Global Fluid Power OEM',
-					'sector'    => 'Hydraulics & motion control',
-					'challenge' => 'A European fluid power manufacturer needed to build a US commercial team from scratch – Regional Sales Director, three product-specialist sales engineers and a service manager – in a market where time-served hydraulics talent is notoriously hard to find. Two previous contingent partners had stalled out.',
-					'solution'  => "Vertek mapped every relevant hydraulics, motion control and pneumatics OEM and distributor across the target US regions. We worked exclusively on engaged terms, ran weekly market read-outs and represented the client's story end-to-end – including total comp, equity and relocation context the client had previously underplayed.",
-					'result'    => "All five hires made within 10 months. 100% retention at 18 months. Vertek has since been engaged on a further 14 mandates including a VP of Sales appointment and the company's first US service leadership team.",
-				],
+// Nov 2026 (Alex): case study dropped for launch - no real one yet.
+				
 				'candidate_process' => [
 					[ 'title' => 'Confidential conversation', 'body' => 'We start by understanding what you actually want next – product area, market, total comp, relocation, work-life. No oversell. We only bring you roles that genuinely fit.' ],
 					[ 'title' => 'Briefed representation',    'body' => 'We sell your experience before the first interview. Hiring managers see your context, your patch and your product knowledge – not just a resume.' ],
@@ -2702,8 +2721,8 @@ class Verto_Installer {
 				'body'      => $c['about']['landing_body'] ?? $c['about']['mission'],
 				'cta_text'  => 'Learn more about us',
 				'cta_link'  => [ 'url' => '/about' ],
-				'image'     => self::media_setting( $media, 'vertek' === $brand ? 'insight_manufacturing' : $c['about_image'] ),
-				'image_alt' => 'vertek' === $brand ? 'Precision machinery on an advanced manufacturing line' : $c['about_image_alt'],
+				'image'     => self::media_setting( $media, 'vertek' === $brand ? 'vertek_spec_compressors' : $c['about_image'] ),
+				'image_alt' => 'vertek' === $brand ? 'Industrial compressors in a plant room' : $c['about_image_alt'],
 				'stats'     => $stats,
 			// Nov 2026 (Alex): ModulR gets the "Talk to us" button too.
 			], in_array( $brand, [ 'edison-lux', 'modulr' ], true ) ? [
@@ -2889,7 +2908,7 @@ class Verto_Installer {
 		// Oct 2026 (Alex, ModulR round): ModulR's clouds photo → data centre.
 		// Nov 2026 (Alex, round 19): "show a variety of the markets we cover" –
 		// Vertek's panel takes the CNC tile from the What-we-cover set.
-		$wwd_img = [ 'edison-lux' => 'edison_cc_v2', 'modulr' => 'modulr_datacentre', 'vertek' => 'vertek_spec_cnc' ][ $brand ] ?? 'about_image';
+		$wwd_img = [ 'edison-lux' => 'edison_cc_v2', 'modulr' => 'modulr_datacentre', 'vertek' => 'vertek_spec_defense' ][ $brand ] ?? 'about_image';
 		$wwd_alt = [ 'edison-lux' => 'A combined-cycle gas plant – the market Edison Lux staffs', 'modulr' => 'Data centre corridor lined with server racks', 'vertek' => 'CNC machining centre cutting a precision component' ][ $brand ] ?? 'A specialist team at work';
 		$about_tail = [
 			self::section( [ self::widget( 'verto-about-split', [
@@ -2987,8 +3006,9 @@ class Verto_Installer {
 		$co      = $c['audiences']['company'];
 		$clients = [
 			self::section( [ self::widget( 'verto-quote-band', [
-				'image'          => self::media_setting( $media, $c['subhero_image'] ?? $c['hero']['image'] ),
-				'image_alt'      => $c['subhero_alt'] ?? $c['hero']['alt'],
+				// Nov 2026 (round 32, Alex): clients page can carry its own hero.
+				'image'          => self::media_setting( $media, $c['clients_hero_image'] ?? $c['subhero_image'] ?? $c['hero']['image'] ),
+				'image_alt'      => $c['clients_hero_alt'] ?? $c['subhero_alt'] ?? $c['hero']['alt'],
 				'overlay'        => 'hero-left',
 				'pad'            => 'hero',
 				'parallax_speed' => 0.3,
@@ -3015,8 +3035,8 @@ class Verto_Installer {
 				// EPC construction asset instead of a third run of pylons.
 				'headline'  => $c['clients_split']['headline'] ?? 'A partnership, not a placement.',
 				'body'      => $c['clients_split']['body'] ?? "We exist to find you the best technical commercial talent on the market – and we've earned that right by building trust with our partners over more than a decade.\n\nEvery consultant specialises in a product area. We recruit across the manufacturer and distributor landscape and represent your business as if it were our own.",
-				'image'     => self::media_setting( $media, [ 'edison-lux' => 'edison_epc_v2', 'vertek' => 'insight_hvac', 'modulr' => 'modulr_datacentre' ][ $brand ] ?? $c['hero']['image'] ),
-				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Rooftop HVAC plant units under a broken sky', 'modulr' => 'Data centre corridor lined with server racks' ][ $brand ] ?? $c['hero']['alt'],
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'edison_epc_v2', 'vertek' => 'insight_fluidpower', 'modulr' => 'modulr_spec_architecture' ][ $brand ] ?? $c['hero']['image'] ),
+				'image_alt' => [ 'edison-lux' => 'Cranes over an EPC construction site', 'vertek' => 'Hydraulic manifold and hoses on a fluid power assembly', 'modulr' => 'An architecture studio at work' ][ $brand ] ?? $c['hero']['alt'],
 				// Nov 2026 (Alex): colour beats black-and-white on Vertek.
 				'grayscale' => 'vertek' === $brand ? '' : 'yes',
 				'panel_bg'  => '#ffffff',
@@ -3136,7 +3156,7 @@ class Verto_Installer {
 			self::section( [ self::widget( 'verto-quote-band', [
 				// Nov 2026 (Alex): candidates page can carry its own hero image.
 				'image'          => self::media_setting( $media, $c['candidates_hero_image'] ?? $c['subhero_image'] ?? $c['hero']['image'] ),
-				'image_alt'      => $c['subhero_alt'] ?? $c['hero']['alt'],
+				'image_alt'      => $c['candidates_hero_alt'] ?? $c['subhero_alt'] ?? $c['hero']['alt'],
 				'overlay'        => 'hero-right',
 				'pad'            => 'hero',
 				'align'          => 'right',
@@ -3164,8 +3184,8 @@ class Verto_Installer {
 				'body'      => $c['candidates_split']['body'] ?? "A job posted on LinkedIn gets hundreds of resumes. Working with $name means you and your experience are put front and centre – sold to the hiring manager before your first interview.\n\nWe only call when there's a role genuinely worth your time. Honest feedback, no fluff, no promises we can't deliver.",
 				// Round 9, item 18: sector imagery (matching the What-we-cover
 				// cards) instead of the repeated hero image.
-				'image'     => self::media_setting( $media, [ 'edison-lux' => 'spec_edison_03', 'vertek' => 'insight_hvac', 'modulr' => 'insight_architecture' ][ $brand ] ?? $c['hero']['image'] ),
-				'image_alt' => [ 'edison-lux' => 'A renewables site – solar and storage under construction', 'vertek' => 'Rooftop HVAC plant', 'modulr' => 'An architecture studio at work' ][ $brand ] ?? $c['hero']['alt'],
+				'image'     => self::media_setting( $media, [ 'edison-lux' => 'edison_biomass_v2', 'vertek' => 'insight_hvac', 'modulr' => 'insight_architecture' ][ $brand ] ?? $c['hero']['image'] ),
+				'image_alt' => [ 'edison-lux' => 'Aerial view of a biomass energy plant', 'vertek' => 'Rooftop HVAC plant', 'modulr' => 'An architecture studio at work' ][ $brand ] ?? $c['hero']['alt'],
 				'grayscale' => 'yes',
 				'panel_bg'  => '#ffffff',
 				'stats'     => [

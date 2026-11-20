@@ -2390,6 +2390,11 @@ body.verto-brand-edison-lux .vbs-team__overlay .vbs-team__focus { display: none;
 /* 3. Team card email line (replaces the shared focus sentence). */
 .vbs-team__email { display: inline-block; margin-top: 0.4rem; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; color: inherit; text-decoration: underline; text-underline-offset: 3px; word-break: break-all; }
 a.vbs-team__card { display: block; text-decoration: none; color: inherit; }
+/* Round 32: stretched LinkedIn link (the card itself is a div – nested <a>s
+   broke the strip). Overlay ignores clicks except the email link. */
+.vbs-team__link { position: absolute; inset: 0; z-index: 1; }
+.vbs-team__overlay { pointer-events: none; z-index: 2; }
+.vbs-team__email { pointer-events: auto; }
 /* 4. Sector chips: bolder cells with a brand number, hover lift and an
    arrow – each clicks through to the specialists. */
 a.vbs-chips__cell { text-decoration: none; color: inherit; font-size: 1rem; font-weight: 600; padding: 1.75rem 1.5rem; position: relative; transition: background 0.2s, transform 0.2s; }

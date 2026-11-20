@@ -655,7 +655,7 @@ class Verto_Vincere {
 			// them the ladder simply steps down.
 			// Nov 2026 (Alex): location was missing from the rich tiers – the
 			// test job had it set in Vincere but we never requested it.
-			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary_from,salary_to,salary_type,currency',
+			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency',
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location',
 			'id,job_title,public_description,job_type,open_date,closed_date,company,location',
 			'id,job_title,public_description,closed_date',
@@ -912,6 +912,13 @@ class Verto_Vincere {
 				if ( '' === $part || preg_match( '/^\d+$/', $part ) ) {
 					continue; // internal id / bare number
 				}
+				// Zip/postcodes off the end of a part ("TX 75074" → "TX").
+				$part = trim( preg_replace( '/\b\d{4,}(?:-\d+)?\b/', '', $part ) );
+				// Anything still carrying digits is a street address ("605
+				// Shiloh Rd") – city-level display only.
+				if ( '' === $part || preg_match( '/\d/', $part ) ) {
+					continue;
+				}
 				$k = strtolower( $part );
 				if ( isset( $seen[ $k ] ) ) {
 					continue; // duplicate (e.g. city twice)
@@ -973,6 +980,17 @@ class Verto_Vincere {
 		// suppress the line entirely so the boards fall back to the job type
 		// / "Competitive package" instead of "usd 0–0 annual".
 		$sal_zero = ( ! (float) $sal_from && ! (float) $sal_to );
+		// Nov 2026 (Alex's screenshot): their workflow fills Vincere's single
+		// ANNUAL SALARY field while the range stays 0.00 – fall back to it.
+		$sal_one = self::field_text( $item['salary'] ?? '' );
+		if ( $sal_zero && (float) $sal_one > 0 ) {
+			$sal_from = $sal_one;
+			$sal_to   = '';
+			$sal_zero = false;
+			if ( '' === $sal_type ) {
+				$sal_type = 'annual';
+			}
+		}
 		if ( ( '' !== $sal_from || '' !== $sal_to ) && ! $sal_zero ) {
 			$fmt    = static fn( $n ) => is_numeric( $n ) ? number_format( (float) $n ) : $n;
 			$salary = trim(
@@ -1140,9 +1158,11 @@ class Verto_Vincere {
 		// definition once (key + id→label map, cached) and translate.
 		$def  = self::sector_field_def();
 		$rows = $json['data'] ?? ( $json['items'] ?? $json );
-		// Product area: free-text field "website_product_area" – stored as-is.
+		// Free-text overrides tagged on the position: "website_product_area"
+		// (product/team) and "website_location" (display location) – both
+		// stored exactly as typed.
 		foreach ( (array) $rows as $pa_row ) {
-			if ( is_array( $pa_row ) && 'website_product_area' === (string) ( $pa_row['key'] ?? '' ) ) {
+			if ( is_array( $pa_row ) && in_array( (string) ( $pa_row['key'] ?? '' ), [ 'website_product_area', 'website_location' ], true ) ) {
 				$pa_vals = [];
 				foreach ( [ 'field_value', 'field_values', 'value', 'values' ] as $vk ) {
 					if ( ! isset( $pa_row[ $vk ] ) ) {
@@ -1162,7 +1182,12 @@ class Verto_Vincere {
 					}
 				}
 				if ( $pa_vals ) {
-					update_post_meta( $post_id, '_product_area', sanitize_text_field( implode( ', ', array_unique( $pa_vals ) ) ) );
+					$pa_text = sanitize_text_field( implode( ', ', array_unique( $pa_vals ) ) );
+					if ( 'website_location' === (string) $pa_row['key'] ) {
+						update_post_meta( $post_id, '_location', $pa_text );
+					} else {
+						update_post_meta( $post_id, '_product_area', $pa_text );
+					}
 				}
 			}
 		}
