@@ -2719,10 +2719,11 @@ class Verto_Installer {
 				] + $sp, $c['specialisms'] ),
 			] ) ], 'verto-bs' ),
 		];
-		// Nov 2026 (Alex): Edison's HOME shows the client ADVERTS (Vincere),
-		// close to the top – right under the about split; the internal desk
-		// board comes off the home page (the merge below skips it).
-		if ( 'edison-lux' === $brand ) {
+		// Nov 2026 (Alex): every brand HOME shows the client ADVERTS
+		// (Vincere), close to the top – right under the about split; the
+		// internal desk board comes off brand homes entirely (desk seats
+		// live on the group Careers board).
+		{
 			array_splice( $home, 3, 0, [ self::section( [ self::widget( 'verto-jobs-board', [
 				'layout'       => 'compact',
 				'brand'        => $brand,
@@ -2768,9 +2769,8 @@ class Verto_Installer {
 		// brand now carries REAL quotes – home_testimonials is the curated
 		// mixed (client + candidate) highlight set, with consultant avatars.
 		$home = array_merge( $home, [
-			// Nov 2026 (Alex): ModulR shows its open roles BEFORE the
-			// testimonials – "need them to see vacancies asap on the page".
-			'modulr' === $brand ? $vacancies : null,
+			// Nov 2026 (Alex, round 27): internal desk boards are OFF brand
+			// homes – the client adverts board above replaces them.
 			self::section( [ self::widget( 'verto-quote-band', [
 				'quotes_style'     => 'light',
 				'quotes_layout'    => 'carousel',
@@ -2788,10 +2788,7 @@ class Verto_Installer {
 				'consultant_brand' => $name,
 				'quotes'           => array_map( fn( $q ) => [ '_id' => self::eid() ] + $q, $c['home_testimonials'] ?? [] ),
 			] ) ], 'verto-bs' ),
-			// Round 9, item 1: brand vacancies – directly after the
-			// testimonials carousel. Nov 2026 (Alex): ModulR flips the order,
-			// vacancies first (handled below).
-			in_array( $brand, [ 'modulr', 'edison-lux' ], true ) ? null : $vacancies,
+
 			// v0.22.4 (client): the HOME page now carries the FULL four-models
 			// section (replacing the round-6 compact services band here –
 			// About / Candidates / Insights keep the compact band).
@@ -3186,18 +3183,24 @@ class Verto_Installer {
 			// Appears once brand-tagged client jobs exist in the sync.
 			// Nov 2026 (Alex): on ModulR the board moves to the TOP (after the
 			// hero) – handled by the reorder below.
-			in_array( $brand, [ 'edison-lux', 'modulr' ], true ) ? self::section( [ self::widget( 'verto-jobs-board', [
+			self::section( [ self::widget( 'verto-jobs-board', [
 				'layout'       => 'compact',
 				'brand'        => $brand,
 				'source'       => 'client',
 				'list_eyebrow' => 'Live roles',
-				'heading'      => 'edison-lux' === $brand ? 'Live roles in USA & European energy.' : 'Live roles in Architecture & Data Centres.',
+				// Nov 2026 (Alex, round 27): client adverts on every brand's
+				// candidates page – Vertek included.
+				'heading'      => [
+					'edison-lux' => 'Live roles in USA & European energy.',
+					'modulr'     => 'Live roles in Architecture & Data Centres.',
+					'vertek'     => 'Live roles in technical sales, service & engineering.',
+				][ $brand ] ?? 'Current vacancies.',
 				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Apply direct, or start a conversation below.',
 				// Round 22: cap at 8, the rest live on the jobs page.
 				'limit'         => 8,
 				'view_all_text' => 'View all jobs',
 				'view_all_link' => [ 'url' => '/jobs' ],
-			] ) ], 'verto-bs vbs-vacancies' ) : $vacancies,
+			] ) ], 'verto-bs vbs-vacancies' ),
 		];
 		// Nov 2026 (Alex): ModulR wants live vacancies at the TOP of the
 		// candidates page – move the board to directly after the hero.

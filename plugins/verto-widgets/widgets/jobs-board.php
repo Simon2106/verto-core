@@ -112,6 +112,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 				'url'        => (string) ( $job['url'] ?? '' ),
 				'permalink'  => (string) ( $job['permalink'] ?? '' ),
 				'vincere_id' => (string) ( $job['vincere_id'] ?? '' ),
+				'product'    => (string) ( $job['product'] ?? '' ),
 			];
 		}
 		return $clean;
@@ -151,7 +152,8 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 						<div class="verto-jobs-compact__row">
 							<a class="verto-jobs-compact__main" href="<?php echo esc_url( $href ); ?>">
 								<span class="verto-jobs-compact__title"><?php echo esc_html( $job['title'] ); ?></span>
-								<span class="verto-jobs-compact__meta"><?php echo esc_html( $job['location'] ); ?> · <?php echo esc_html( $job['level'] ); ?> · <?php echo esc_html( $job['package'] ); ?></span>
+								<?php // Nov 2026 (Alex): location + salary only – no guessed level. ?>
+							<span class="verto-jobs-compact__meta"><?php echo '' !== ( $job['product'] ?? '' ) ? esc_html( $job['product'] ) . ' · ' : ''; ?><?php echo esc_html( $job['location'] ); ?> · <?php echo esc_html( $job['package'] ); ?></span>
 							</a>
 							<a class="verto-jobs-compact__apply" href="<?php echo esc_url( '' !== $permalink ? $permalink . '#apply' : $href ); ?>">Apply <span aria-hidden="true">↗</span></a>
 						</div>
@@ -284,9 +286,14 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							   data-level="<?php echo esc_attr( $job['level'] ); ?>">
 								<div class="verto-jobs__rowmain">
 									<div class="verto-jobs__meta">
-										<span class="verto-tip verto-jobs__brand" style="color:<?php echo esc_attr( $b['color'] ); ?>;"><?php echo esc_html( $b['label'] ); ?><span class="verto-tip__bubble"><?php echo esc_html( $b['sector'] ); ?></span></span>
-										<span class="sep">·</span>
-										<span class="lvl"><?php echo esc_html( $job['level'] ); ?></span>
+										<?php // Nov 2026 (Alex): kicker shows the brand only – the
+									// guessed level comes off (Level filter still works via
+									// the row's data-level attribute). ?>
+									<span class="verto-tip verto-jobs__brand" style="color:<?php echo esc_attr( $b['color'] ); ?>;"><?php echo esc_html( $b['label'] ); ?><span class="verto-tip__bubble"><?php echo esc_html( $b['sector'] ); ?></span></span>
+									<?php if ( '' !== ( $job['product'] ?? '' ) ) : // Nov 2026 (Alex): product area in the kicker ?>
+									<span class="sep">·</span>
+									<span class="lvl"><?php echo esc_html( $job['product'] ); ?></span>
+									<?php endif; ?>
 									</div>
 									<div class="verto-jobs__title"><?php echo esc_html( $job['title'] ); ?></div>
 									<div class="verto-jobs__package"><?php echo esc_html( $job['package'] ); ?></div>

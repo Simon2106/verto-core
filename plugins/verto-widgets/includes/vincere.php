@@ -653,8 +653,10 @@ class Verto_Vincere {
 			// Oct 2026 (Alex's advert spec): salary on the advert – richest
 			// tier asks for the pay fields too; if the tenant rejects any of
 			// them the ladder simply steps down.
-			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,salary_from,salary_to,salary_type,currency',
-			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners',
+			// Nov 2026 (Alex): location was missing from the rich tiers – the
+			// test job had it set in Vincere but we never requested it.
+			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary_from,salary_to,salary_type,currency',
+			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location',
 			'id,job_title,public_description,job_type,open_date,closed_date,company,location',
 			'id,job_title,public_description,closed_date',
 		] );
@@ -1100,8 +1102,12 @@ class Verto_Vincere {
 		}
 		$checked = (string) get_post_meta( $post_id, '_sector_cf_checked', true );
 		$brand   = (string) get_post_meta( $post_id, '_brand', true );
-		if ( $checked && 'verto' !== $brand && '' !== $brand ) {
-			return; // already resolved to a real brand
+		// Nov 2026 (Alex): branded jobs also carry a free-text
+		// "website_product_area" custom field – keep fetching until it has
+		// been captured once (only the handful of brand-tagged jobs refetch).
+		$prod_checked = (string) get_post_meta( $post_id, '_product_area_checked', true );
+		if ( $checked && 'verto' !== $brand && '' !== $brand && $prod_checked ) {
+			return; // brand resolved and product area captured
 		}
 		$json = self::api_get( 'position/' . rawurlencode( $job['vincere_id'] ) . '/customfields' );
 		update_post_meta( $post_id, '_sector_cf_checked', '1' );
@@ -1115,6 +1121,33 @@ class Verto_Vincere {
 		// definition once (key + id→label map, cached) and translate.
 		$def  = self::sector_field_def();
 		$rows = $json['data'] ?? ( $json['items'] ?? $json );
+		// Product area: free-text field "website_product_area" – stored as-is.
+		foreach ( (array) $rows as $pa_row ) {
+			if ( is_array( $pa_row ) && 'website_product_area' === (string) ( $pa_row['key'] ?? '' ) ) {
+				$pa_vals = [];
+				foreach ( [ 'field_value', 'field_values', 'value', 'values' ] as $vk ) {
+					if ( ! isset( $pa_row[ $vk ] ) ) {
+						continue;
+					}
+					foreach ( (array) $pa_row[ $vk ] as $v ) {
+						if ( is_array( $v ) ) {
+							$v = $v['value'] ?? '';
+						}
+						$v = trim( (string) $v );
+						if ( '' !== $v ) {
+							$pa_vals[] = $v;
+						}
+					}
+					if ( $pa_vals ) {
+						break;
+					}
+				}
+				if ( $pa_vals ) {
+					update_post_meta( $post_id, '_product_area', sanitize_text_field( implode( ', ', array_unique( $pa_vals ) ) ) );
+				}
+			}
+		}
+		update_post_meta( $post_id, '_product_area_checked', '1' );
 		foreach ( (array) $rows as $row ) {
 			if ( ! is_array( $row ) ) {
 				continue;
@@ -1354,12 +1387,11 @@ class Verto_Vincere {
 		] );
 		foreach ( $posts as $post ) {
 			// Oct 2026 (advert spec): salary beats the job-type line when synced.
+			// Nov 2026 (Alex): client rows show salary or "Competitive
+			// package" – never the Permanent/Full-Time employment line.
 			$package = (string) get_post_meta( $post->ID, '_salary', true );
 			if ( '' === $package ) {
 				$package = (string) get_post_meta( $post->ID, '_package', true );
-			}
-			if ( '' === $package ) {
-				$package = (string) get_post_meta( $post->ID, '_job_type', true );
 			}
 			$cache[ $brand ][] = [
 				'id'          => (int) $post->ID,
@@ -1372,6 +1404,7 @@ class Verto_Vincere {
 				'permalink'   => (string) get_permalink( $post ),
 				'vincere_id'  => (string) get_post_meta( $post->ID, '_vincere_id', true ),
 				'owner_email' => (string) get_post_meta( $post->ID, '_owner_email', true ),
+				'product'     => (string) get_post_meta( $post->ID, '_product_area', true ),
 			];
 		}
 		return $cache[ $brand ];
