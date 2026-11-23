@@ -2373,7 +2373,10 @@ body.verto-brand-vertek .vbs-story__headline .vbs-italic {
 .verto-quote { border-radius: 1rem; box-shadow: inset 2px 0 0 var(--accent), 0 18px 36px -26px rgba(0,0,0,0.55); }
 .verto-quote__mark { margin-bottom: 0.25rem; }
 /* 6. Group About intro: the two columns stretch the full container width
-   (to the end of the photo collage below). */
+   (to the end of the photo collage below). Round 36 (Alex): the .verto-intro
+   56rem cap was defeating this – the About intro drops the cap so the two
+   paragraphs line up with the collage edges. */
+body.verto-brand-verto .verto-intro:has(> h1.verto-display-2) { max-width: none; }
 body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body { width: 48.5%; margin-right: 3%; max-width: none; }
 body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body:last-of-type { margin-right: 0; }
 /* ── Round 19 (Nov 2026, Alex "changes") ── */
@@ -2439,7 +2442,7 @@ a.vbs-chips__cell:hover .vbs-chips__arrow { opacity: 1; transform: none; }
 }
 /* Group About opening: the two paragraphs sit side by side, filling the dead
    space to the right. */
-body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body { display: inline-block; width: 46%; vertical-align: top; margin-right: 3%; }
+body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body { display: inline-block; width: 48.5%; vertical-align: top; margin-right: 3%; }
 /* Group About thesis: a touch more air between the text blocks, lead line up. */
 .verto-prose p { margin-bottom: 1.5em; }
 .verto-prose p:first-child { font-size: 1.125em; }
