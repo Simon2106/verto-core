@@ -1200,6 +1200,13 @@ body.verto-brand-edison-lux .vbs-story__headline .vbs-italic {
    copy column a touch wider so the writing fills the space. */
 body.verto-brand-edison-lux .vbs-asplit__imgwrap { min-height: 320px; }
 @media (min-width: 1024px) { body.verto-brand-edison-lux .vbs-asplit__imgwrap { min-height: 420px; } }
+/* Round 36: the wide gas-plant photo left the home imgwrap shorter than the
+   black stat card, which (absolutely positioned) bled into the vacancies
+   band. On Edison's landing split the card sits in flow instead, so the box
+   always grows to contain it and the photo fills behind. */
+body.verto-brand-edison-lux .vbs-asplit--frame .vbs-asplit__imgwrap { display: flex; justify-content: flex-end; align-items: flex-start; }
+body.verto-brand-edison-lux .vbs-asplit--frame .vbs-statcard { position: static; margin: 1.5rem 1.5rem 1.5rem auto; }
+@media (min-width: 768px) { body.verto-brand-edison-lux .vbs-asplit--frame .vbs-statcard { margin: 2.5rem 2.5rem 2.5rem auto; } }
 @media (min-width: 1024px) { body.verto-brand-edison-lux .vbs-asplit__copywrap { padding-top: 4rem; padding-bottom: 4rem; } }
 body.verto-brand-edison-lux .vbs-asplit__copy { max-width: 32rem; }
 body.verto-brand-edison-lux .vbs-asplit__body--panel { font-size: 1.0625rem; line-height: 1.7; opacity: 0.9; }
