@@ -2506,12 +2506,15 @@ class Verto_Installer {
 				// Round 10: the prototype's invented 'testimonials' array is GONE –
 				// the real curated client_quotes / candidate_quotes above feed the
 				// Clients and Candidates page bands for every brand now.
+				// Round 36 (Nov 2026, Alex): his rewrite of all four steps +
+				// the section intro (side_text below).
 				'process' => [
-					[ 'title' => 'Discover', 'body' => 'We sit down with the business, the product line and the territory – not just the job spec. Success at 90 days, 6 months and 12 months is mapped before we name a single candidate.' ],
-					[ 'title' => 'Map',      'body' => 'We map the entire competitor, manufacturer and distributor landscape on patch. Time-served engineers, sales specialists, service leaders – visible and invisible.' ],
-					[ 'title' => 'Engage',   'body' => 'Every approach is briefed properly – your product, your culture, the opportunity. No mass outreach. No resumes into the void.' ],
-					[ 'title' => 'Deliver',  'body' => "Structured shortlist, candidate context resumes can't capture, offer management and post-placement check-ins. Frequent updates throughout. No surprises." ],
+					[ 'title' => 'Discover', 'body' => 'We go beyond the job description to understand your business, products, culture and commercial objectives.' ],
+					[ 'title' => 'Map',      'body' => 'We map the competitor, manufacturer, and distributor landscape to identify the strongest talent within your market. From experienced engineers and technical sales specialists to senior leaders, we uncover both active and passive candidates.' ],
+					[ 'title' => 'Engage',   'body' => 'Every approach is tailored to the individual, communicating your opportunity, culture and value proposition. We engage, qualify and assess candidates against your requirements, ensuring every introduction is relevant and considered.' ],
+					[ 'title' => 'Deliver',  'body' => 'We present carefully selected candidates with detailed insights that go beyond the CV. From interview coordination and offer management to post-placement follow-up, we manage the process with clear communication and consistent updates.' ],
 				],
+				'process_intro' => 'A structured, targeted approach to recruitment. Every stage is designed to reduce uncertainty, uncover exceptional talent and deliver lasting hiring success.',
 // Nov 2026 (Alex): case study dropped for launch - no real one yet.
 				
 				'candidate_process' => [
@@ -3079,7 +3082,7 @@ class Verto_Installer {
 				'bg'         => 'muted',
 				'eyebrow'    => 'How we work',
 				'heading'    => 'A process built to remove chance.',
-				'side_text'  => '',
+				'side_text'  => $c['process_intro'] ?? '',
 				'items'      => array_map( fn( $st ) => [ '_id' => self::eid(), 'kicker' => '', 'bullets' => '' ] + $st, $c['process'] ),
 			] ) ], 'verto-bs' );
 			// Splice it from the end of the list to just before the four
