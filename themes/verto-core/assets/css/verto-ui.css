@@ -2321,6 +2321,8 @@ body.verto-brand-vertek .vbs-team__overlay {
 /* Headed USP pairs on the four-models cards (Engage / Contract): bold label,
    its own description underneath – the competitor-style breakdown. */
 .vbs-rail__usps { margin-top: 1rem; display: grid; gap: 0.875rem; }
+/* Round 34: the Contract paragraph sits under the key points on row4. */
+.vbs-rail__body--after { margin-top: 1.1rem; font-size: 0.8125rem; opacity: 0.85; }
 .vbs-usp { display: grid; gap: 0.2rem; }
 .vbs-usp__label { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.01em; color: var(--foreground); }
 .vbs-usp__text { font-size: 0.8125rem; line-height: 1.5; color: var(--muted-foreground); }

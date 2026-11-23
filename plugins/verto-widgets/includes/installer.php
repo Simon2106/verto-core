@@ -2600,14 +2600,17 @@ class Verto_Installer {
 				[ '_id' => self::eid(), 'title' => 'Verto Engage', 'kicker' => 'A true partnership', 'badge' => 'Our flagship',
 				  'body' => '', 'bullets' => '',
 				  'usps' => "Performance Guarantee | We commit to delivering qualified, interview-ready talent. 100% success rate – our most certain hiring option.\nReplacement Guarantee | 6 months of protection on every successful placement.\nShared Commitment | An upfront engagement secures dedicated resources, priority delivery and a committed search partnership.\nCo-Branded Adverts | Leverage our network with your branding. Wider reach with quality results." ],
-				[ '_id' => self::eid(), 'title' => 'Exclusive', 'kicker' => 'One search, one partner',
-				  'body' => 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.',
-				  'bullets' => "Senior resource on the brief\nFaster, deeper shortlists\nOne process to manage" ],
+				// Round 34 (Nov 2026, Alex): Exclusive + Contingent join the
+				// headed-USP format with his copy; Exclusive carries the
+				// "Our dedicated solution" pill to mirror Engage's flagship.
+				[ '_id' => self::eid(), 'title' => 'Exclusive', 'kicker' => 'One search, one trusted partner', 'badge' => 'Our dedicated solution',
+				  'body' => '', 'bullets' => '',
+				  'usps' => "Specialist Expertise | Specialists dedicated to your search, bringing in-depth market knowledge and targeted headhunting expertise.\nReplacement Guarantee | 1-3 months of protection on every successful hire.\nShared Commitment | An exclusive partnership ensures your vacancy is prioritised, with dedicated resources and a focused approach to delivery.\nProven Process | A streamlined recruitment strategy delivering stronger shortlists, faster results and a greater chance of hiring success." ],
 				[ '_id' => self::eid(), 'title' => 'Contract', 'kicker' => 'Interim & project specialists',
 				  'body' => $contract['body'], 'bullets' => '', 'usps' => $contract['usps'] ],
-				[ '_id' => self::eid(), 'title' => 'Contingent', 'kicker' => '',
-				  'body' => 'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.',
-				  'bullets' => "You only pay on a hire\nFree-replacement guarantee\nSimple to switch on" ],
+				[ '_id' => self::eid(), 'title' => 'Contingent', 'kicker' => 'No hire, no fee',
+				  'body' => '', 'bullets' => '',
+				  'usps' => "Replacement Guarantee | Our standard replacement guarantee.\nNo Upfront Commitment | Only pay when you successfully hire – the lowest commitment option.\nFlexible Process | A straightforward recruitment solution that is quick to activate." ],
 			],
 		] ) ], 'verto-bs' );
 	}

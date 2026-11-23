@@ -3,14 +3,14 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.22.56
+ * Version: 0.22.57
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.22.56' );
+define( 'VERTO_WIDGETS_VERSION', '0.22.57' );
 
 /**
  * Compact services band for the brand sites: the FOUR Verto engagement
@@ -26,9 +26,9 @@ function verto_services_band_html(): string {
 	// model" and moves to the end (Engage / Exclusive / Contract / Contingent).
 	$models = [
 		[ 'Verto Engage', 'A true partnership',           'Our flagship model with a 100% success rate: a performance guarantee, a 6-month replacement guarantee, dedicated resources with priority delivery, and co-branded adverts promoted to our 35,000 LinkedIn followers.', 'Our flagship' ],
-		[ 'Exclusive',    'One search, one partner',      'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.', '' ],
+		[ 'Exclusive',    'One search, one trusted partner', 'We commit senior resource to an exclusive brief and you get a faster, deeper shortlist without managing multiple agencies.', '' ],
 		[ 'Contract',     'Interim & project specialists','Skilled contractors and interim professionals supporting business-critical operations, project delivery and changing workforce demands – compliantly engaged and ready fast.', '' ],
-		[ 'Contingent',   'Pay on success',               'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.', '' ],
+		[ 'Contingent',   'No hire, no fee',              'We search, you interview, and a fee applies only when you hire. Backed by a free-replacement guarantee.', '' ],
 	];
 	$cards = '';
 	foreach ( $models as $i => [ $title, $kicker, $body, $badge ] ) {

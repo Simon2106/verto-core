@@ -164,11 +164,15 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 								<?php if ( $badge && $row4 ) : ?><span class="vbs-card__badge vbs-card__badge--inline"><?php echo esc_html( $badge ); ?></span><?php endif; ?>
 								<?php if ( $it['kicker'] ) : ?><p class="vbs-rail__kicker"><?php echo esc_html( $it['kicker'] ); ?></p><?php endif; ?>
 								<?php if ( $row4 ) : ?></div><?php endif; ?>
-								<?php if ( trim( (string) $it['body'] ) ) : ?><p class="<?php echo $is3 ? 'vbs-rail__body3' : 'vbs-rail__body'; ?>"><?php echo esc_html( $it['body'] ); ?></p><?php endif; ?>
 								<?php
 								// Round 17: headed USPs ("Label | text" per line).
-								$usps = array_filter( array_map( 'trim', explode( "\n", (string) ( $it['usps'] ?? '' ) ) ) );
-								if ( $usps ) : ?>
+								// Round 34 (Nov 2026, Alex): on the flat four-models row
+								// the paragraph reads better BELOW the key points, so
+								// row4 renders usps first and the body after.
+								$usps     = array_filter( array_map( 'trim', explode( "\n", (string) ( $it['usps'] ?? '' ) ) ) );
+								$body_txt = trim( (string) $it['body'] );
+								if ( $body_txt && ! ( $row4 && $usps ) ) : ?><p class="<?php echo $is3 ? 'vbs-rail__body3' : 'vbs-rail__body'; ?>"><?php echo esc_html( $it['body'] ); ?></p><?php endif; ?>
+								<?php if ( $usps ) : ?>
 									<div class="vbs-rail__usps">
 										<?php foreach ( $usps as $u ) :
 											$parts = array_map( 'trim', explode( '|', $u, 2 ) ); ?>
@@ -179,6 +183,7 @@ class Verto_Widget_Process_Rail extends \Elementor\Widget_Base {
 										<?php endforeach; ?>
 									</div>
 								<?php endif; ?>
+								<?php if ( $body_txt && $row4 && $usps ) : ?><p class="vbs-rail__body vbs-rail__body--after"><?php echo esc_html( $it['body'] ); ?></p><?php endif; ?>
 								<?php
 								$bullets = array_filter( array_map( 'trim', explode( "\n", (string) $it['bullets'] ) ) );
 								if ( $bullets ) : ?>
