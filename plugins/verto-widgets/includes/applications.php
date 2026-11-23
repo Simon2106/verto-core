@@ -264,9 +264,10 @@ class Verto_Applications {
 
 	/**
 	 * GDPR retention sweep (daily cron): any application still stored after
-	 * 30 days is deleted, CV and all – covers test-mode submissions and
-	 * failed pushes the team has had ample time to action (the owner email
-	 * already carried the details the moment it arrived).
+	 * 7 days is deleted, CV and all – covers test-mode submissions and
+	 * failed pushes (Nov 2026, Alex via Simon: the site should hold no
+	 * personal data; the owner email already carried the details the
+	 * moment it arrived, so a week is ample to action a failed push).
 	 */
 	public static function retention_sweep(): void {
 		$old = get_posts( [
@@ -274,7 +275,7 @@ class Verto_Applications {
 			'post_status'    => 'any',
 			'posts_per_page' => 200,
 			'fields'         => 'ids',
-			'date_query'     => [ [ 'before' => '30 days ago' ] ],
+			'date_query'     => [ [ 'before' => '7 days ago' ] ],
 			'no_found_rows'  => true,
 		] );
 		foreach ( $old as $app_id ) {

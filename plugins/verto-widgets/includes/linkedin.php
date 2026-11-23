@@ -50,6 +50,13 @@ class Verto_LinkedIn {
 				}
 			}
 		} );
+		// Nov 2026 (round 33, Simon: "YES"): hand-picked posts. An admin box
+		// (Settings -> LinkedIn posts) takes one post per line; each becomes
+		// a brand-category Insights card. No feeds or rss.app needed.
+		add_action( 'admin_menu', function () {
+			add_options_page( 'LinkedIn posts', 'LinkedIn posts', 'manage_options', 'verto-linkedin', [ self::class, 'render_admin' ] );
+		} );
+		add_action( 'admin_post_verto_linkedin_save', [ self::class, 'handle_save' ] );
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'verto linkedin-sync', function () {
 				if ( ! self::feed_url() ) {
@@ -183,6 +190,126 @@ class Verto_LinkedIn {
 			$new++;
 		}
 		return $new;
+	}
+	/* ── Hand-picked posts (round 33) ──────────────────────────────────── */
+
+	const OPT_MANUAL = 'verto_linkedin_posts';
+
+	/** Parse the textarea: one per line, "URL | Author | Caption". */
+	private static function parse_manual( string $raw ): array {
+		$rows = [];
+		foreach ( preg_split( '/\r?\n/', $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line || 0 !== strpos( $line, 'http' ) ) {
+				continue;
+			}
+			$parts   = array_map( 'trim', explode( '|', $line, 3 ) );
+			$url     = esc_url_raw( $parts[0] );
+			if ( '' === $url || false === strpos( $url, 'linkedin.com' ) ) {
+				continue;
+			}
+			$rows[ untrailingslashit( strtok( $url, '?' ) ) ] = [
+				'url'     => $url,
+				'author'  => $parts[1] ?? '',
+				'caption' => $parts[2] ?? '',
+			];
+		}
+		return $rows;
+	}
+
+	/** Upsert the picked posts; drop manual posts whose line was removed. */
+	public static function sync_manual(): array {
+		$rows   = self::parse_manual( (string) get_option( self::OPT_MANUAL, '' ) );
+		$brand  = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
+		$cat    = get_category_by_slug( $brand );
+		$cat_id = $cat ? (int) $cat->term_id : (int) wp_create_category( $brand );
+		$added  = 0;
+		$kept   = [];
+
+		foreach ( $rows as $guid => $row ) {
+			$exists = get_posts( [
+				'post_type'     => 'post',
+				'post_status'   => 'any',
+				'numberposts'   => 1,
+				'fields'        => 'ids',
+				'meta_key'      => '_verto_li_guid',
+				'meta_value'    => $guid,
+				'no_found_rows' => true,
+			] );
+			if ( $exists ) {
+				$kept[] = (int) $exists[0];
+				continue;
+			}
+			$caption = '' !== $row['caption'] ? $row['caption']
+				: ( '' !== $row['author'] ? $row['author'] . ' on LinkedIn' : 'On LinkedIn' );
+			$post_id = wp_insert_post( [
+				'post_type'     => 'post',
+				'post_status'   => 'publish',
+				'post_title'    => wp_trim_words( $caption, 16 ),
+				'post_excerpt'  => wp_trim_words( $caption, 40 ),
+				'post_content'  => esc_html( $caption ) . "\n\n" . '<p><a href="' . esc_url( $row['url'] ) . '" rel="noopener">View on LinkedIn &rarr;</a></p>',
+				'post_category' => $cat_id ? [ $cat_id ] : [],
+			] );
+			if ( ! $post_id || is_wp_error( $post_id ) ) {
+				continue;
+			}
+			update_post_meta( $post_id, '_verto_li_guid', $guid );
+			update_post_meta( $post_id, '_verto_external_url', $row['url'] );
+			update_post_meta( $post_id, '_verto_li_author', $row['author'] );
+			update_post_meta( $post_id, '_verto_li_manual', '1' );
+			$kept[] = (int) $post_id;
+			$added++;
+		}
+
+		// A removed line un-picks the post – only manual ones are touched.
+		$removed = 0;
+		foreach ( get_posts( [
+			'post_type'     => 'post',
+			'post_status'   => 'any',
+			'numberposts'   => -1,
+			'fields'        => 'ids',
+			'meta_key'      => '_verto_li_manual',
+			'meta_value'    => '1',
+			'no_found_rows' => true,
+		] ) as $pid ) {
+			if ( ! in_array( (int) $pid, $kept, true ) ) {
+				wp_delete_post( (int) $pid, true );
+				$removed++;
+			}
+		}
+		return [ 'added' => $added, 'removed' => $removed ];
+	}
+
+	public static function handle_save() {
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( $_POST['_verto_li_nonce'] ?? '', 'verto_linkedin_save' ) ) {
+			wp_die( 'Not allowed.' );
+		}
+		update_option( self::OPT_MANUAL, sanitize_textarea_field( wp_unslash( $_POST['verto_linkedin_posts'] ?? '' ) ), false );
+		$res = self::sync_manual();
+		wp_safe_redirect( add_query_arg( [ 'page' => 'verto-linkedin', 'added' => $res['added'], 'removed' => $res['removed'] ], admin_url( 'options-general.php' ) ) );
+		exit;
+	}
+
+	public static function render_admin() {
+		$raw   = (string) get_option( self::OPT_MANUAL, '' );
+		$count = count( self::parse_manual( $raw ) );
+		?>
+		<div class="wrap">
+			<h1>LinkedIn posts on Insights</h1>
+			<p>Paste one LinkedIn post per line. The post appears as a LinkedIn card on this site's Insights page and links out to LinkedIn. Delete a line and save to take it off the site.</p>
+			<p><strong>Format:</strong> <code>post URL | author name | short caption shown on the card</code> &mdash; author and caption are optional, but a caption makes a much better card.</p>
+			<?php if ( isset( $_GET['added'] ) ) : ?>
+				<div class="notice notice-success"><p><?php echo (int) $_GET['added']; ?> added, <?php echo (int) $_GET['removed']; ?> removed. Live posts from this box: <?php echo (int) $count; ?>.</p></div>
+			<?php endif; ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="verto_linkedin_save" />
+				<?php wp_nonce_field( 'verto_linkedin_save', '_verto_li_nonce' ); ?>
+				<textarea name="verto_linkedin_posts" rows="12" class="large-text code" placeholder="https://www.linkedin.com/posts/... | Alex Hatfield | We're hiring across our US energy desks"><?php echo esc_textarea( $raw ); ?></textarea>
+				<p>To give a card a picture, set a featured image on the post it creates (Posts &rarr; the LinkedIn item) &mdash; otherwise it uses the branded LinkedIn tile.</p>
+				<?php submit_button( 'Save & update Insights' ); ?>
+			</form>
+		</div>
+		<?php
 	}
 }
 
