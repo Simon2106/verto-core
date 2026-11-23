@@ -655,6 +655,12 @@ class Verto_Vincere {
 			// them the ladder simply steps down.
 			// Nov 2026 (Alex): location was missing from the rich tiers – the
 			// test job had it set in Vincere but we never requested it.
+			// Nov 2026 (round 35, Alex): Ben's "Air Distribution" leads made
+			// the site – a position parked at LEAD has no closed_date, so the
+			// status itself must come down. Field name varies by tenant, so
+			// both spellings get a rung; local filter below is defensive.
+			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency,status',
+			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency,job_status',
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency',
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location',
 			'id,job_title,public_description,job_type,open_date,closed_date,company,location',
@@ -765,6 +771,13 @@ class Verto_Vincere {
 			// Open = no closed_date, or closed_date still in the future
 			// (this tenant sets closed_date as an expiry date on open jobs).
 			if ( ! empty( $item['closed_date'] ) && strtotime( $item['closed_date'] ) <= time() ) {
+				continue;
+			}
+			// Round 35 (Alex): only ACTIVE/OPEN positions are public – leads,
+			// holds and closed/placed/lost jobs never reach the site. Unknown
+			// or absent status values pass through (don't hide good jobs).
+			$pos_status = strtoupper( trim( self::field_text( $item['status'] ?? ( $item['job_status'] ?? '' ) ) ) );
+			if ( '' !== $pos_status && preg_match( '/LEAD|HOLD|CLOS|PLACED|LOST|CANCEL|INACTIVE|DRAFT/', $pos_status ) ) {
 				continue;
 			}
 			$job = self::map_position( $item, $settings );
