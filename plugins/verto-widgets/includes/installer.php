@@ -395,6 +395,9 @@ class Verto_Installer {
 			'barcelona_05' => 'barcelona-05.jpg', // dinner trio
 			'barcelona_06' => 'barcelona-06.jpg', // boarding the easyJet flight
 			'gala_01'      => 'gala-01.jpg',      // gala – group at the podium
+			// Round 37 (Nov 2026, Alex): the DE&I card's real photography.
+			'dei_01'       => 'dei-session.jpg',  // DE&I session in the office
+			'dei_02'       => 'dei-webinar.jpg',  // Women-in-Architecture webinar
 			'gala_02'      => 'gala-02.jpg',      // gala – black-tie group
 			'gala_03'      => 'gala-03.jpg',      // gala – dance floor
 			'gala_04'      => 'gala-04.jpg',      // gala – the room
@@ -1381,7 +1384,7 @@ class Verto_Installer {
 						[ '_id' => self::eid(), 'line' => 'Three brands. One' ],
 						[ '_id' => self::eid(), 'line' => 'process-driven standard.' ],
 					],
-					'body'      => 'Founded in 2020, Verto connects exceptional technical and commercial people with the businesses that need them. Today, three focused brands – each with its own market, its own network and its own consultants – united by how we work.',
+					'body'      => 'Since 2020, Verto has been connecting technical and commercial staff with ambitious businesses. Today, we bring together three specialist brands, each with deep industry expertise, dedicated consultants and established talent networks.',
 					'link_text' => 'Explore the Verto brands',
 					'link'      => [ 'url' => '/about' ],
 				] ),
@@ -1492,7 +1495,7 @@ class Verto_Installer {
 						[ '_id' => self::eid(), 'line' => 'Back yourself.' ],
 						[ '_id' => self::eid(), 'line' => "We'll match it." ],
 					],
-					'body' => "40% commission. A share scheme that includes everyone. Two incentive holidays a year and a genuine route to the US. If you're going to work this hard anyway, do it somewhere that pays you properly – in money, ownership and experiences.",
+					'body' => "With up to 40% commission, an inclusive share scheme, two international incentive trips a year and genuine opportunities to take your career to the US, we go beyond the standard recruitment package. We're building a business where your hard work translates into financial success and unforgettable experiences.",
 				] ),
 			], 'verto-container-pad' ),
 			// Round 4, item 5: heading carries no word "roles" (widget default).
@@ -1508,7 +1511,7 @@ class Verto_Installer {
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Sales days',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'One day a month, all in.' ] ],
-					'body'    => "A company favourite: a full day of competition, prizes and noise, every month – and something we've been leading in the local area.",
+					'body'    => "Once a month, we turn up the volume for our legendary Sales Day. Think high-energy challenges, team rivalries, big prizes and plenty of friendly competition. It's a highlight of the Verto calendar.",
 				] ),
 				self::widget( 'verto-salesdays-mosaic', [ 'items' => self::salesdays_items( $media ) ] ),
 			], 'verto-muted verto-container-pad' ),
@@ -1519,7 +1522,7 @@ class Verto_Installer {
 					'eyebrow' => 'What we offer',
 					'size'    => 'verto-display-3',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'The package, in full.' ] ],
-					'body'    => 'The package gets you in the door. The team is why the average consultant is still here years later.',
+					'body'    => "We believe exceptional performance deserves exceptional rewards. From our market-leading commission structure and share scheme to international incentive trips, clear career progression and an award-winning culture, we've built a competitive package designed to reward ambition, recognise success and support your long-term growth.",
 				] ),
 				self::widget( 'verto-perks' ),
 			], 'verto-container-pad' ),
@@ -1529,10 +1532,11 @@ class Verto_Installer {
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Where a desk here takes you.' ] ],
 				] ),
 				self::widget( 'verto-principles', [ 'columns' => '4', 'items' => [
-					[ '_id' => self::eid(), 'kicker' => 'Months 0–12', 'title' => 'Trainee Consultant', 'body' => 'Phone-first training inside a live team. Structured L&D, a named mentor and your first placements.' ],
-					[ '_id' => self::eid(), 'kicker' => 'Year 1–2', 'title' => 'Consultant', 'body' => 'Your own market and your own clients. Full 40% commission and your first incentive trips.' ],
-					[ '_id' => self::eid(), 'kicker' => 'Year 1–3', 'title' => 'Senior Consultant', 'body' => "A market you're known in. Bigger deals, international briefs, and the option to relocate with your desk." ],
-					[ '_id' => self::eid(), 'kicker' => 'Year 2–4+', 'title' => 'Principal / Team Manager', 'body' => 'Lead a team or go deeper as a biller – both paths carry equity and a seat in how the group grows.' ],
+					// Round 38 (Nov 2026, Alex): his rewrite of all four steps.
+					[ '_id' => self::eid(), 'kicker' => 'Months 0–12', 'title' => 'Trainee Consultant', 'body' => "Build the foundations of a successful recruitment career. With hands-on training, structured learning and development, you'll develop your skills and celebrate your first placements." ],
+					[ '_id' => self::eid(), 'kicker' => 'Year 1–2', 'title' => 'Consultant', 'body' => 'Take ownership of your specialist market, build lasting client relationships and establish your reputation. Unlock our full 40% commission structure and earn your place on our international incentive trips.' ],
+					[ '_id' => self::eid(), 'kicker' => 'Year 1–3', 'title' => 'Senior Consultant', 'body' => 'Become a recognised specialist in your industry. Secure bigger deals, work with international clients and explore opportunities to take your career overseas with Verto.' ],
+					[ '_id' => self::eid(), 'kicker' => 'Year 2–4+', 'title' => 'Principal Consultant / Team Manager', 'body' => 'Choose the career path that plays to your strengths. Become an industry-leading biller or build and develop your own high-performing team. Both routes offer equity opportunities and the chance to shape the future of Verto and its brands.' ],
 				] ] ),
 			], 'verto-muted verto-container-pad' ),
 			// Incentives + share scheme – the client's share-scheme interview film
@@ -1544,7 +1548,7 @@ class Verto_Installer {
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Incentives',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Hit target. Board the plane.' ] ],
-					'body'    => "Two international incentive trips a year, winners' lunches, sales days and personal training sessions. Barcelona 2025, Prague in January, Ibiza this summer – and a share scheme that includes every person in the business. Press play to hear what owning a piece of Verto actually means to the team, and to see where hitting target took the winners this summer.",
+					'body'    => "Success is worth celebrating. From two international incentive trips a year and exclusive winners' lunches to high-energy sales days and our H1 & H2 awards, we make sure hard work never goes unnoticed.\n\nWith a companywide share scheme, everyone has the opportunity to be part of our success. Press play to hear what the equity scheme means to our team and experience what life at Verto is all about.",
 				] ),
 				self::widget( 'html', [ 'html' => self::incentive_media_row_html( $media ) ] ),
 			], 'verto-ink verto-container-pad' ),
@@ -1779,7 +1783,9 @@ class Verto_Installer {
 			// after the 2023 Amelia-Mae Foundation gala.
 			[ 'Gala nights', "Black-tie charity galas – most recently for Maeve's Mission, following the 2023 gala that raised £15,504 for the Amelia-Mae Foundation.", 'gala_01', 'The team on stage at the charity gala', null, null ],
 			[ 'Charity & fundraising', 'Every office backs a cause the team chooses – fundraisers, sponsored events and hands-on volunteering through the year.', 'gala_02', 'Black-tie group at the charity gala', 'charity_film', 'charity_film_poster' ],
-			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments – and the numbers behind them – publish here soon.', null, '', null, null ],
+			// Round 37 (Nov 2026, Alex): his two DE&I photos as a pair; the
+			// one-line description follows in his next email.
+			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments – and the numbers behind them – publish here soon.', [ 'dei_01', 'dei_02' ], 'A DE&I session in the Verto office', null, null ],
 		];
 		$html = '<div class="verto-community">';
 		foreach ( $cards as [ $title, $body, $mkey, $alt, $vkey, $pkey ] ) {
@@ -1789,7 +1795,14 @@ class Verto_Installer {
 				$html  .= '<div class="verto-community__media verto-community__media--video">'
 					. '<video controls preload="none" playsinline' . $poster . ' src="' . esc_url( $media[ $vkey ]['url'] ) . '" aria-label="' . esc_attr( $title . ' – the charity gala film' ) . '"></video>'
 					. '</div>';
-			} elseif ( $mkey && ! empty( $media[ $mkey ]['url'] ) ) {
+			} elseif ( is_array( $mkey ) && ! empty( $media[ $mkey[0] ]['url'] ) ) {
+				// Round 37: a pair of photos side by side in the media box.
+				$pair = '<img src="' . esc_url( $media[ $mkey[0] ]['url'] ) . '" alt="' . esc_attr( $alt ) . '" loading="lazy" />';
+				if ( ! empty( $mkey[1] ) && ! empty( $media[ $mkey[1] ]['url'] ) ) {
+					$pair .= '<img src="' . esc_url( $media[ $mkey[1] ]['url'] ) . '" alt="" loading="lazy" />';
+				}
+				$html .= '<div class="verto-community__media verto-community__media--pair">' . $pair . '</div>';
+			} elseif ( $mkey && is_string( $mkey ) && ! empty( $media[ $mkey ]['url'] ) ) {
 				$html .= '<div class="verto-community__media"><img src="' . esc_url( $media[ $mkey ]['url'] ) . '" alt="' . esc_attr( $alt ) . '" loading="lazy" /></div>';
 			} else {
 				$html .= '<div class="verto-community__ph">'

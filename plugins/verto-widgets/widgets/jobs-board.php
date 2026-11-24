@@ -67,7 +67,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$this->add_control( 'list_eyebrow', [ 'label' => 'Compact eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join the team' ] );
 		// Round 4, item 5: catchier heading, and no word "roles" in the section.
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Your next desk is here.' ] );
-		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "These are seats on our own desks – not client vacancies. And if your desk isn't listed yet, we still want to hear from experienced consultants." ] );
+		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "Explore opportunities to join our growing team across our specialist brands and locations. Don't see a role that matches your expertise? We're always keen to hear from ambitious, experienced recruitment consultants who want to make an impact." ] );
 		// Round 22 (Nov 2026, Alex): dedicated brand jobs pages + capped
 		// compact boards ("could have 30, 50 or even more at any one time").
 		$this->add_control( 'full_eyebrow', [ 'label' => 'Full-board eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join Verto' ] );
