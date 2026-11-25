@@ -584,62 +584,62 @@ class Verto_Installer {
 		      Simon Cottenham, Louis Fuller, Hannah Gresses, Jake Price. ── */
 		return [
 			/* ── The Directors ── */
-			'Alex Hatfield'   => [ 'linkedin' => 'https://www.linkedin.com/in/alex-hatfield-25774443/', 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'alex-hatfield-v4.png', 'photo_vertek' => 'vertek-alex-hatfield.png', 'leader' => true ],
-			'Martin Doig'     => [ 'linkedin' => 'https://www.linkedin.com/in/martin-doig/', 'brands' => [ 'verto', 'modulr' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'martin-doig-v4.png', 'photo_modulr' => 'modulr-martin-doig.png', 'leader' => true ],
-			'Robbie Sturgess' => [ 'linkedin' => 'https://www.linkedin.com/in/robbiesturgess/', 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'robbie-sturgess-v4.png', 'photo_vertek' => 'vertek-robbie-sturgess.png', 'leader' => true ],
+			'Alex Hatfield'   => [ 'linkedin' => 'https://www.linkedin.com/in/alex-hatfield-25774443/', 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'verto-alex-hatfield-sq.jpg', 'photo_vertek' => 'vertek-alex-hatfield-sq.jpg', 'leader' => true ],
+			'Martin Doig'     => [ 'linkedin' => 'https://www.linkedin.com/in/martin-doig/', 'brands' => [ 'verto', 'modulr' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'verto-martin-doig-sq.jpg', 'photo_modulr' => 'modulr-martin-doig-sq.jpg', 'leader' => true ],
+			'Robbie Sturgess' => [ 'linkedin' => 'https://www.linkedin.com/in/robbiesturgess/', 'brands' => [ 'verto', 'vertek' ], 'tier2' => 'director', 'tier' => 'leadership', 'role' => 'Founder', 'photo' => 'verto-robbie-sturgess-sq.jpg', 'photo_vertek' => 'vertek-robbie-sturgess-sq.jpg', 'leader' => true ],
 			/* ── Management ── */
-			'Dan Bisset'        => [ 'linkedin' => 'https://www.linkedin.com/in/danbisset/', 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'edison-dan-bisset-v4.png' ],
+			'Dan Bisset'        => [ 'linkedin' => 'https://www.linkedin.com/in/danbisset/', 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'management', 'role' => 'VP of Engineering', 'photo' => 'edison-dan-bisset-sq.jpg' ],
 			
-			'George East'       => [ 'linkedin' => 'https://www.linkedin.com/in/george-east-940a161a1/', 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-george-east-v4.png' ],
-			'Ben Tiffin'        => [ 'linkedin' => 'https://www.linkedin.com/in/ben-tiffin-7814531a3/', 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin-v4.png' ],
+			'George East'       => [ 'linkedin' => 'https://www.linkedin.com/in/george-east-940a161a1/', 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-george-east-sq.jpg' ],
+			'Ben Tiffin'        => [ 'linkedin' => 'https://www.linkedin.com/in/ben-tiffin-7814531a3/', 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-tiffin-sq.jpg' ],
 			
-			'Ben Cranston'      => [ 'linkedin' => 'https://www.linkedin.com/in/ben-cranston-329770151/', 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-cranston.png' ],
-			'Sade Kendall'      => [ 'linkedin' => 'https://www.linkedin.com/in/sade-kendall/', 'brands' => [ 'modulr' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'modulr-sade-kendall-v4.png' ],
+			'Ben Cranston'      => [ 'linkedin' => 'https://www.linkedin.com/in/ben-cranston-329770151/', 'brands' => [ 'vertek' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'vertek-ben-cranston-sq.jpg' ],
+			'Sade Kendall'      => [ 'linkedin' => 'https://www.linkedin.com/in/sade-kendall/', 'brands' => [ 'modulr' ], 'tier2' => 'tl', 'tier' => 'management', 'role' => 'Team Leader', 'photo' => 'modulr-sade-kendall-sq.jpg' ],
 			
 			/* ── Ops (Verto group pages only – fold into "The team" section) ── */
-			'Karabo Mothopeng' => [ 'linkedin' => 'https://www.linkedin.com/in/karabo-mothopeng-a54020164/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-karabo-mothopeng-v4.png' ],
-			'Angel Ndlovu'     => [ 'linkedin' => 'https://www.linkedin.com/in/angel-ndlovu-046307188/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-angel-ndlovu-v4.png' ],
-			'Alfie Gray'       => [ 'linkedin' => 'https://www.linkedin.com/in/alfiegraymarketing/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => 'verto-alfie-gray.png' ],
+			'Karabo Mothopeng' => [ 'linkedin' => 'https://www.linkedin.com/in/karabo-mothopeng-a54020164/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-karabo-mothopeng-sq.jpg' ],
+			'Angel Ndlovu'     => [ 'linkedin' => 'https://www.linkedin.com/in/angel-ndlovu-046307188/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Data Administrator', 'photo' => 'verto-angel-ndlovu-sq.jpg' ],
+			'Alfie Gray'       => [ 'linkedin' => 'https://www.linkedin.com/in/alfiegraymarketing/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Digital Marketing Executive', 'photo' => 'verto-alfie-gray-sq.jpg' ],
 			// Nov 2026 (Alex, "changes 3"): new starters – no photos yet
 			// (initials tiles until they arrive); roles TBC with Alex.
-			'Lucy Claydon'     => [ 'linkedin' => 'https://www.linkedin.com/in/lucyyclayydon/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Marketing Executive', 'photo' => 'verto-lucy-claydon.png' ],
+			'Lucy Claydon'     => [ 'linkedin' => 'https://www.linkedin.com/in/lucyyclayydon/', 'brands' => [ 'verto' ], 'tier2' => 'ops', 'tier' => 'ops', 'role' => 'Marketing Executive', 'photo' => 'verto-lucy-claydon-sq.jpg' ],
 			/* ── The team – Vertek ──
 			   Nov 2026 (Alex): Gary moves out of the Management tranche. ── */
-			'Gary Hunt'        => [ 'linkedin' => 'https://www.linkedin.com/in/gary-hunt-vertopeople/', 'brands' => [ 'vertek' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'vertek-gary-hunt-v4.png' ],
-			'Alice Schofield'  => [ 'linkedin' => 'https://www.linkedin.com/in/alice-schofield-9b768832b/', 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-alice-schofield-v4.png' ],
-			"Harley O'Connell" => [ 'linkedin' => 'https://www.linkedin.com/in/harley-o%E2%80%99connell-51a054290/', 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-harley-oconnell-v4.png' ],
-			'Sam Parnell'      => [ 'linkedin' => 'https://www.linkedin.com/in/sam-parnell-636885aa/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-sam-parnell-v4.png' ],
-			'Frank Warner'     => [ 'linkedin' => 'https://www.linkedin.com/in/frank-warner-1422272b0/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-frank-warner-v4.png' ],
-			'Harvey Earl'      => [ 'linkedin' => 'https://www.linkedin.com/in/harvey-earl-890589211/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-harvey-earl-v4.png' ],
-			'Lewis Mason'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-mason-mep-recruiter/', 'email' => 'lewis@vertopeople.com', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-lewis-mason-v4.png' ],
-			'Alex Wright'      => [ 'linkedin' => 'https://www.linkedin.com/in/alex-wright-546823245/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-alex-wright-v4.png' ],
-			'Lewis Sullivan'   => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-sullivan-1a7096321/', 'email' => 'lewiss@vertopeople.com', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-lewis-sullivan-v4.png' ],
-			'Saman Akbari'     => [ 'linkedin' => 'https://www.linkedin.com/in/saman-a-38b888196/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-saman-akbari.png' ],
-			'Rex Reavley'      => [ 'linkedin' => 'https://www.linkedin.com/in/rex-reavley-3791b7253/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-rex-reavley-v4.png' ],
-			'Olivia Pinhorne'  => [ 'linkedin' => 'https://uk.linkedin.com/in/olivia-pinhorne-6277aa334', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-olivia-pinhorne-v4.png' ],
-			'Hannah Gresses'   => [ 'linkedin' => 'https://www.linkedin.com/in/hannah-greses-81b0941a2/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-hannah-gresses.png' ],
-			'Hannah Benneyworth' => [ 'linkedin' => 'https://www.linkedin.com/in/hannah-benneyworth/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-hannah-benneyworth.png' ],
-			'Nolan Escover'      => [ 'linkedin' => 'https://www.linkedin.com/in/nolan-escover-8804b0195/', 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-nolan-escover.png' ],
+			'Gary Hunt'        => [ 'linkedin' => 'https://www.linkedin.com/in/gary-hunt-vertopeople/', 'brands' => [ 'vertek' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'vertek-gary-hunt-sq.jpg' ],
+			'Alice Schofield'  => [ 'linkedin' => 'https://www.linkedin.com/in/alice-schofield-9b768832b/', 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-alice-schofield-sq.jpg' ],
+			"Harley O'Connell" => [ 'linkedin' => 'https://www.linkedin.com/in/harley-o%E2%80%99connell-51a054290/', 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-harley-oconnell-sq.jpg' ],
+			'Sam Parnell'      => [ 'linkedin' => 'https://www.linkedin.com/in/sam-parnell-636885aa/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-sam-parnell-sq.jpg' ],
+			'Frank Warner'     => [ 'linkedin' => 'https://www.linkedin.com/in/frank-warner-1422272b0/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-frank-warner-sq.jpg' ],
+			'Harvey Earl'      => [ 'linkedin' => 'https://www.linkedin.com/in/harvey-earl-890589211/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-harvey-earl-sq.jpg' ],
+			'Lewis Mason'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-mason-mep-recruiter/', 'email' => 'lewis@vertopeople.com', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-lewis-mason-sq.jpg' ],
+			'Alex Wright'      => [ 'linkedin' => 'https://www.linkedin.com/in/alex-wright-546823245/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-alex-wright-sq.jpg' ],
+			'Lewis Sullivan'   => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-sullivan-1a7096321/', 'email' => 'lewiss@vertopeople.com', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-lewis-sullivan-sq.jpg' ],
+			'Saman Akbari'     => [ 'linkedin' => 'https://www.linkedin.com/in/saman-a-38b888196/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-saman-akbari-sq.jpg' ],
+			'Rex Reavley'      => [ 'linkedin' => 'https://www.linkedin.com/in/rex-reavley-3791b7253/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-rex-reavley-sq.jpg' ],
+			'Olivia Pinhorne'  => [ 'linkedin' => 'https://uk.linkedin.com/in/olivia-pinhorne-6277aa334', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-olivia-pinhorne-sq.jpg' ],
+			'Hannah Gresses'   => [ 'linkedin' => 'https://www.linkedin.com/in/hannah-greses-81b0941a2/', 'brands' => [ 'vertek' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'vertek-hannah-gresses-sq.jpg' ],
+			'Hannah Benneyworth' => [ 'linkedin' => 'https://www.linkedin.com/in/hannah-benneyworth/', 'brands' => [ 'vertek' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'vertek-hannah-benneyworth-sq.jpg' ],
+			'Nolan Escover'      => [ 'linkedin' => 'https://www.linkedin.com/in/nolan-escover-8804b0195/', 'brands' => [ 'vertek' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'vertek-nolan-escover-sq.jpg' ],
 			/* ── The team – Verto Life Sciences (sits with the group) ── */
-			'Martyn Jamieson'  => [ 'linkedin' => 'https://www.linkedin.com/in/martyn-jamieson-ba-hons-mirp-certrp-321587148/', 'brands' => [ 'verto' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Life Sciences', 'photo' => 'verto-martyn-jamieson.png' ],
+			'Martyn Jamieson'  => [ 'linkedin' => 'https://www.linkedin.com/in/martyn-jamieson-ba-hons-mirp-certrp-321587148/', 'brands' => [ 'verto' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Life Sciences', 'photo' => 'verto-martyn-jamieson-sq.jpg' ],
 			/* ── The team – ModulR (PDF: Jake now sits on ModulR only) ──
 			   Nov 2026 (Alex): Charlotte moves out of the Management tranche. ── */
-			'Charlotte Northam' => [ 'linkedin' => 'https://www.linkedin.com/in/charlotte-northam-cmgr-mcmi-64208011a/', 'brands' => [ 'modulr' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Architecture', 'photo' => 'modulr-charlotte-northam-v4.png' ],
-			'Natasha Sykes'     => [ 'linkedin' => 'https://www.linkedin.com/in/natashasykes1/', 'brands' => [ 'modulr' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'modulr-natasha-sykes-v4.png' ],
-			'Monira Akter'      => [ 'linkedin' => 'https://www.linkedin.com/in/moniraaktar/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-monira-aktar-v4.png' ],
-			'Lewis Wright'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-wright-27b5a4235/', 'email' => 'lewisw@vertopeople.com', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-lewis-wright-v4.png' ],
-			'Forough Rezaei'    => [ 'linkedin' => 'https://www.linkedin.com/in/forough-rezaei7898/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-forough-rezaei.png' ],
-			'Jake Massingham'   => [ 'linkedin' => 'https://www.linkedin.com/in/jake-hoare-572a55355/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-jake-massingham.png' ],
+			'Charlotte Northam' => [ 'linkedin' => 'https://www.linkedin.com/in/charlotte-northam-cmgr-mcmi-64208011a/', 'brands' => [ 'modulr' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Architecture', 'photo' => 'modulr-charlotte-northam-sq.jpg' ],
+			'Natasha Sykes'     => [ 'linkedin' => 'https://www.linkedin.com/in/natashasykes1/', 'brands' => [ 'modulr' ], 'tier2' => 'senior', 'tier' => 'team', 'role' => 'Senior Recruitment Consultant', 'photo' => 'modulr-natasha-sykes-sq.jpg' ],
+			'Monira Akter'      => [ 'linkedin' => 'https://www.linkedin.com/in/moniraaktar/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-monira-akter-sq.jpg' ],
+			'Lewis Wright'      => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-wright-27b5a4235/', 'email' => 'lewisw@vertopeople.com', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-lewis-wright-sq.jpg' ],
+			'Forough Rezaei'    => [ 'linkedin' => 'https://www.linkedin.com/in/forough-rezaei7898/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-forough-rezaei-sq.jpg' ],
+			'Jake Massingham'   => [ 'linkedin' => 'https://www.linkedin.com/in/jake-hoare-572a55355/', 'brands' => [ 'modulr' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'modulr-jake-massingham-sq.jpg' ],
 			/* ── The team – Edison Lux ──
 			   Nov 2026 (Alex): Simon moves out of the Management tranche. ── */
-			'Simon Cottenham'    => [ 'linkedin' => 'https://www.linkedin.com/in/scottenham/', 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'edison-simon-cottenham-v5.png' ],
-			'Milly Compton'      => [ 'linkedin' => 'https://www.linkedin.com/in/milly-compton-bb00a2228/', 'brands' => [ 'edison-lux' ], 'tier2' => 'principal', 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-v4.png' ],
-			'Joe Williams'       => [ 'linkedin' => 'https://www.linkedin.com/in/joe-williams-300431189/', 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-joe-williams-v4.png' ],
-			'Noah Ward'          => [ 'linkedin' => 'https://www.linkedin.com/in/noah-ward-certrp-548781210/', 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-noah-ward-v4.png' ],
-			'Lewis Dominy'       => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-dominy-66280b21a/', 'email' => 'lewisd@vertopeople.com', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-v4.png' ],
-			'Ollie Hesmondhalgh' => [ 'linkedin' => 'https://www.linkedin.com/in/oliver-hesmondhalgh-7992a3376/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-oliver-hesmondhalgh-v5.png' ],
-			'Matthew Pearce'     => [ 'linkedin' => 'https://www.linkedin.com/in/matthew-pearce-recruitment/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-matthew-pearce-v4.png' ],
-			'Justice Conley'     => [ 'linkedin' => 'https://www.linkedin.com/in/jlconley/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-justice-conley.png' ],
+			'Simon Cottenham'    => [ 'linkedin' => 'https://www.linkedin.com/in/scottenham/', 'brands' => [ 'edison-lux' ], 'tier2' => 'vp', 'tier' => 'team', 'role' => 'VP of Sales', 'photo' => 'edison-simon-cottenham-sq.jpg' ],
+			'Milly Compton'      => [ 'linkedin' => 'https://www.linkedin.com/in/milly-compton-bb00a2228/', 'brands' => [ 'edison-lux' ], 'tier2' => 'principal', 'tier' => 'team', 'role' => 'Principal Recruitment Consultant', 'photo' => 'edison-milly-compton-sq.jpg' ],
+			'Joe Williams'       => [ 'linkedin' => 'https://www.linkedin.com/in/joe-williams-300431189/', 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-joe-williams-sq.jpg' ],
+			'Noah Ward'          => [ 'linkedin' => 'https://www.linkedin.com/in/noah-ward-certrp-548781210/', 'brands' => [ 'edison-lux' ], 'tier2' => 'lead', 'tier' => 'team', 'role' => 'Lead Recruitment Consultant', 'photo' => 'edison-noah-ward-sq.jpg' ],
+			'Lewis Dominy'       => [ 'linkedin' => 'https://www.linkedin.com/in/lewis-dominy-66280b21a/', 'email' => 'lewisd@vertopeople.com', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-lewis-dominy-sq.jpg' ],
+			'Ollie Hesmondhalgh' => [ 'linkedin' => 'https://www.linkedin.com/in/oliver-hesmondhalgh-7992a3376/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-ollie-hesmondhalgh-sq.jpg' ],
+			'Matthew Pearce'     => [ 'linkedin' => 'https://www.linkedin.com/in/matthew-pearce-recruitment/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-matthew-pearce-sq.jpg' ],
+			'Justice Conley'     => [ 'linkedin' => 'https://www.linkedin.com/in/jlconley/', 'brands' => [ 'edison-lux' ], 'tier2' => 'rec', 'tier' => 'team', 'role' => 'Recruitment Consultant', 'photo' => 'edison-justice-conley-sq.jpg' ],
 		];
 	}
 
@@ -752,7 +752,7 @@ class Verto_Installer {
 
 	/** Team-photo batch version – bump when the client sends new treated
 	 *  headshots so existing installs swap them in on their next Rebuild. */
-	const TEAM_PHOTOS = 'photos-0.22.40';
+	const TEAM_PHOTOS = 'photos-0.22.66';
 
 	/**
 	 * Versioned team-photo migration. Round 9, item 22 (photos-0.21.0): the
