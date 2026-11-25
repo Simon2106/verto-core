@@ -1952,6 +1952,31 @@ body.verto-modal-open { overflow: hidden; }
 /* ── Advert prose (post_content) ── */
 .verto-jobadvert { padding-block: 5rem 3rem; }
 .verto-jobadvert__body { margin-top: 1.5rem; max-width: 48rem; }
+/* Round 40 (Nov 2026, Alex): larger advert type filling the page beside a
+   sticky at-a-glance card in the job's brand colour. */
+.verto-jobadvert__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3rem; align-items: start; }
+@media (min-width: 1024px) { .verto-jobadvert__grid { grid-template-columns: minmax(0, 1fr) 330px; gap: 4.5rem; } }
+.verto-jobadvert__body--xl { max-width: 52rem; }
+.verto-jobadvert__body--xl p, .verto-jobadvert__body--xl li { font-size: 1.125rem; line-height: 1.75; }
+.verto-jobadvert__body--xl > p:first-child { font-size: 1.3125rem; line-height: 1.6; color: var(--foreground); }
+.verto-jobadvert__body--xl ul { padding-left: 1.4rem; }
+.verto-jobadvert__body--xl li::marker { color: var(--job-brand, var(--brand)); }
+.verto-jobfacts { position: sticky; top: 6rem; }
+.verto-jobfacts__card {
+  background: #0a0a0a; color: #fff; border-radius: 0.5rem; padding: 1.75rem;
+  border-top: 3px solid var(--job-brand, var(--brand));
+  box-shadow: 0 24px 60px -30px rgba(0,0,0,0.5);
+}
+.verto-jobfacts__kicker { font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--job-brand, var(--brand)); }
+.verto-jobfacts__row { padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.12); display: grid; gap: 0.2rem; }
+.verto-jobfacts__label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.65; }
+.verto-jobfacts__value { font-size: 0.9375rem; line-height: 1.4; font-weight: 600; }
+.verto-jobfacts__apply {
+  display: block; text-align: center; margin-top: 1.25rem;
+  background: var(--job-brand, var(--brand)); color: var(--job-brand-fg, #fff);
+  border-color: transparent;
+}
+.verto-jobfacts__apply:hover { filter: brightness(1.08); }
 .verto-prose h3 {
   margin: 2.25rem 0 0.875rem; font-family: var(--font-display);
   font-size: 1.25rem; letter-spacing: -0.01em;

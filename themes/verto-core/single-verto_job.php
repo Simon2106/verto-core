@@ -52,6 +52,8 @@ if ( '' === $verto_job_package ) {
 	$verto_job_package = 'Competitive package';
 }
 $verto_job_vid    = (string) get_post_meta( $verto_job->ID, '_vincere_id', true );
+$verto_job_internal = '1' === (string) get_post_meta( $verto_job->ID, '_internal', true );
+$verto_job_product  = (string) get_post_meta( $verto_job->ID, '_product_area', true );
 $verto_job_open   = '0' !== (string) get_post_meta( $verto_job->ID, '_active', true );
 $verto_apply_url  = (string) get_post_meta( $verto_job->ID, '_apply_url', true ); // optional external portal
 
@@ -178,8 +180,10 @@ get_header();
 		</div>
 	</section>
 
-	<?php /* ── 2. OFFICE – photos of the location + the blurb ── */ ?>
-	<?php if ( $verto_job_office ) : ?>
+	<?php /* ── 2. OFFICE – photos of the location + the blurb. Round 40
+	   (Nov 2026, Alex): only on Verto's own internal postings – "Life in
+	   Solent isn't relevant" on a client advert. ── */ ?>
+	<?php if ( $verto_job_office && $verto_job_internal ) : ?>
 	<section class="verto-joboffice">
 		<div class="verto-container">
 			<span class="verto-jobs__eyebrow">The office</span>
@@ -216,19 +220,46 @@ get_header();
 	<?php endif; ?>
 
 	<?php /* ── 4. ADVERT – the job description ── */ ?>
+	<?php /* Round 40 (Alex): "font too small, takes up a fraction of the white
+	   space" – the advert steps up a size and runs beside a sticky at-a-glance
+	   card in the job's brand colour, with the Apply CTA always in reach. */ ?>
 	<section class="verto-jobadvert" id="advert">
-		<div class="verto-container">
-			<span class="verto-jobs__eyebrow">The role</span>
-			<div class="verto-prose verto-jobadvert__body">
-				<?php
-				$verto_job_content = apply_filters( 'the_content', $verto_job->post_content );
-				if ( trim( wp_strip_all_tags( (string) $verto_job_content ) ) ) {
-					echo $verto_job_content; // phpcs:ignore WordPress.Security.EscapeOutput -- post_content through the_content filters
-				} else {
-					echo '<p>Full details on application – tell us a little about yourself below and the consultant who owns this desk will come straight back to you.</p>';
-				}
-				?>
+		<div class="verto-container verto-jobadvert__grid">
+			<div>
+				<span class="verto-jobs__eyebrow">The role</span>
+				<div class="verto-prose verto-jobadvert__body verto-jobadvert__body--xl">
+					<?php
+					$verto_job_content = apply_filters( 'the_content', $verto_job->post_content );
+					if ( trim( wp_strip_all_tags( (string) $verto_job_content ) ) ) {
+						echo $verto_job_content; // phpcs:ignore WordPress.Security.EscapeOutput -- post_content through the_content filters
+					} else {
+						echo '<p>Full details on application – tell us a little about yourself below and the consultant who owns this desk will come straight back to you.</p>';
+					}
+					?>
+				</div>
 			</div>
+			<aside class="verto-jobfacts" aria-label="Role at a glance">
+				<div class="verto-jobfacts__card">
+					<div class="verto-jobfacts__kicker">At a glance</div>
+					<?php
+					$verto_job_facts = array_filter( [
+						'Brand'        => $verto_job_b['label'],
+						'Location'     => $verto_job_loc,
+						'Package'      => $verto_job_package,
+						'Product area' => $verto_job_product,
+						'Consultant'   => $verto_job_owner,
+					] );
+					foreach ( $verto_job_facts as $verto_job_fk => $verto_job_fv ) : ?>
+						<div class="verto-jobfacts__row">
+							<span class="verto-jobfacts__label"><?php echo esc_html( $verto_job_fk ); ?></span>
+							<span class="verto-jobfacts__value"><?php echo esc_html( $verto_job_fv ); ?></span>
+						</div>
+					<?php endforeach; ?>
+					<?php if ( $verto_job_open ) : ?>
+						<a class="btn-base verto-jobfacts__apply" href="#apply">Apply for this role</a>
+					<?php endif; ?>
+				</div>
+			</aside>
 		</div>
 	</section>
 
@@ -262,7 +293,8 @@ get_header();
 	<section class="verto-jobteam">
 		<div class="verto-container">
 			<span class="verto-jobs__eyebrow">The team</span>
-			<h2 class="verto-display-3 verto-jobteam__heading">Who you&rsquo;d sit with.</h2>
+			<?php /* Round 40 (Alex): renamed from "Who you'd sit with." */ ?>
+			<h2 class="verto-display-3 verto-jobteam__heading">Recruiters in your market.</h2>
 			<div class="verto-jobteam__grid">
 				<?php foreach ( $verto_job_team as $verto_job_person ) :
 					$verto_job_role = get_post_meta( $verto_job_person->ID, '_verto_role', true );
