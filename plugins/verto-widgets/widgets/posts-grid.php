@@ -112,11 +112,18 @@ class Verto_Widget_Posts_Grid extends \Elementor\Widget_Base {
 					<span class="verto-post-card__cat"><?php echo esc_html( $is_li ? 'LinkedIn' : $cat_name ); ?></span>
 				</a>
 				<div class="verto-post-card__body">
+					<?php
+					// Round 50 (Alex): "Vertek · Vertek" – when the kicker just
+					// repeats the category, drop the meta row entirely.
+					$meta_kicker = $is_li && $li_author ? $li_author : $s['kicker'];
+					$meta_cat    = $is_li ? 'LinkedIn' : $cat_name;
+					if ( strtolower( trim( $meta_kicker ) ) !== strtolower( trim( $meta_cat ) ) ) : ?>
 					<div class="verto-post-card__meta">
-						<span class="verto-post-card__kicker"><?php echo esc_html( $is_li && $li_author ? $li_author : $s['kicker'] ); ?></span>
+						<span class="verto-post-card__kicker"><?php echo esc_html( $meta_kicker ); ?></span>
 						<span>·</span>
-						<span><?php echo esc_html( $is_li ? 'LinkedIn' : $cat_name ); ?></span>
+						<span><?php echo esc_html( $meta_cat ); ?></span>
 					</div>
+					<?php endif; ?>
 					<h3 class="verto-post-card__title"><a href="<?php echo esc_url( $card_href ); ?>"<?php echo $card_tgt; ?>><?php the_title(); ?></a></h3>
 					<p class="verto-post-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 26 ) ); ?></p>
 					<div class="verto-post-card__foot">

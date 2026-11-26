@@ -1321,6 +1321,15 @@ body.verto-brand-edison-lux .vbs-desks .vbs-aud__card:nth-child(2) {
    and section tighter. */
 body.verto-brand-edison-lux .vbs-spec__num,
 body.verto-brand-edison-lux .vbs-spec__icon { display: none; }
+/* Round 50 (Alex): Vertek drops the pink icons and the 01-06 numbers too. */
+body.verto-brand-vertek .vbs-spec__num,
+body.verto-brand-vertek .vbs-spec__icon { display: none; }
+/* Round 50 (Alex): feature tiles – bodies start in line even when a title
+   wraps to two lines, and the compact job rows get a clear brand-colour
+   hover on the title. */
+body.verto-brand-vertek .vbs-feature__title { min-height: 2.75em; }
+.verto-jobs-compact__title { transition: color 0.2s ease; }
+a:hover > * .verto-jobs-compact__title, .verto-jobs__row:hover .verto-jobs-compact__title, a:hover .verto-jobs-compact__title { color: var(--brand) !important; }
 body.verto-brand-edison-lux .vbs-card .vbs-card__bar { background: var(--brand-gradient) !important; }
 body.verto-brand-edison-lux .vbs-spec { padding-block: 4rem; }
 body.verto-brand-edison-lux .vbs-spec__grid { margin-top: 2.5rem; gap: 1rem; }
@@ -1587,7 +1596,8 @@ body.verto-brand-edison-lux .vbs-statcard__value {
 
 /* ── Community & DE&I placeholder cards ── */
 .verto-community { display: grid; gap: 1.5rem; margin-top: 3.5rem; }
-@media (min-width: 768px) { .verto-community { grid-template-columns: repeat(3, 1fr); } }
+/* Round 51 (Alex): two larger cards instead of three. */
+@media (min-width: 768px) { .verto-community { grid-template-columns: repeat(2, 1fr); gap: 2rem; } }
 .verto-community__card {
   display: flex; flex-direction: column; overflow: hidden; border-radius: 1rem;
   background: var(--surface, var(--background)); border: 1px solid var(--border);
@@ -2487,6 +2497,11 @@ body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body { d
 /* Group About thesis: a touch more air between the text blocks, lead line up. */
 .verto-prose p { margin-bottom: 1.5em; }
 .verto-prose p:first-child { font-size: 1.125em; }
+/* Round 51 (Alex): the About opener sits in a card, uniform type. */
+.verto-prose--panel { background: #fff; border: 1px solid var(--border); border-radius: 0.75rem; padding: 2.25rem 2.5rem; box-shadow: 0 24px 60px -45px rgba(0,0,0,0.35); }
+.verto-prose--panel p { font-size: 1.0625em; line-height: 1.7; }
+.verto-prose--panel p:first-child { font-size: 1.0625em; }
+.verto-prose--panel p:last-child { margin-bottom: 0; }
 
 /* ModulR hero film (Nov 2026): a touch more ink on the left so the headline
    reads over the aerial footage. */

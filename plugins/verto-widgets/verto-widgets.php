@@ -3,14 +3,14 @@
  * Plugin Name: Verto Widgets
  * Plugin URI: https://github.com/Simon2106/verto-core
  * Description: Custom Elementor widgets for the Verto site family – V-mask media hero, line-by-line title reveal, and the Vincere jobs-board wrapper.
- * Version: 0.22.76
+ * Version: 0.22.78
  * Requires Plugins: elementor
  * Author: ICE
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VERTO_WIDGETS_VERSION', '0.22.76' );
+define( 'VERTO_WIDGETS_VERSION', '0.22.78' );
 
 /**
  * Compact services band for the brand sites: the FOUR Verto engagement
@@ -128,6 +128,12 @@ add_action( 'elementor/widgets/register', function ( $widgets_manager ) {
 add_action( 'elementor/elements/categories_registered', function ( $elements_manager ) {
 	$elements_manager->add_category( 'verto', [ 'title' => 'Verto', 'icon' => 'fa fa-bolt' ] );
 } );
+
+/** Round 50: no public comments anywhere on the Verto sites – the reply
+ *  form on article pages confused the client ("what would this be?"). */
+add_filter( 'comments_open', '__return_false', 20 );
+add_filter( 'pings_open', '__return_false', 20 );
+add_filter( 'comments_template', function () { return __DIR__ . '/includes/blank-comments.php'; }, 20 );
 
 /** Allow SVG upload for admins (needed for the ModulR logo import). */
 add_filter( 'upload_mimes', function ( $mimes ) {

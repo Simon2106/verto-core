@@ -37,6 +37,8 @@ class Verto_Widget_Timeline extends \Elementor\Widget_Base {
 				[ 'date' => 'Sep 2025', 'title' => 'First international incentive trip – Barcelona' ],
 				[ 'date' => 'Jan 2026', 'title' => 'Prague incentive trip' ],
 				[ 'date' => '2026', 'title' => 'The Sunday Times Best Places to Work', 'highlight' => 'yes' ],
+				[ 'date' => 'Aug 2026', 'title' => 'Austin office opens', 'highlight' => 'yes' ],
+				[ 'date' => 'Sep 2026', 'title' => 'Shortlisted – Recruiter Awards 2026' ],
 			],
 		] );
 		$this->end_controls_section();

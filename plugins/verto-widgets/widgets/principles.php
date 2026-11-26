@@ -18,10 +18,11 @@ class Verto_Widget_Principles extends \Elementor\Widget_Base {
 			'label' => 'Items', 'type' => \Elementor\Controls_Manager::REPEATER,
 			'fields' => $rep->get_controls(), 'title_field' => '{{{ title }}}',
 			'default' => [
-				[ 'title' => 'Own your day', 'body' => "Nobody here waits to be told. Every consultant plans their market, runs their desk and takes satisfaction from doing exactly what they said they'd do." ],
-				[ 'title' => 'Phone first', 'body' => 'Markets move in conversations, not inboxes. We pick up the phone first – to candidates, to clients, to each other – and everything we know comes from that.' ],
-				[ 'title' => 'Ask better questions', 'body' => 'Curiosity is a working tool here. The best shortlist starts with the question nobody else asked – of the client, the candidate and ourselves.' ],
-				[ 'title' => 'Win as a team', 'body' => 'Deals are individual; success isn\'t. We celebrate together, travel together and hold each other to the same standard – whichever brand the placement lands in.' ],
+				// Round 51 (Nov 2026, Alex): his rewrite of all four principles.
+				[ 'title' => 'Own Your Day', 'body' => 'We believe success starts with accountability. Our consultants take ownership of their markets, drive their own performance and approach every day with purpose. We set ambitious goals, take initiative and deliver on our commitments.' ],
+				[ 'title' => 'Phone First', 'body' => 'Great recruitment is built on real conversations. We prioritise meaningful interactions with clients and candidates, building stronger relationships, developing deeper market knowledge and uncovering opportunities that others miss.' ],
+				[ 'title' => 'Ask Better Questions', 'body' => 'We go beyond the obvious. By challenging assumptions, staying curious and asking the right questions, we develop a deeper understanding of our clients, candidates and specialist markets.' ],
+				[ 'title' => 'Win as a Team', 'body' => 'We champion individual and collective success. Across every brand, we share knowledge, support one another and hold ourselves to the same high standards.' ],
 			],
 		] );
 		$this->add_control( 'columns', [

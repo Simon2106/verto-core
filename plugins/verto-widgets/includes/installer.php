@@ -758,7 +758,7 @@ class Verto_Installer {
 	// assets/blogs/{brand}.json (parsed from their Drive PDF + thumbnail
 	// drops). Bump when a new batch lands; entries are keyed so re-runs
 	// never duplicate.
-	const BLOG_POSTS  = 'blogs-0.22.67';
+	const BLOG_POSTS  = 'blogs-0.22.78';
 
 	/**
 	 * Versioned team-photo migration. Round 9, item 22 (photos-0.21.0): the
@@ -843,6 +843,7 @@ class Verto_Installer {
 			$post_id = wp_insert_post( [
 				'post_type'     => 'post',
 				'post_status'   => 'publish',
+				'comment_status' => 'closed',
 				'post_title'    => (string) $e['title'],
 				'post_excerpt'  => (string) ( $e['excerpt'] ?? '' ),
 				'post_content'  => (string) ( $e['html'] ?? '' ),
@@ -858,6 +859,13 @@ class Verto_Installer {
 				copy( $dir . $img, $tmp );
 				$att = media_handle_sideload( [ 'name' => $img, 'tmp_name' => $tmp ], $post_id );
 				if ( ! is_wp_error( $att ) ) set_post_thumbnail( $post_id, (int) $att );
+			}
+		}
+		// Round 52: with the real client articles live, the prototype's
+		// placeholder insights come down (drafted, not deleted).
+		foreach ( get_posts( [ 'post_type' => 'post', 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids', 's' => 'Placeholder insight from the prototype' ] ) as $ph_id ) {
+			if ( false !== strpos( (string) get_post_field( 'post_content', (int) $ph_id ), 'Placeholder insight from the prototype' ) ) {
+				wp_update_post( [ 'ID' => (int) $ph_id, 'post_status' => 'draft' ] );
 			}
 		}
 		update_option( 'verto_installer_blogs', self::BLOG_POSTS );
@@ -1671,8 +1679,10 @@ class Verto_Installer {
 				] ),
 			], [
 				self::widget( 'text-editor', [
-					'editor'       => "<p>Verto is a group of specialist brands, each with its own market, its own networks and its own consultants. What unites them is the Verto way of working: process-driven search built to get it right first time, feedback taken from every client and candidate interaction, and a belief that we're here to build teams, not fill seats.</p><p>A power operator hiring a Head of Commissioning shouldn't have to explain CCGT to their recruiter. A hydraulic OEM briefing a technical sales role shouldn't have to walk their consultant through what a proportional valve does. A hyperscaler filling a data-centre Project Manager shouldn't receive commercial-fit-out resumes.</p><p>So we built the opposite. Every consultant sits inside one of three brands, each led by people who've worked or recruited inside that sector. The group behind them is where it all started – and where the quality bar is set.</p>",
-					'_css_classes' => 'verto-prose',
+					// Round 51 (Nov 2026, Alex): his two paragraphs, boxed panel,
+					// uniform type (the oversized lead line is gone).
+					'editor'       => "<p>Verto was founded on a simple belief: Exceptional recruitment starts with a genuine understanding of the industries we serve. Today, our group brings together three specialist brands, each with dedicated consultants, established networks and deep market knowledge, united by one shared commitment to delivering excellence.</p><p>A power operator hiring a Head of Commissioning shouldn't have to explain CCGT to their recruiter. A hyperscaler filling a data-centre Project Manager shouldn't receive commercial-fit-out resumes. So we built the opposite. Every consultant sits inside one of three brands, each led by people who've worked or recruited inside that sector. The group behind them is where it all started and where the quality bar is set.</p>",
+					'_css_classes' => 'verto-prose verto-prose--panel',
 				] ),
 			], 'verto-container-pad', 33 ),
 			self::section( [
@@ -1688,10 +1698,10 @@ class Verto_Installer {
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'The brands',
 					'lines'   => [
-						[ '_id' => self::eid(), 'line' => 'Three teams. Three markets.' ],
+						[ '_id' => self::eid(), 'line' => 'Three markets.' ],
 						[ '_id' => self::eid(), 'line' => 'One standard.' ],
 					],
-					'body' => "Each brand runs independently – its own P&L, its own MD, its own client relationships. What's shared is the standard every search is held to. Our life sciences desk sits with the group while it grows.",
+					'body' => 'Explore our brands within Energy, Built environment and Engineering sales, service & advanced manufacturing.',
 				] ),
 				self::widget( 'verto-brand-tiles', [ 'items' => self::brand_tiles_items( $media ) ] ),
 			], 'verto-muted verto-container-pad' ),
@@ -1708,7 +1718,7 @@ class Verto_Installer {
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Our footprint',
 					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Solent. Austin. Soon, New York.' ] ],
-					'body'    => "Where it started, where it's grown, and where it's going next. Every location runs on the same platform, so a US brief with UK candidates – or the reverse – moves through one team.",
+					'body'    => 'From our foundations in the Solent to our expansion into Austin and our upcoming New York office, Verto continues to grow internationally.',
 				] ),
 				// Round 9, items 11 + 25: Solent tile swaps the wrong London
 				// skyline for real office photography (Spinnaker photo still
@@ -1725,8 +1735,8 @@ class Verto_Installer {
 					'eyebrow' => 'Leadership',
 					'size'    => 'verto-display-3',
 					// Verto Amendments PDF (Oct 2026): simple headings, dash removed.
-					'lines'   => [ [ '_id' => self::eid(), 'line' => 'The Directors.' ] ],
-					'body'    => "Verto Group is founder-owned and independently financed. Every leader across the group has come up through the desk, either as a recruiter inside their sector, or as an operator hired by one of ours.",
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Meet the people driving Verto forward.' ] ],
+					'body'    => 'Founder-owned and independently financed, Verto is led by people who understand recruitment from the ground up. Combining hands-on recruitment experience, specialist industry knowledge and entrepreneurial ambition, our leadership team is committed to developing exceptional talent, driving sustainable growth and shaping the future of the group.',
 				] ),
 				self::widget( 'verto-team-grid', [ 'mode' => 'leaders' ] ),
 				// Nov 2026 (Alex, round 18): below the Directors the group team
@@ -1782,7 +1792,8 @@ class Verto_Installer {
 			self::section( [
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => 'Community & DE&I',
-					'lines'   => [ [ '_id' => self::eid(), 'line' => 'More than the numbers.' ] ],
+					// Round 51: Alex wants a new title – 'Giving back.' proposed.
+					'lines'   => [ [ '_id' => self::eid(), 'line' => 'Giving back.' ] ],
 					'body'    => 'Gala nights, fundraising and a genuine commitment to building a diverse group – the parts of Verto that never make a sales deck.',
 				] ),
 				self::widget( 'text-editor', [ 'editor' => self::community_cards_html( $media ) ] ),
@@ -1833,13 +1844,13 @@ class Verto_Installer {
 	 *  client's commitments/numbers arrive. */
 	private static function community_cards_html( array $media = [] ): string {
 		$cards = [
-			// Round 4, item 17: two galas now – most recent for Maeve's Mission,
-			// after the 2023 Amelia-Mae Foundation gala.
-			[ 'Gala nights', "Black-tie charity galas – most recently for Maeve's Mission, following the 2023 gala that raised £15,504 for the Amelia-Mae Foundation.", 'gala_01', 'The team on stage at the charity gala', null, null ],
-			[ 'Charity & fundraising', 'Every office backs a cause the team chooses – fundraisers, sponsored events and hands-on volunteering through the year.', 'gala_02', 'Black-tie group at the charity gala', 'charity_film', 'charity_film_poster' ],
+			// Round 51 (Nov 2026, Alex): gala-nights card dropped – two larger
+			// cards remain, the gala story moves under the charity film.
+			[ 'Charity & fundraising', "July 2026 saw us hold our 2nd charity gala, this time for Maeve's Mission, following the 2023 gala that raised £15,504 for the Amelia-Mae Foundation.", 'gala_02', 'Black-tie group at the charity gala', 'charity_film', 'charity_film_poster' ],
 			// Round 37 (Nov 2026, Alex): his two DE&I photos as a pair; the
 			// one-line description follows in his next email.
-			[ 'DE&I commitments', 'Hiring on ability, progressing on results. Our DE&I commitments – and the numbers behind them – publish here soon.', [ 'dei_01', 'dei_02' ], 'A DE&I session in the Verto office', null, null ],
+			// Round 51 (Alex): description out ('waffle') – his copy follows.
+			[ 'DE&I commitments', '', [ 'dei_01', 'dei_02' ], 'A DE&I session in the Verto office', null, null ],
 		];
 		$html = '<div class="verto-community">';
 		foreach ( $cards as [ $title, $body, $mkey, $alt, $vkey, $pkey ] ) {
@@ -1866,7 +1877,7 @@ class Verto_Installer {
 			}
 			$html .= '<div class="verto-community__body">'
 				. '<h3 class="verto-community__title">' . esc_html( $title ) . '</h3>'
-				. '<p class="verto-community__text">' . esc_html( $body ) . '</p>'
+				. ( '' !== $body ? '<p class="verto-community__text">' . esc_html( $body ) . '</p>' : '' )
 				. '</div>'
 				. '</article>';
 		}
@@ -2419,7 +2430,7 @@ class Verto_Installer {
 					'line1'  => 'Engineering',
 					'line2'  => "what's next",
 					// Round 4, item 12: US + Europe.
-					'sub'    => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns one product area.',
+					'sub'    => 'Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns their product area.',
 					'image'  => 'vertek_hero',
 					'alt'    => 'Automated assembly machinery in red and blue machine light',
 					'scale'  => 1.18,
@@ -2431,14 +2442,15 @@ class Verto_Installer {
 					'object_position' => 'center bottom',
 				],
 				'features' => [
-					[ 'icon' => 'crosshair',   'title' => 'Specialists, Not Generalists', 'body' => 'Every consultant specialises in a specific product area – Fluid Power, HVAC, Defense & Advanced Manufacturing, Industrial Automation, CNC & Metalworking and Compressors.' ],
+					[ 'icon' => 'crosshair',   'title' => 'Specialists, Not Generalists', 'body' => 'Every consultant specialises in a specific product area: Fluid Power, HVAC, Defense & Advanced Manufacturing, Industrial Automation, CNC & Metalworking and Compressors.' ],
 					[ 'icon' => 'bar-chart-3', 'title' => 'Verto Engage',        'body' => 'Our flagship model with a 100% success rate, an extended candidate guarantee, and the initial fee taken off on a successful hire.' ],
 					[ 'icon' => 'trending-up', 'title' => 'Sales Floor To Shop Floor', 'body' => 'Regional and national sales & service talent, plus the onsite manufacturing, engineering and internal sales teams who deliver.' ],
 					[ 'icon' => 'handshake',   'title' => 'World-Class NPS',     'body' => 'We capture feedback from every candidate and client interaction to hold ourselves to the highest standard.' ],
 				],
 				'about'        => [
-					'headline' => 'One product area, per consultant. Every time.',
-					'mission'  => 'Deliver the right hire, first time – combining a deep specialist network with a process refined over years so speed never comes at the cost of quality.',
+					// Round 50 (Nov 2026, Alex): his heading + paragraph.
+					'headline' => 'One specialism per consultant.',
+					'mission'  => 'Our consultants focus exclusively on their specialist product areas, combining in-depth technical knowledge, established industry networks and proven recruitment processes to deliver the right hire.',
 					'vision'   => 'To be the firm every VP of Sales, MD and founder in technical sales and engineering reaches out to first – on both sides of the Atlantic.',
 					'purpose'  => "Product knowledge can't be faked. Neither can ours. We exist so that manufacturers and distributors never have to explain their own product to their recruiter – and so that engineers get sold on their merits.",
 				],
@@ -2524,6 +2536,7 @@ class Verto_Installer {
 				'clients_hero_image' => 'insight_hvac',
 				'clients_hero_alt'   => 'Rooftop HVAC plant units under a broken sky',
 				'subhero_alt'   => 'Precision machinery on an advanced manufacturing line',
+				'testimonials_body' => 'Hear directly from the clients we partner with and the candidates whose careers we help shape, their experiences reflect our commitment to great service. We ask for feedback from every client and candidate interaction.',
 				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns one product area. That's why it works.",
 				'what_we_do' => [
 					'headline'   => 'Embedded in the industries that build the world.',
@@ -2822,9 +2835,9 @@ class Verto_Installer {
 				'source'       => 'client',
 				'list_eyebrow' => 'Live roles',
 				'heading'      => 'Current vacancies.',
-				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Apply direct, or start a conversation below.',
-				// Round 22: cap at 8, the rest live on the jobs page.
-				'limit'         => 8,
+				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Click a role to find out more, or start a conversation below.',
+				// Round 50 (Alex): top 5 only – the rest live on the jobs page.
+				'limit'         => 5,
 				'view_all_text' => 'View all jobs',
 				'view_all_link' => [ 'url' => '/jobs' ],
 			] ) ], 'verto-bs vbs-vacancies' ) ] );
@@ -3288,9 +3301,9 @@ class Verto_Installer {
 					'modulr'     => 'Live roles in Architecture & Data Centres.',
 					'vertek'     => 'Live roles in technical sales, service & engineering.',
 				][ $brand ] ?? 'Current vacancies.',
-				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Apply direct, or start a conversation below.',
-				// Round 22: cap at 8, the rest live on the jobs page.
-				'limit'         => 8,
+				'intro'        => 'Open positions we are hiring for on behalf of our clients right now. Click a role to find out more, or start a conversation below.',
+				// Round 50 (Alex): top 5 only – the rest live on the jobs page.
+				'limit'         => 5,
 				'view_all_text' => 'View all jobs',
 				'view_all_link' => [ 'url' => '/jobs' ],
 			] ) ], 'verto-bs vbs-vacancies' ),

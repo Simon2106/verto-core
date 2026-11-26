@@ -20,15 +20,15 @@ class Verto_Widget_Sector_Coverage extends \Elementor\Widget_Base {
 	protected function register_controls() {
 		$this->start_controls_section( 'content', [ 'label' => 'Sector coverage' ] );
 		$this->add_control( 'eyebrow', [ 'label' => 'Eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Sector coverage' ] );
-		$this->add_control( 'line1', [ 'label' => 'Heading line 1', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => "Whatever you're building," ] );
-		$this->add_control( 'line2', [ 'label' => 'Heading line 2', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'we know who builds it.' ] );
+		$this->add_control( 'line1', [ 'label' => 'Heading line 1', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'A close look' ] );
+		$this->add_control( 'line2', [ 'label' => 'Heading line 2', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'at our brands.' ] );
 		$this->add_control( 'body1', [
 			'label' => 'Body paragraph 1', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => "Every consultant at Verto is a former operator, engineer or in-market recruiter – not a generalist. The sectors below aren't categories on a website; they're desks that ship hires every month.",
+			'default' => 'From powering critical infrastructure and advancing engineering innovation to designing and delivering the built environment.',
 		] );
 		$this->add_control( 'body2', [
 			'label' => 'Body paragraph 2', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => 'Each links through to the brand that owns it. Our life sciences desk sits with the group while it grows.',
+			'default' => 'Each specialism is supported by dedicated consultants with deep market knowledge and a genuine understanding of the sectors they serve.',
 		] );
 		$rep = new \Elementor\Repeater();
 		$rep->add_control( 'wordmark', [ 'label' => 'Wordmark', 'type' => \Elementor\Controls_Manager::TEXT ] );
