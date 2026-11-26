@@ -137,7 +137,12 @@ get_header();
 				</article>
 			<?php endwhile; ?>
 		</div>
-		<?php the_posts_pagination(); ?>
+		<?php // Round 54 (Simon): "12Next" – proper pill pagination.
+		the_posts_pagination( [
+			'mid_size'  => 2,
+			'prev_text' => '&larr; Previous',
+			'next_text' => 'Next &rarr;',
+		] ); ?>
 	<?php endif; ?>
 
 	<?php /* Nov 2026 (Alex): services band removed from the Insights

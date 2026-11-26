@@ -88,6 +88,7 @@ class Verto_Installer {
 			// Brand-site install (modulr / vertek / edison-lux): build that
 			// brand's standalone site instead of the Verto Group site.
 			$media = self::import_media();
+			self::remove_default_content();
 			self::seed_team();
 			self::migrate_team_photos();
 			// Round 9, item 1: brand installs seed THEIR OWN standing
@@ -121,6 +122,7 @@ class Verto_Installer {
 		}
 
 		$media = self::import_media();
+		self::remove_default_content();
 		self::seed_posts( $media );
 		self::seed_team();
 		self::migrate_team_photos();
@@ -869,6 +871,21 @@ class Verto_Installer {
 			}
 		}
 		update_option( 'verto_installer_blogs', self::BLOG_POSTS );
+	}
+
+	/** Round 53 (Nov 2026, Alex): WordPress's stock "Hello world!" post and
+	 *  "Sample Page" have no business in the Insights grids – trashed on
+	 *  every rebuild, on every site. */
+	private static function remove_default_content(): void {
+		foreach ( get_posts( [ 'post_type' => 'post', 'post_status' => 'publish', 'name' => 'hello-world', 'numberposts' => 1 ] ) as $hw ) {
+			if ( 'Hello world!' === $hw->post_title ) {
+				wp_trash_post( (int) $hw->ID );
+			}
+		}
+		$sample = get_page_by_path( 'sample-page' );
+		if ( $sample instanceof WP_Post && 'Sample Page' === $sample->post_title ) {
+			wp_trash_post( (int) $sample->ID );
+		}
 	}
 
 	/* ── Job detail pages: office galleries + standing internal vacancies ── */

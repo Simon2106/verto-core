@@ -2506,3 +2506,20 @@ body.verto-brand-verto .verto-intro h1.verto-display-2 ~ p.verto-intro__body { d
 /* ModulR hero film (Nov 2026): a touch more ink on the left so the headline
    reads over the aerial footage. */
 body.verto-brand-modulr .vbs-hero__wash { background: linear-gradient(90deg, var(--ink) 18%, color-mix(in oklab, var(--ink) 72%, transparent) 46%, transparent 78%); }
+
+/* ── Round 54: posts pagination – pill buttons instead of the bare
+      "1 2 Next" run-together default. ── */
+.navigation.pagination { margin: 3rem 0 1rem; }
+.navigation.pagination .screen-reader-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.navigation.pagination .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.navigation.pagination .page-numbers {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2.5rem; height: 2.5rem; padding: 0 0.9rem;
+  border: 1px solid var(--border); border-radius: 0.5rem;
+  font-size: 0.875rem; font-weight: 600; text-decoration: none;
+  color: var(--foreground); background: transparent;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.navigation.pagination a.page-numbers:hover { border-color: var(--brand); color: var(--brand); }
+.navigation.pagination .page-numbers.current { background: var(--brand); border-color: var(--brand); color: var(--brand-foreground, #fff); }
+.navigation.pagination .page-numbers.dots { border: 0; min-width: auto; padding: 0 0.25rem; }
