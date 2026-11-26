@@ -12,7 +12,7 @@ class Verto_Widget_Socials extends \Elementor\Widget_Base {
 		$this->start_controls_section( 'content', [ 'label' => 'Socials' ] );
 		$this->add_control( 'eyebrow', [ 'label' => 'Eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Life at Verto' ] );
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'The moments between the meetings.' ] );
-		$this->add_control( 'body', [ 'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => 'Awards, incentive trips, sales days and the occasional inflatable – what working here actually looks like.' ] );
+		$this->add_control( 'body', [ 'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => '' ] );
 		$this->add_control( 'handle', [ 'label' => 'Instagram handle', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'verto_people' ] );
 		$this->end_controls_section();
 	}

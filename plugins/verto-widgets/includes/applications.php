@@ -72,6 +72,9 @@ class Verto_Applications {
 		add_action( 'init', [ self::class, 'register_cpt' ] );
 		add_action( 'admin_post_' . self::ACTION, [ self::class, 'handle_submit' ] );
 		add_action( 'admin_post_nopriv_' . self::ACTION, [ self::class, 'handle_submit' ] );
+		// Round 45 (Nov 2026, Alex/Simon): review mode – consultants act on
+		// applications straight from the alert email, no WP login.
+		add_action( 'template_redirect', [ self::class, 'maybe_handle_review' ], 1 );
 		add_filter( 'manage_' . self::CPT . '_posts_columns', [ self::class, 'admin_columns' ] );
 		add_action( 'manage_' . self::CPT . '_posts_custom_column', [ self::class, 'admin_column' ], 10, 2 );
 		// GDPR retention sweep – daily (Nov 2026, Simon).
@@ -112,6 +115,14 @@ class Verto_Applications {
 	 * live Vincere. Only `define( 'VERTO_VINCERE_PUSH_LIVE', true );` in
 	 * wp-config.php (or the filter) turns real pushes on.
 	 */
+	/** Round 45: review mode – store + email with action buttons; nothing
+	 *  reaches Vincere until a consultant presses Save. One wp-config line:
+	 *  define( 'VERTO_VINCERE_REVIEW', true );
+	 *  Unreviewed applications purge after 30 days (REVIEW_DAYS). */
+	private static function review_mode(): bool {
+		return defined( 'VERTO_VINCERE_REVIEW' ) && VERTO_VINCERE_REVIEW && ! self::test_mode();
+	}
+
 	private static function test_mode(): bool {
 		$live = defined( 'VERTO_VINCERE_PUSH_LIVE' ) && VERTO_VINCERE_PUSH_LIVE;
 		return ! apply_filters( 'verto/applications/push_live', $live );
@@ -192,6 +203,7 @@ class Verto_Applications {
 			self::respond( false, 'server', $async );
 		}
 		foreach ( [
+			'_name'           => $name,
 			'_email'          => $email,
 			'_phone'          => $phone,
 			'_linkedin'       => $linkedin,
@@ -226,6 +238,16 @@ class Verto_Applications {
 			'job_id'    => $job_id,
 			'job_title' => $job_title,
 		];
+
+		// ── Review mode (round 45): store + email the Save button, no push ──
+		if ( self::review_mode() ) {
+			$token = bin2hex( random_bytes( 20 ) );
+			update_post_meta( $app_id, '_review_token', $token );
+			update_post_meta( $app_id, '_status', 'awaiting-review' );
+			update_post_meta( $app_id, '_vincere_status', 'Awaiting consultant review (Save to Vincere button in the owner email)' );
+			self::email_owner( $app_id, $data, $cv_path, 'Awaiting your review – use the buttons below.', $token );
+			self::respond( true, '', $async );
+		}
 
 		// ── Vincere push (or test mode) ──
 		if ( self::test_mode() ) {
@@ -270,12 +292,13 @@ class Verto_Applications {
 	 * moment it arrived, so a week is ample to action a failed push).
 	 */
 	public static function retention_sweep(): void {
-		$old = get_posts( [
+		$days = self::review_mode() ? 30 : 7; // round 45: consultants get a month to review
+		$old  = get_posts( [
 			'post_type'      => self::CPT,
 			'post_status'    => 'any',
 			'posts_per_page' => 200,
 			'fields'         => 'ids',
-			'date_query'     => [ [ 'before' => '7 days ago' ] ],
+			'date_query'     => [ [ 'before' => $days . ' days ago' ] ],
 			'no_found_rows'  => true,
 		] );
 		foreach ( $old as $app_id ) {
@@ -317,7 +340,27 @@ class Verto_Applications {
 	 * Shapes + evidence: see the file header. Never throws; every step's
 	 * outcome is folded into the summary.
 	 */
+	/** Round 46 (Alex): the job owner's Vincere user id – the push stamps it
+	 *  as creator_id so the candidate/application/CV show under the
+	 *  consultant's name, not the API account. 0 = unknown (field omitted). */
+	private static function job_owner_id( string $job_id ): int {
+		if ( '' === $job_id || ! class_exists( 'Verto_Vincere' ) ) {
+			return 0;
+		}
+		$jobs = get_posts( [
+			'post_type'      => Verto_Vincere::CPT,
+			'post_status'    => 'any',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'meta_key'       => '_vincere_id',
+			'meta_value'     => $job_id,
+			'no_found_rows'  => true,
+		] );
+		return $jobs ? (int) get_post_meta( (int) $jobs[0], '_owner_id', true ) : 0;
+	}
+
 	private static function push_to_vincere( int $app_id, array $a, string $cv_path ): array {
+		$creator = self::job_owner_id( (string) $a['job_id'] );
 		// 1) Create the candidate (verified shape – JSON body, NOT form-encoded).
 		$parts = preg_split( '/\s+/', trim( $a['name'] ), 2 );
 		$body  = [
@@ -333,6 +376,9 @@ class Verto_Applications {
 		$source = self::candidate_source_id();
 		if ( $source > 0 ) {
 			$body['candidate_source_id'] = $source;
+		}
+		if ( $creator > 0 ) {
+			$body['creator_id'] = $creator;
 		}
 
 		$res = Verto_Vincere::api_post( 'candidate', $body );
@@ -359,6 +405,9 @@ class Verto_Applications {
 				'document_type_id' => 1, // 1 = CV/Resume
 				'original_cv'      => true,
 			];
+			if ( $creator > 0 ) {
+				$payload['creator_id'] = $creator;
+			}
 			$up = Verto_Vincere::api_post( 'candidate/' . $cid . '/file', $payload );
 			if ( is_wp_error( $up ) ) {
 				$att = (int) get_post_meta( $app_id, '_cv_attachment', true );
@@ -381,12 +430,16 @@ class Verto_Applications {
 		// endpoint is POST /application with candidate_id + job_id +
 		// registration_date + stage (SHORTLISTED or SENT only at create).
 		if ( '' !== $a['job_id'] ) {
-			$link = Verto_Vincere::api_post( 'application', [
+			$app_body = [
 				'candidate_id'      => $cid,
 				'job_id'            => (int) $a['job_id'],
 				'registration_date' => gmdate( 'Y-m-d\TH:i:s.000\Z' ),
 				'stage'             => 'SHORTLISTED',
-			] );
+			];
+			if ( $creator > 0 ) {
+				$app_body['creator_id'] = $creator;
+			}
+			$link = Verto_Vincere::api_post( 'application', $app_body );
 			if ( is_wp_error( $link ) ) {
 				$ok      = false;
 				$notes[] = 'application to position #' . $a['job_id'] . ' failed (' . $link->get_error_message() . ') – shortlist manually';
@@ -460,7 +513,7 @@ class Verto_Applications {
 
 	/* ── Owner email ───────────────────────────────────────────────────── */
 
-	private static function email_owner( int $app_id, array $a, string $cv_path, string $push_status ) {
+	private static function email_owner( int $app_id, array $a, string $cv_path, string $push_status, string $review_token = '' ) {
 		$owner = '';
 		if ( '' !== $a['job_id'] && class_exists( 'Verto_Vincere' ) ) {
 			$jobs = get_posts( [
@@ -497,11 +550,23 @@ class Verto_Applications {
 			'',
 			'Vincere:  ' . $push_status,
 			'',
+		];
+		if ( '' !== $review_token ) {
+			$lines[] = 'SAVE TO VINCERE (creates the candidate + CV, shortlisted on the job):';
+			$lines[] = add_query_arg( [ 'verto_review' => $review_token, 'act' => 'save' ], home_url( '/' ) );
+			$lines[] = '';
+			$lines[] = 'Not right for Vincere (deletes the application + CV from the website):';
+			$lines[] = add_query_arg( [ 'verto_review' => $review_token, 'act' => 'reject' ], home_url( '/' ) );
+			$lines[] = '';
+			$lines[] = 'If you do nothing, the application deletes itself from the website after 30 days.';
+			$lines[] = '';
+		}
+		$lines = array_merge( $lines, [
 			( '' !== $cv_path ? 'The CV is attached to this email.' : 'NOTE: the CV could not be stored – ask the candidate to resend it.' ),
 			'View in WordPress: ' . admin_url( 'edit.php?post_type=' . self::CPT ),
 			'',
 			'GDPR: the candidate ticked the consent box (' . self::consent_text() . ')',
-		];
+		] );
 		wp_mail( $owner, $subject, implode( "\n", $lines ), [], '' !== $cv_path ? [ $cv_path ] : [] );
 	}
 
@@ -682,6 +747,94 @@ class Verto_Applications {
 	}
 
 	/* ── Admin list table ──────────────────────────────────────────────── */
+
+	/* ── Round 45: email-link review (no WP login; the token is the auth) ── */
+
+	public static function maybe_handle_review() {
+		$token = isset( $_GET['verto_review'] ) ? preg_replace( '/[^a-f0-9]/', '', (string) wp_unslash( $_GET['verto_review'] ) ) : '';
+		if ( '' === $token || strlen( $token ) !== 40 ) {
+			return;
+		}
+		$apps = get_posts( [
+			'post_type'      => self::CPT,
+			'post_status'    => 'any',
+			'posts_per_page' => 1,
+			'meta_key'       => '_review_token',
+			'meta_value'     => $token,
+			'no_found_rows'  => true,
+		] );
+		if ( ! $apps ) {
+			self::review_page( 'Link expired', '<p>This application has already been handled, or it reached the 30-day limit and deleted itself.</p>' );
+		}
+		$app  = $apps[0];
+		$id   = (int) $app->ID;
+		$name = (string) ( get_post_meta( $id, '_name', true ) ?: $app->post_title );
+		$role = (string) get_post_meta( $id, '_job_title', true );
+		$act  = isset( $_POST['verto_review_act'] ) ? sanitize_key( (string) wp_unslash( $_POST['verto_review_act'] ) ) : '';
+
+		// GET (or a scanner's prefetch): show the confirm page – no action yet.
+		if ( 'POST' !== strtoupper( (string) ( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) ) || ! in_array( $act, [ 'save', 'reject' ], true ) ) {
+			$pre  = sanitize_key( (string) ( $_GET['act'] ?? '' ) );
+			$att  = (int) get_post_meta( $id, '_cv_attachment', true );
+			$cv   = $att ? (string) wp_get_attachment_url( $att ) : '';
+			$body = '<p><strong>' . esc_html( $name ) . '</strong> – ' . esc_html( $role ?: 'General application' ) . '</p>'
+				. '<p>' . esc_html( (string) get_post_meta( $id, '_email', true ) ) . ' · ' . esc_html( (string) ( get_post_meta( $id, '_phone', true ) ?: 'no phone' ) ) . '</p>'
+				. ( $cv ? '<p><a href="' . esc_url( $cv ) . '" target="_blank" rel="noopener">View the CV</a></p>' : '' )
+				. '<form method="post" class="verto-review-actions">'
+				. '<button class="verto-review-btn verto-review-btn--save' . ( 'reject' === $pre ? '' : ' is-primary' ) . '" name="verto_review_act" value="save">Save to Vincere</button>'
+				. '<button class="verto-review-btn verto-review-btn--reject' . ( 'reject' === $pre ? ' is-primary' : '' ) . '" name="verto_review_act" value="reject">Not right – delete</button>'
+				. '</form>'
+				. '<p class="verto-review-note">Save creates the candidate and CV in Vincere, shortlisted on the job, and removes the copy from this website. Delete removes it from the website immediately. Untouched applications delete themselves after 30 days.</p>';
+			self::review_page( 'Review application', $body );
+		}
+
+		// POST: do the thing. The token dies with the application either way.
+		if ( 'reject' === $act ) {
+			self::purge_application( $id );
+			self::review_page( 'Deleted', '<p>The application and CV have been removed from the website. Nothing was sent to Vincere.</p>' );
+		}
+		$data = [
+			'name'      => $name,
+			'email'     => (string) get_post_meta( $id, '_email', true ),
+			'phone'     => (string) get_post_meta( $id, '_phone', true ),
+			'linkedin'  => (string) get_post_meta( $id, '_linkedin', true ),
+			'message'   => (string) get_post_meta( $id, '_message', true ),
+			'job_id'    => (string) get_post_meta( $id, '_vincere_job_id', true ),
+			'job_title' => $role,
+		];
+		$att_id  = (int) get_post_meta( $id, '_cv_attachment', true );
+		$cv_path = $att_id ? (string) get_attached_file( $att_id ) : '';
+		if ( ! class_exists( 'Verto_Vincere' ) || ! Verto_Vincere::configured() ) {
+			self::review_page( 'Not connected', '<p>Vincere is not connected on this site – the application stays stored. Contact the site admin.</p>' );
+		}
+		$push = self::push_to_vincere( $id, $data, $cv_path );
+		update_post_meta( $id, '_vincere_status', (string) $push['status'] );
+		if ( $push['ok'] ) {
+			self::purge_application( $id );
+			self::review_page( 'Saved to Vincere', '<p><strong>' . esc_html( $name ) . '</strong> is now in Vincere with the CV attached, shortlisted on the job. The copy on this website has been deleted.</p>' );
+		}
+		update_post_meta( $id, '_status', 'needs-attention' );
+		self::review_page( 'Partly saved', '<p>Vincere said: ' . esc_html( (string) $push['status'] ) . '</p><p>The application stays stored on the website so nothing is lost – the site admin can retry.</p>' );
+	}
+
+	/** Minimal branded standalone page for the email-link review flow. */
+	private static function review_page( string $title, string $body_html ): void {
+		status_header( 200 );
+		nocache_headers();
+		$site = esc_html( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) );
+		header( 'Content-Type: text/html; charset=utf-8' );
+		echo '<!DOCTYPE html><html><head><meta charset="utf-8" /><meta name="robots" content="noindex" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>' . esc_html( $title ) . ' – ' . $site . '</title>'
+			. '<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f3f3f5;color:#0a0a0a;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:1.5rem;}'
+			. '.card{background:#fff;border-radius:12px;box-shadow:0 24px 60px -30px rgba(0,0,0,.35);max-width:30rem;width:100%;padding:2.25rem;}'
+			. 'h1{font-size:1.4rem;margin:0 0 1rem;}p{line-height:1.6;color:#3a3a3a;}a{color:#0a63c9;}'
+			. '.verto-review-actions{display:flex;gap:.75rem;margin:1.5rem 0 .5rem;flex-wrap:wrap;}'
+			. '.verto-review-btn{border:1px solid #c9c9cf;background:#fff;color:#0a0a0a;border-radius:6px;padding:.8rem 1.3rem;font-size:.95rem;font-weight:600;cursor:pointer;}'
+			. '.verto-review-btn--save.is-primary{background:#0a0a0a;color:#fff;border-color:#0a0a0a;}'
+			. '.verto-review-btn--reject.is-primary{background:#b42318;color:#fff;border-color:#b42318;}'
+			. '.verto-review-note{font-size:.8rem;color:#6b6b73;}</style></head><body>'
+			. '<div class="card"><h1>' . esc_html( $title ) . '</h1>' . $body_html . '<p class="verto-review-note">' . $site . ' – candidate application review</p></div></body></html>';
+		exit;
+	}
 
 	public static function admin_columns( $columns ) {
 		return [

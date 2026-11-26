@@ -31,7 +31,7 @@ class Verto_Widget_Hero extends \Elementor\Widget_Base {
 		] );
 		$this->add_control( 'body', [
 			'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => 'Verto connects exceptional talent with the industries that power our World, drive innovation in engineering & manufacturing and shape the built environment. Through three specialist brands, we build teams with precision, expertise and purpose. Three specialist brands. Uncompromising standard.',
+			'default' => 'Verto connects exceptional talent with the industries that power our World, drive innovation in engineering & manufacturing and shape the built environment. Through three specialist brands, we build teams with precision, expertise and purpose.',
 		] );
 		$this->add_control( 'cta1_text', [ 'label' => 'Primary CTA text', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join us' ] );
 		$this->add_control( 'cta1_link', [ 'label' => 'Primary CTA link', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '/careers' ] ] );

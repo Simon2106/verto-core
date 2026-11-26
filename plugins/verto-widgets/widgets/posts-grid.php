@@ -86,9 +86,20 @@ class Verto_Widget_Posts_Grid extends \Elementor\Widget_Base {
 			$card_href = $is_li ? $li_url : get_permalink();
 			$card_tgt  = $is_li ? ' target="_blank" rel="noopener"' : '';
 			$type_lbl  = $is_li ? 'LinkedIn' : ( $is_video ? 'Video' : 'Article' );
+			// Round 47 (Alex): the trio's video stories preview on hover like
+			// the sales-day mosaic (verto-effects.js §16) – src pulled from
+			// the post's <video> tag or [video] shortcode, loaded on hover only.
+			$vid_src = '';
+			if ( $is_video && ! $is_li ) {
+				if ( preg_match( '/<video[^>]*\ssrc="([^"]+)"/i', $raw, $vm ) ) {
+					$vid_src = $vm[1];
+				} elseif ( preg_match( '/\[video[^\]]*\s(?:mp4|src)="([^"]+)"/i', $raw, $vm ) ) {
+					$vid_src = $vm[1];
+				}
+			}
 			?>
 			<article class="verto-post-card<?php echo $is_li ? ' verto-post-card--li' : ''; ?>">
-				<a class="verto-post-card__media" href="<?php echo esc_url( $card_href ); ?>"<?php echo $card_tgt; ?>>
+				<a class="verto-post-card__media<?php echo $vid_src ? ' verto-hovervid' : ''; ?>"<?php echo $vid_src ? ' data-hover-video="' . esc_url( $vid_src ) . '"' : ''; ?> href="<?php echo esc_url( $card_href ); ?>"<?php echo $card_tgt; ?>>
 					<?php if ( has_post_thumbnail() ) {
 						the_post_thumbnail( 'large' );
 					} elseif ( $is_li ) { ?>

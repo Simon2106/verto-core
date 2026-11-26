@@ -1460,7 +1460,7 @@ class Verto_Installer {
 						[ '_id' => self::eid(), 'line' => 'The package,' ],
 						[ '_id' => self::eid(), 'line' => 'in full.' ],
 					],
-					'body' => "Fourteen reasons a desk here beats the one you're at – in money, ownership, travel and the things other agencies call perks and we call standard.",
+					'body' => "Fourteen reasons to make your next move with Verto. From exceptional earning potential & equity, to international experiences, career development and everyday benefits, we've built a package that goes beyond the industry standard.",
 				] ),
 				// Round 5, item 10: the share-scheme awards-night photo – wide,
 				// rounded, above the perks grid.
@@ -1474,7 +1474,7 @@ class Verto_Installer {
 						[ '_id' => self::eid(), 'line' => 'Life inside' ],
 						[ '_id' => self::eid(), 'line' => 'the group.' ],
 					],
-					'body'      => 'Incentive trips, awards, sales days and everything in between – straight from the team, not a marketing department.',
+					// Round 47 (Alex): paragraph removed, title + link stay.
 					'link_text' => "See everything that's going on",
 					'link'      => [ 'url' => '/whats-going-on' ],
 				] ),
@@ -1497,7 +1497,7 @@ class Verto_Installer {
 						[ '_id' => self::eid(), 'line' => "Don't take our" ],
 						[ '_id' => self::eid(), 'line' => 'word for it.' ],
 					],
-					'body' => 'Straight from the team – what working here is actually like.',
+					'body' => 'Discover what makes life at Verto different, straight from the team.',
 				] ),
 			], 'verto-ink verto-container-pad' ),
 			self::section( [
@@ -1511,10 +1511,10 @@ class Verto_Installer {
 				self::widget( 'verto-section-intro', [
 					'eyebrow' => "Verto's values",
 					'lines'   => [
-						[ '_id' => self::eid(), 'line' => 'Five values.' ],
-						[ '_id' => self::eid(), 'line' => 'Every desk, every day.' ],
+						[ '_id' => self::eid(), 'line' => 'Five core values.' ],
+						[ '_id' => self::eid(), 'line' => 'One shared culture.' ],
 					],
-					'body' => "Every desk runs its own market and its own network. What's shared is what we stand for – the five values every person across the group works by.",
+					'body' => 'Across our specialist brands, we operate in different markets but share the same principles. Our five core values define who we are, shape how we work and drive everything we do.',
 				] ),
 				self::widget( 'verto-values' ),
 			], 'verto-values-light verto-container-pad verto-container-pad--values' ),

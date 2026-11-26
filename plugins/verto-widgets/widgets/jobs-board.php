@@ -67,7 +67,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$this->add_control( 'list_eyebrow', [ 'label' => 'Compact eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join the team' ] );
 		// Round 4, item 5: catchier heading, and no word "roles" in the section.
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Your next desk is here.' ] );
-		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "Explore opportunities to join our growing team across our specialist brands and locations. Don't see a role that matches your expertise? We're always keen to hear from ambitious, experienced recruitment consultants who want to make an impact." ] );
+		$this->add_control( 'intro', [ 'label' => 'Intro', 'type' => \Elementor\Controls_Manager::TEXTAREA, 'default' => "Explore opportunities to join our growing team across our specialist brands and locations.\nDon't see a role that matches your expertise? We're always keen to hear from ambitious, experienced recruitment consultants who want to make an impact." ] );
 		// Round 22 (Nov 2026, Alex): dedicated brand jobs pages + capped
 		// compact boards ("could have 30, 50 or even more at any one time").
 		$this->add_control( 'full_eyebrow', [ 'label' => 'Full-board eyebrow', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Join Verto' ] );
@@ -141,7 +141,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 					<span class="eyebrow"><?php echo esc_html( $s['list_eyebrow'] ?: 'Join the team' ); ?></span>
 					<h2 class="display-3 vbs-mt5"><?php echo esc_html( $s['heading'] ); ?></h2>
 					<?php if ( ! empty( $s['intro'] ) ) : ?>
-						<p class="verto-jobs-compact__intro"><?php echo esc_html( $s['intro'] ); ?></p>
+						<p class="verto-jobs-compact__intro"><?php echo nl2br( esc_html( $s['intro'] ) ); ?></p>
 					<?php endif; ?>
 				</div>
 				<div class="verto-jobs-compact__list">
@@ -253,7 +253,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 				<h2 class="verto-title-reveal verto-display-2" style="margin-top:1.25rem;">
 					<span class="line-mask"><span class="line-inner"><?php echo esc_html( $s['heading'] ); ?></span></span>
 				</h2>
-				<p class="verto-intro__body"><?php echo esc_html( $s['intro'] ); ?></p>
+				<p class="verto-intro__body"><?php echo nl2br( esc_html( $s['intro'] ) ); ?></p>
 			</div>
 
 			<div class="verto-jobs__layout" style="margin-top:3rem;">

@@ -21,7 +21,7 @@ class Verto_Widget_Awards_Strip extends \Elementor\Widget_Base {
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'The Sunday Times Best Places to Work 2026. Shortlisted, Recruiter Awards 2026.' ] );
 		$this->add_control( 'body', [
 			'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => 'Alongside Best New Recruitment Agency of the Year at the British Recruitment Awards (2023), two category wins at the Business Awards UK (2023), Recruiter Awards shortlists in 2023 and 2026, and a finalist place at the News Business Excellence Awards (2024).',
+			'default' => 'Alongside Best New Recruitment Agency of the Year at the British Recruitment Awards (2023), two category wins at the Business Awards UK (2023), 2026 Recruiter Awards shortlists for Best Recruitment Company to Work For and Recruitment Agency of the Year, and a finalist place at the News Business Excellence Awards (2024).',
 		] );
 		$this->end_controls_section();
 	}

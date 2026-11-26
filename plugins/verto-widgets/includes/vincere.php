@@ -966,9 +966,22 @@ class Verto_Vincere {
 
 		$owner_email = '';
 		$owner_name  = '';
+		$owner_id    = 0;
 		if ( isset( $item['owners'] ) && is_array( $item['owners'] ) ) {
 			$first = reset( $item['owners'] );
+			// Round 46 (Alex): applications in Vincere must carry the
+			// consultant's name – keep the owner's Vincere user id so the
+			// push can stamp creator_id. Some tenants return bare ids.
+			if ( is_numeric( $first ) ) {
+				$owner_id = (int) $first;
+			}
 			if ( is_array( $first ) ) {
+				foreach ( [ 'id', 'user_id' ] as $ik ) {
+					if ( ! empty( $first[ $ik ] ) && is_numeric( $first[ $ik ] ) ) {
+						$owner_id = (int) $first[ $ik ];
+						break;
+					}
+				}
 				if ( ! empty( $first['email'] ) && is_string( $first['email'] ) ) {
 					$owner_email = sanitize_email( $first['email'] );
 				}
@@ -1034,6 +1047,7 @@ class Verto_Vincere {
 			'job_type'    => implode( ' · ', array_unique( $type_bits ) ),
 			'apply_url'   => $apply_url,
 			'owner_email' => $owner_email,
+			'owner_id'    => $owner_id,
 			'owner_name'  => $owner_name,
 			'salary'      => $salary,
 			'internal'    => $internal,
@@ -1122,6 +1136,7 @@ class Verto_Vincere {
 			'_job_type'    => $job['job_type'],
 			'_apply_url'   => $job['apply_url'],
 			'_owner_email' => $job['owner_email'],
+			'_owner_id'    => (string) ( $job['owner_id'] ?? '' ),
 			'_owner_name'  => $job['owner_name'] ?? '',
 			'_salary'      => $job['salary'] ?? '',
 			'_internal'    => $job['internal'] ? '1' : '0',
