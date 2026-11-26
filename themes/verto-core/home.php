@@ -14,7 +14,7 @@
  */
 $verto_brand = function_exists( 'verto_current_brand' ) ? verto_current_brand() : 'verto';
 $verto_hub   = [
-	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Sales days, incentive trips, awards, promotions and the occasional market note – straight from the team.' ],
+	'verto'      => [ 'eyebrow' => "What's going on", 'l1' => "What's going on", 'l2' => 'at Verto.', 'body' => 'Take a look behind the scenes at life at Verto. From unforgettable incentive trips and action-packed sales days to career milestones, promotions, and award celebrations. Discover the people, personalities and experiences that make our culture what it is.' ],
 	'modulr'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'architecture & data centres.', 'body' => 'The thinking from the consultants closest to the architecture & data centres market.' ],
 	'vertek'     => [ 'eyebrow' => 'Insights', 'l1' => 'Field notes from inside', 'l2' => 'technical sales, service & engineering.', 'body' => 'The thinking from the consultants closest to the technical sales, service & engineering market.' ],
 	// Edison copy doc (Oct 2026), page 13: "Inside the industry."
@@ -173,8 +173,7 @@ get_header();
 				<div class="verto-events__intro">
 					<span class="verto-eyebrow">Recent events</span>
 					<h2 class="verto-display-3" style="margin-top:1.25rem;">The last few months, on film.</h2>
-					<?php // Oct 2026 (Alex): no dash, and hover now plays the films. ?>
-					<p class="verto-events__body">The summit, the Ibiza trip, the charity night and four promotions landing. Hover to watch.</p>
+					<?php // Round 49 (Nov 2026, Alex): description + "Hover to watch" removed. ?>
 				</div>
 				<?php if ( $verto_missing ) : ?>
 					<span class="verto-events__note">&#9888; <?php echo (int) $verto_missing; ?> film<?php echo 1 === $verto_missing ? '' : 's'; ?> pending &ndash; run Verto Setup &rarr; Rebuild to import the videos</span>
