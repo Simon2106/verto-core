@@ -448,7 +448,7 @@
         btn.disabled = true;
         btn.textContent = "Sending…";
       }
-      fetch(form.action, {
+      fetch(form.getAttribute("action"), {
         method: "POST",
         body: new FormData(form),
         credentials: "same-origin",
@@ -687,7 +687,7 @@
         btn.disabled = true;
         btn.textContent = "Sending…";
       }
-      fetch(form.action, {
+      fetch(form.getAttribute("action"), {
         method: "POST",
         body: new FormData(form),
         credentials: "same-origin",
