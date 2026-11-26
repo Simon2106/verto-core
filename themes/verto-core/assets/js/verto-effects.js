@@ -455,7 +455,10 @@
         headers: { Accept: "application/json" },
       })
         .then(function (res) {
-          return res.json().then(function (json) { return json; });
+          return res.text().then(function (text) {
+            var a = text.indexOf("{"), b = text.lastIndexOf("}");
+            return JSON.parse(a !== -1 && b > a ? text.slice(a, b + 1) : text);
+          });
         })
         .then(function (json) {
           if (json && json.success) {
@@ -690,7 +693,12 @@
         credentials: "same-origin",
         headers: { Accept: "application/json" },
       })
-        .then(function (res) { return res.json(); })
+        .then(function (res) {
+          return res.text().then(function (text) {
+            var a = text.indexOf("{"), b = text.lastIndexOf("}");
+            return JSON.parse(a !== -1 && b > a ? text.slice(a, b + 1) : text);
+          });
+        })
         .then(function (json) {
           if (json && json.success) {
             form.hidden = true;

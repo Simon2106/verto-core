@@ -411,7 +411,7 @@ class Verto_Applications {
 			return (int) VINCERE_CANDIDATE_SOURCE_ID;
 		}
 		$cached = get_option( self::OPT_SOURCE, null );
-		if ( null !== $cached && is_numeric( $cached ) ) {
+		if ( null !== $cached && is_numeric( $cached ) && (int) $cached > 0 ) {
 			return (int) $cached;
 		}
 		$id = 0;
@@ -422,14 +422,18 @@ class Verto_Applications {
 			}
 			$items = [];
 			foreach ( [ $res, $res['data'] ?? null, $res['items'] ?? null, $res['result']['items'] ?? null ] as $candidate_list ) {
-				if ( is_array( $candidate_list ) && isset( $candidate_list[0] ) && is_array( $candidate_list[0] ) && isset( $candidate_list[0]['id'] ) ) {
+				if ( is_array( $candidate_list ) && isset( $candidate_list[0] ) && is_array( $candidate_list[0] )
+					&& ( isset( $candidate_list[0]['id'] ) || isset( $candidate_list[0]['value'] ) ) ) {
 					$items = $candidate_list;
 					break;
 				}
 			}
 			$first = 0;
+			$site  = 0;
 			foreach ( $items as $item ) {
-				$item_id = (int) ( $item['id'] ?? 0 );
+				// Nov 2026 (round 43): this tenant returns {value, description,
+				// show_careersite} rather than {id, name}.
+				$item_id = (int) ( $item['id'] ?? ( $item['value'] ?? 0 ) );
 				if ( ! $item_id ) {
 					continue;
 				}
@@ -441,11 +445,12 @@ class Verto_Applications {
 					$id = $item_id;
 					break 2;
 				}
+				if ( ! $site && ! empty( $item['show_careersite'] ) ) {
+					$site = $item_id; // careers-site source – best stand-in for "Website"
+				}
 			}
-			if ( $first ) {
-				$id = $first;
-				break;
-			}
+			if ( $site ) { $id = $site; break; }
+			if ( $first ) { $id = $first; break; }
 		}
 		update_option( self::OPT_SOURCE, $id, false );
 		return $id;
