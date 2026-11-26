@@ -659,6 +659,10 @@ class Verto_Vincere {
 			// the site – a position parked at LEAD has no closed_date, so the
 			// status itself must come down. Field name varies by tenant, so
 			// both spellings get a rung; local filter below is defensive.
+			// Round 48 (Alex): "make private to take it off the website" – the
+			// richest rung also asks for private_job so their familiar
+			// public/private toggle controls the site.
+			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency,status,private_job',
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency,status',
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency,job_status',
 			'id,job_title,public_description,open_date,closed_date,job_type,employment_type,industry,functional_expertise,company,owners,location,salary,salary_from,salary_to,salary_type,currency',
@@ -778,6 +782,11 @@ class Verto_Vincere {
 			// or absent status values pass through (don't hide good jobs).
 			$pos_status = strtoupper( trim( self::field_text( $item['status'] ?? ( $item['job_status'] ?? '' ) ) ) );
 			if ( '' !== $pos_status && preg_match( '/LEAD|HOLD|CLOS|PLACED|LOST|CANCEL|INACTIVE|DRAFT/', $pos_status ) ) {
+				continue;
+			}
+			// Round 48 (Alex): a job marked PRIVATE in Vincere stays off the
+			// site (and drops off at the next sync if it was public before).
+			if ( ! empty( $item['private_job'] ) ) {
 				continue;
 			}
 			$job = self::map_position( $item, $settings );

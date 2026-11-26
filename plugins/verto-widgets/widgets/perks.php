@@ -40,7 +40,6 @@ class Verto_Widget_Perks extends \Elementor\Widget_Base {
 				[ 'title' => 'Healthcare Cashback', 'sub' => 'Claim back healthcare costs, including dental care, optical appointments and physiotherapy.' ],
 				[ 'title' => 'Company Pension', 'sub' => 'Company pension from day one.' ],
 			],
-,
 		] );
 		$this->end_controls_section();
 	}
