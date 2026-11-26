@@ -350,11 +350,14 @@ class Verto_Applications {
 
 		// 2) CV upload – base64 JSON body first, `url` body as fallback.
 		if ( '' !== $cv_path && is_readable( $cv_path ) && filesize( $cv_path ) <= self::MAX_BYTES ) {
+			// Round 44 (Nov 2026, api.vincere.io spec): document_type_id is
+			// SINGULAR and required (the plural array 400ed: "document_type_id
+			// cannot be null").
 			$payload = [
-				'file_name'         => basename( $cv_path ),
-				'base_64_content'   => base64_encode( (string) file_get_contents( $cv_path ) ),
-				'document_type_ids' => [ 1 ], // 1 = CV/Resume in Vincere's document types
-				'original_cv'       => true,
+				'file_name'        => basename( $cv_path ),
+				'base_64_content'  => base64_encode( (string) file_get_contents( $cv_path ) ),
+				'document_type_id' => 1, // 1 = CV/Resume
+				'original_cv'      => true,
 			];
 			$up = Verto_Vincere::api_post( 'candidate/' . $cid . '/file', $payload );
 			if ( is_wp_error( $up ) ) {
@@ -374,22 +377,21 @@ class Verto_Applications {
 			$notes[] = 'no CV file to upload';
 		}
 
-		// 3) Link candidate → position (the application itself).
+		// 3) The application itself. Round 44 (api.vincere.io spec): the v2
+		// endpoint is POST /application with candidate_id + job_id +
+		// registration_date + stage (SHORTLISTED or SENT only at create).
 		if ( '' !== $a['job_id'] ) {
-			$link = Verto_Vincere::api_post( 'position/' . $a['job_id'] . '/candidate/' . $cid, new stdClass() );
+			$link = Verto_Vincere::api_post( 'application', [
+				'candidate_id'      => $cid,
+				'job_id'            => (int) $a['job_id'],
+				'registration_date' => gmdate( 'Y-m-d\TH:i:s.000\Z' ),
+				'stage'             => 'SHORTLISTED',
+			] );
 			if ( is_wp_error( $link ) ) {
-				$status = (int) ( $link->get_error_data()['status'] ?? 0 );
-				$link2  = in_array( $status, [ 404, 405 ], true )
-					? Verto_Vincere::api_post( 'candidate/' . $cid . '/position/' . $a['job_id'], new stdClass() )
-					: $link;
-				if ( is_wp_error( $link2 ) ) {
-					$ok      = false;
-					$notes[] = 'link to position #' . $a['job_id'] . ' failed (' . $link->get_error_message() . ') – shortlist manually';
-				} else {
-					$notes[] = 'linked to position #' . $a['job_id'] . ' (mirrored path)';
-				}
+				$ok      = false;
+				$notes[] = 'application to position #' . $a['job_id'] . ' failed (' . $link->get_error_message() . ') – shortlist manually';
 			} else {
-				$notes[] = 'linked to position #' . $a['job_id'];
+				$notes[] = 'application created on position #' . $a['job_id'] . ' (shortlisted)';
 			}
 		} else {
 			$notes[] = 'no position id (general application) – not linked';
