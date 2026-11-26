@@ -95,6 +95,7 @@ class Verto_Installer {
 			// brand vacancies sections always have live rows + detail pages.
 			self::seed_internal_jobs( $brand );
 			self::seed_brand_posts( $brand, $media );
+			self::seed_client_blogs( $brand );
 			self::create_brand_site_pages( $brand, $media );
 			/* ── JOBS (round 22, Alex: pipermaddox.com/jobs reference) – the
 		      dedicated, searchable/filterable board for the brand's client
@@ -753,6 +754,11 @@ class Verto_Installer {
 	/** Team-photo batch version – bump when the client sends new treated
 	 *  headshots so existing installs swap them in on their next Rebuild. */
 	const TEAM_PHOTOS = 'photos-0.22.66';
+	// Round 42 (Nov 2026): the client's approved Insights articles, shipped as
+	// assets/blogs/{brand}.json (parsed from their Drive PDF + thumbnail
+	// drops). Bump when a new batch lands; entries are keyed so re-runs
+	// never duplicate.
+	const BLOG_POSTS  = 'blogs-0.22.67';
 
 	/**
 	 * Versioned team-photo migration. Round 9, item 22 (photos-0.21.0): the
@@ -807,6 +813,54 @@ class Verto_Installer {
 			if ( ! is_wp_error( $att ) ) set_post_thumbnail( $id, $att );
 		}
 		update_option( 'verto_installer_team_photos', self::TEAM_PHOTOS );
+	}
+
+	/** Round 42: seed the client's approved articles for this brand from
+	 *  assets/blogs/{brand}.json – real posts in the brand category (the
+	 *  Insights grid picks them up by date), thumbnail as featured image,
+	 *  publish dates staggered so the listing reads naturally. */
+	private static function seed_client_blogs( string $brand ): void {
+		if ( self::BLOG_POSTS === get_option( 'verto_installer_blogs' ) ) return;
+		$file = dirname( __DIR__ ) . '/assets/blogs/' . $brand . '.json';
+		if ( ! file_exists( $file ) ) {
+			update_option( 'verto_installer_blogs', self::BLOG_POSTS );
+			return;
+		}
+		$entries = json_decode( (string) file_get_contents( $file ), true );
+		if ( ! is_array( $entries ) ) return;
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		$cat    = get_category_by_slug( $brand );
+		$cat_id = $cat ? (int) $cat->term_id : (int) wp_create_category( $brand );
+		$dir    = dirname( __DIR__ ) . '/assets/import/';
+		$total  = count( $entries );
+		foreach ( array_values( $entries ) as $i => $e ) {
+			$key = (string) ( $e['key'] ?? '' );
+			if ( '' === $key ) continue;
+			$exists = get_posts( [ 'post_type' => 'post', 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids', 'meta_key' => '_verto_blog_key', 'meta_value' => $key, 'no_found_rows' => true ] );
+			if ( $exists ) continue;
+			$post_id = wp_insert_post( [
+				'post_type'     => 'post',
+				'post_status'   => 'publish',
+				'post_title'    => (string) $e['title'],
+				'post_excerpt'  => (string) ( $e['excerpt'] ?? '' ),
+				'post_content'  => (string) ( $e['html'] ?? '' ),
+				// Oldest first, 5 days apart, newest ~4 days ago.
+				'post_date'     => gmdate( 'Y-m-d 10:00:00', time() - ( ( $total - $i ) * 5 + 4 ) * DAY_IN_SECONDS ),
+				'post_category' => $cat_id ? [ $cat_id ] : [],
+			] );
+			if ( ! $post_id || is_wp_error( $post_id ) ) continue;
+			update_post_meta( $post_id, '_verto_blog_key', $key );
+			$img = (string) ( $e['image'] ?? '' );
+			if ( '' !== $img && file_exists( $dir . $img ) ) {
+				$tmp = wp_tempnam( $img );
+				copy( $dir . $img, $tmp );
+				$att = media_handle_sideload( [ 'name' => $img, 'tmp_name' => $tmp ], $post_id );
+				if ( ! is_wp_error( $att ) ) set_post_thumbnail( $post_id, (int) $att );
+			}
+		}
+		update_option( 'verto_installer_blogs', self::BLOG_POSTS );
 	}
 
 	/* ── Job detail pages: office galleries + standing internal vacancies ── */
