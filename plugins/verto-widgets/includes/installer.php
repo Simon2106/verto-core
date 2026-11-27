@@ -2529,7 +2529,7 @@ class Verto_Installer {
 				'audiences' => [
 					'company' => [
 						'headline' => 'Straightforward. No overpromising. Just the right hire.',
-						'body'     => "Tell us the product, the patch and the profile. We'll tell you honestly whether we can deliver – and then we will. Every consultant specialises by product because our clients and candidates don't generalise either.",
+						'body'     => "Tell us the product, the patch and the profile and we'll do the rest. Every consultant specialises by product, so we can really advise on what's happening in your market.",
 						// Nov 2026 (Alex): "Not building anything in vertek – it's
 						// sales, service and manufacturing" – no "build" wording.
 						'bullets'  => "Verto Engage – our flagship model, 100% success rate\nDirect hire through deep product-specialist networks\nSales, service and engineering hires – one role or a whole function\nFrequent updates, structured briefings, no surprises",
@@ -2574,6 +2574,15 @@ class Verto_Installer {
 					'Deep product-specialist networks across sales, service and engineering',
 					'Feedback captured from every candidate and client interaction, then acted on',
 				],
+				// Round 57 (Nov 2026, Alex): his partnership paragraph on the
+				// clients split; the process intro comes off; the team strip
+				// becomes "Meet your Specialists." with no paragraph.
+				'clients_split' => [
+					'headline' => 'A partnership, not a placement.',
+					'body'     => 'We believe successful recruitment is built on relationships, not one offs. With 94% of our clients choosing to partner with us again, we take pride in understanding your businesses, representing your brand and operating as an extension of your teams. Our focus is on delivering long-term value, not simply filling vacancies.',
+				],
+				'team_heading' => 'Meet your Specialists.',
+				'team_body'    => '',
 				'team_focus' => 'Technical sales & engineering search.',
 				'insights'   => [
 					[ 'title' => 'Fluid Power Sales Engineer Salary Guide – UK & US, 2026',
@@ -2621,7 +2630,7 @@ class Verto_Installer {
 					[ 'title' => 'Engage',   'body' => 'Every approach is tailored to the individual, communicating your opportunity, culture and value proposition. We engage, qualify and assess candidates against your requirements, ensuring every introduction is relevant and considered.' ],
 					[ 'title' => 'Deliver',  'body' => 'We present carefully selected candidates with detailed insights that go beyond the CV. From interview coordination and offer management to post-placement follow-up, we manage the process with clear communication and consistent updates.' ],
 				],
-				'process_intro' => 'A structured, targeted approach to recruitment. Every stage is designed to reduce uncertainty, uncover exceptional talent and deliver lasting hiring success.',
+				// Round 57 (Alex): process side paragraph removed.
 // Nov 2026 (Alex): case study dropped for launch - no real one yet.
 				
 				'candidate_process' => [
