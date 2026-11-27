@@ -2069,7 +2069,7 @@ class Verto_Installer {
 					'line1'  => 'Connecting talent.',
 					'line2'  => 'Powering progress',
 					// Round 4, item 13: client-approved positioning.
-					'sub'    => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the USA and Europe.',
+					'sub'    => 'ModulR connects the very best talent within the Built Environment, Data Centre and Architecture sectors with the companies building the future. Covering both the USA and Europe.',
 					// Nov 2026: looping hero film – aerial of a data-centre
 					// construction site at dusk (replaces the globe).
 					'video_mp4'       => 'modulr_hero_mp4',
@@ -2084,11 +2084,13 @@ class Verto_Installer {
 				'features' => [
 					[ 'icon' => 'bar-chart-3', 'title' => 'Verto Engage', 'body' => 'Our flagship model with a 100% success rate, an extended candidate guarantee, and the initial fee taken off on a successful hire.' ],
 					[ 'icon' => 'handshake', 'title' => 'World-Class NPS', 'body' => 'We capture feedback from every candidate and client interaction to hold ourselves to the highest standard.' ],
-					[ 'icon' => 'lock',      'title' => 'NDA-Grade Discretion',    'body' => 'Sensitive, pre-announcement and competitor-adjacent search handled as standard.' ],
-					[ 'icon' => 'globe-2', 'title' => 'USA & Europe', 'body' => 'Data centres, colocation and celebrated architecture practices – two regions, one network.' ],
+					[ 'icon' => 'lock',      'title' => 'NDA-Grade Discretion',    'body' => 'Sensitive, pre-announcement and confidential-adjacent searches handled as standard.' ],
+					[ 'icon' => 'globe-2', 'title' => 'USA & Europe', 'body' => 'Across architecture, interior design, data centre construction and operations, building services and facilities management.' ],
 				],
 				'about'        => [
 					'headline' => 'Considered introductions, not resumes into the void.',
+					// Round 59 (Alex): landing paragraph removed.
+					'landing_body' => '',
 					'mission'  => "Build teams for the projects that will define a generation – staffing what others can't, working quickly and discreetly, and to the standard those projects demand.",
 					'vision'   => 'A world where no exceptional architect or built-environment professional is stuck because the right opportunity was invisible to them – and the first call every project director makes when they need to scale.',
 					'purpose'  => 'Championing the professionals who build our world – opening doors that don\'t exist yet, so the most ambitious projects in architecture and critical infrastructure are built by the best people, not whoever applied first.',
@@ -2151,22 +2153,26 @@ class Verto_Installer {
 				'audiences' => [
 					'company' => [
 						'headline' => "Your next project is out there. It just isn't advertised.",
-						'body'     => "Whether you're scaling a data centre programme or shaping a skyline, one conversation opens doors that don't exist yet. Considered introductions, never resumes into the void – and discretion as standard.",
+						'body'     => "Whether you're scaling a data centre programme or shaping a skyline, one conversation opens doors that don't exist yet. Considered introductions, never resumes into the void, and discretion as standard.",
 						'bullets'  => "Curated introductions, not mass outreach\nConfidential and NDA-grade search handled as standard\nProject team builds – contract and permanent\nLong-game relationships across the project pipeline",
 						'cta'      => 'Scale your project team',
 					],
 					'candidate' => [
 						'headline' => 'The best projects are rarely advertised.',
-						'body'     => 'The best talent is rarely searching. Modulr exists in that gap – making precise, considered introductions rather than firing resumes into the void, and protecting reputations on every engagement.',
+						'body'     => 'The best talent is rarely searching. Modulr exists in that gap, making precise, considered introductions rather than firing resumes into the void, and protecting reputations on every engagement.',
 						'bullets'  => "Data centre, colocation, architecture and MEP opportunities\nExclusive, often NDA-protected briefs\nCareer trajectory advice across the full project lifecycle\nDiscreet, considered, never transactional",
 						'cta'      => 'Find your next project',
 					],
 				],
 				'about_hero' => [ 'pre' => 'The projects that define', 'accent' => 'a generation.', 'post' => 'Built by the right people.' ],
+				// Round 60 (Nov 2026, Alex): dash artefact out of the derived line.
+				'about_hero_body' => "Considered introductions, not resumes into the void. It's how we've built ModulR into the firm clients and candidates in architecture, data centres and the built environment reach out to first.",
+				// Round 60 (Alex): "Two regions, one network" comes off the box.
+				'about_hero_stat_label' => '',
 				// Round 4, item 13: client-approved positioning.
 				'positioning' => 'Modulr connects the very best talent in Data Centres and Architecture with the companies building the future. Covering both the USA and Europe.',
 				'what_we_do' => [
-					'headline'   => 'Embedded in the projects that define a generation.',
+					'headline'   => 'Connecting talent with the right projects.',
 					'paragraphs' => "Data centres, colocation and edge, architecture, MEP engineering and the full concept-to-commissioning lifecycle – this is where our network runs deepest. Every consultant works one part of the built environment, not the whole map.\n\nFor project directors, developers and practice principals, we operate as a discreet extension of the leadership team – considered introductions rather than resumes into the void, with NDA-grade discretion as standard.",
 				],
 				'proof' => [
@@ -2537,8 +2543,10 @@ class Verto_Installer {
 					],
 					'candidate' => [
 						'headline' => 'Options, not applications.',
+						// Round 58 (Nov 2026, Alex): his hero paragraphs + bullets.
 						'body'     => 'Put a role on a job board and it gets hundreds of resumes. Work with us and it works the other way round – we put you and your experience front and centre, and we sell the opportunity before you sit in an interview.',
-						'bullets'  => "US and European roles across the product landscape\nTotal comp, equity, progression and work-life on the table\nTime-served engineers and product specialists – spoken to as equals\nHonest feedback. No oversell. No fluff.",
+						'hero_body' => "Your next career move deserves more than another job application. At Vertek, our specialist consultants take the time to understand your technical expertise, experience and career aspirations, connecting you with opportunities that genuinely align with your ambitions.\n\nThrough established industry relationships and in-depth market knowledge, we give you access to opportunities beyond the job boards, champion your expertise and support you throughout every stage of your career move.",
+						'bullets'  => "Access to career opportunities across the USA and Europe within technical sales, service and engineering.\nPersonalised guidance on compensation, benefits, career progression and what's important to you.\nDedicated consultants who understand your technical expertise, products and industry.\nTransparent communication and complete confidentiality.",
 						'cta'      => 'See live roles',
 					],
 				],
@@ -2583,6 +2591,12 @@ class Verto_Installer {
 				],
 				'team_heading' => 'Meet your Specialists.',
 				'team_body'    => '',
+				// Round 58 (Alex): "Sold on your merits." carries his copy.
+				'candidates_split' => [
+					'body' => "At Vertek, you're more than a CV. Our specialist consultants take the time to understand your technical expertise, professional achievements, and career ambitions. Through our established industry relationships, we position your experience directly in front of key decision makers, ensuring your value is recognised before you even step into an interview.\n\nWe give you access to exclusive opportunities, valuable market insights and personalised career guidance. From your initial conversation through to securing your next role, we're committed to supporting you at every stage, helping you make informed decisions and take the next step in your career with confidence.",
+				],
+				// Round 58 (Alex): "What candidates say" loses its sub-line.
+				'reviews_body' => '',
 				'team_focus' => 'Technical sales & engineering search.',
 				'insights'   => [
 					[ 'title' => 'Fluid Power Sales Engineer Salary Guide – UK & US, 2026',
@@ -2633,11 +2647,12 @@ class Verto_Installer {
 				// Round 57 (Alex): process side paragraph removed.
 // Nov 2026 (Alex): case study dropped for launch - no real one yet.
 				
+				// Round 58 (Nov 2026, Alex): his rewrite of all four steps.
 				'candidate_process' => [
-					[ 'title' => 'Confidential conversation', 'body' => 'We start by understanding what you actually want next – product area, market, total comp, relocation, work-life. No oversell. We only bring you roles that genuinely fit.' ],
-					[ 'title' => 'Briefed representation',    'body' => 'We sell your experience before the first interview. Hiring managers see your context, your patch and your product knowledge – not just a resume.' ],
-					[ 'title' => 'Interview preparation',     'body' => "Full briefing on the company, the panel, the product line and the likely lines of questioning. We've usually placed there before." ],
-					[ 'title' => 'Offer & beyond',            'body' => "Honest comp guidance, equity context for US advanced manufacturing, counter-offer support and check-ins long after you've started." ],
+					[ 'title' => 'Confidential conversation', 'body' => 'We start by understanding exactly what you want next. From your preferred product area and salary expectations to location and work-life balance, we identify opportunities that genuinely align to your experience.' ],
+					[ 'title' => 'Representing Your Expertise', 'body' => 'We go beyond simply submitting your CV. Our consultants proactively champion your technical knowledge, professional achievements and industry experience, positioning your expertise directly with key decision makers.' ],
+					[ 'title' => 'Preparing You for Success', 'body' => 'We provide comprehensive interview preparation, including company insights, product knowledge, hiring manager expectations and guidance on potential interview questions. Our aim is to ensure you approach every interview with confidence.' ],
+					[ 'title' => 'Offer & beyond', 'body' => "From salary negotiations and offer management to navigating your resignation and starting your new role, we're here to support you throughout the transition. Our relationship continues beyond placement, providing ongoing guidance as your career develops." ],
 				],
 				// Round 4, item 12: mirrors the client's six sectors + the two
 				// cross-cutting desks.
@@ -2765,7 +2780,7 @@ class Verto_Installer {
 			'heading_pre'      => 'What candidates say.',
 			'heading_accent'   => '',
 			'heading_post'     => '',
-			'body'             => 'Real feedback from the people we place – gathered from every engagement.',
+			'body'             => $c['reviews_body'] ?? 'Real feedback from the people we place – gathered from every engagement.',
 			'stat_value'       => '',
 			'stat_label'       => '',
 			'consultant_brand' => $name,
@@ -2982,7 +2997,7 @@ class Verto_Installer {
 				'heading_post'   => $c['about_hero']['post'],
 				'body'           => $about_hero_body,
 				'stat_value'     => $c['stats'][0]['value'],
-				'stat_label'     => $c['stats'][0]['label'],
+				'stat_label'     => $c['about_hero_stat_label'] ?? $c['stats'][0]['label'],
 				'stat_cta_text'  => $c['about_hero_stat_cta']['text'] ?? '',
 				'stat_cta_link'  => [ 'url' => $c['about_hero_stat_cta']['url'] ?? '' ],
 			] ) ], 'verto-bs' ),

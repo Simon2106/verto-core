@@ -2551,3 +2551,27 @@ body.verto-brand-verto section:has(.verto-team--leaders) .verto-intro__body { ma
 .verto-featured__media .verto-hovervid__video {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%;
 }
+
+/* ── Round 58: single-article page (Insights / WGO) ── */
+.verto-article { padding: 4.5rem 1.5rem 5rem; }
+@media (min-width: 768px) { .verto-article { padding-inline: 2.5rem; } }
+.verto-article__inner, .verto-article__body, .verto-article__foot, .verto-article__hero { max-width: 46rem; margin-inline: auto; }
+.verto-article__back { display: inline-block; margin-bottom: 2rem; font-size: 0.8125rem; letter-spacing: 0.04em; color: var(--muted-foreground); text-decoration: none; }
+.verto-article__back:hover { color: var(--brand); }
+.verto-article__eyebrow { color: var(--brand); }
+.verto-article__title { margin-top: 1rem; }
+.verto-article__meta { margin-top: 1rem; font-size: 0.8125rem; letter-spacing: 0.04em; color: var(--muted-foreground); }
+.verto-article__hero { margin: 2.5rem auto 0; }
+.verto-article__hero img { width: 100%; height: auto; border-radius: 0.75rem; display: block; }
+.verto-article__body { margin-top: 2.5rem; }
+.verto-article__body p { font-size: 1.0625rem; line-height: 1.75; margin: 0 0 1.4em; }
+.verto-article__body p:first-child { font-size: 1.1875rem; line-height: 1.65; color: var(--foreground); }
+.verto-article__body h3 { margin: 2.25rem 0 0.9rem; font-size: 1.375rem; line-height: 1.3; }
+.verto-article__body h3::before { content: ""; display: block; width: 2rem; height: 2px; background: var(--brand); margin-bottom: 0.7rem; }
+.verto-article__body em { color: var(--muted-foreground); }
+.verto-article__foot { margin-top: 3.5rem; }
+.verto-article__cta { border-color: var(--brand); color: var(--brand); }
+
+/* Round 59 (Nov 2026, Alex): ModulR audience cards – the two paragraphs
+   start in line even though the headings wrap differently. */
+@media (min-width: 768px) { body.verto-brand-modulr .vbs-aud__headline { min-height: calc(3 * 1.25em); } }
