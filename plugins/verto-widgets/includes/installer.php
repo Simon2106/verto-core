@@ -2468,15 +2468,15 @@ class Verto_Installer {
 					// Round 50 (Nov 2026, Alex): his heading + paragraph.
 					'headline' => 'One specialism per consultant.',
 					'mission'  => 'Our consultants focus exclusively on their specialist product areas, combining in-depth technical knowledge, established industry networks and proven recruitment processes to deliver the right hire.',
-					'vision'   => 'To be the firm every VP of Sales, MD and founder in technical sales and engineering reaches out to first – on both sides of the Atlantic.',
-					'purpose'  => "Product knowledge can't be faked. Neither can ours. We exist so that manufacturers and distributors never have to explain their own product to their recruiter – and so that engineers get sold on their merits.",
+					'vision'   => 'To be the firm every VP of Sales, MD and founder in technical sales and engineering reaches out to first in the USA and Europe.',
+					'purpose'  => 'We believe our clients deserve a recruitment partner who truly understands their products and markets, and our candidates deserve a specialist who recognises their expertise, understands their ambitions and supports their career progression.',
 				],
 				// No images.landingAbout override in the prototype – the hero
 				// image doubles as the landing about visual (getBrandImage fallback).
 				'about_image'     => 'vertek_hero',
 				'about_image_alt' => 'Cable-stayed bridge at night with crimson motion light trails',
 				'stats' => [
-					[ 'value' => 'USA',     'label' => 'Coverage coast to coast' ],
+					[ 'value' => 'USA & Europe', 'label' => 'Coverage across both markets' ],
 					[ 'value' => '100%',    'label' => 'Success rate on Verto Engage' ],
 					[ 'value' => '94%',     'label' => 'Of clients partner with us again' ],
 				],
@@ -2543,6 +2543,15 @@ class Verto_Installer {
 					],
 				],
 				'about_hero' => [ 'pre' => 'Product knowledge,', 'accent' => 'one desk at a time.', 'post' => '' ],
+				// Round 56 (Nov 2026, Alex): his hero paragraph.
+				'about_hero_body' => "Our consultants focus exclusively on their specialist product areas, combining in-depth technical knowledge and established industry networks. It's how we've built Vertek into the firm that clients and candidates in technical sales, service and engineering reach out to first.",
+				// Round 56 (Alex): the story rewritten – three paragraphs.
+				'about_story' => [
+					'eyebrow'  => '',
+					'headline' => 'The story behind',
+					'italic'   => 'Vertek.',
+					'body'     => "Vertek partners with manufacturers, distributors and service providers that drive industrial markets across the USA and Europe. Our strength lies in genuine specialisation, with every consultant dedicated to a specific product area, combining deep industry knowledge with established technical and commercial networks.\n\nWith our founders' roots firmly established in technical sales and engineering recruitment, Vertek represents the very foundations on which the Verto Group was built. Our brand brings together years of industry expertise, focusing exclusively on the markets, products and disciplines we know best.\n\nWe're experts in hiring for outside sales, sales leadership, national sales, regional service and site based service, manufacturing and engineering positions across the USA and Europe.",
+				],
 				// Nov 2026 (Alex): "only showing 4 people - add everyone else".
 				'team_limit'  => 20,
 				// Nov 2026 (Alex): the bridge comes off the About/Clients page
@@ -2557,13 +2566,13 @@ class Verto_Installer {
 				'positioning' => "Vertek recruits technical sales, service and engineering professionals for the manufacturers and distributors that keep industry moving – across the USA and Europe. Every consultant owns one product area. That's why it works.",
 				'what_we_do' => [
 					'headline'   => 'Embedded in the industries that build the world.',
-					'paragraphs' => "Fluid power, HVAC, rotating equipment, industrial automation and US advanced manufacturing – these are the industries we know inside out. Every consultant specialises in a product area and stays close enough to add genuine insight to every conversation.\n\nFor VPs of Sales, Managing Directors and Founders, we operate as an extension of the leadership team – discreet, accountable and never transactional.",
+					'paragraphs' => "Fluid power, HVAC, rotating equipment, industrial automation and US advanced manufacturing: these are the industries we know inside out. Every consultant specialises in a product area and stays close enough to add genuine insight to every conversation.\n\nFor Senior Leadership, VPs, Directors and Founders, we operate as an extension of the leadership team. Discreet, accountable and never transactional.",
 				],
 				'proof' => [
 					'100% success rate on Verto Engage',
 					'94% of clients return for a second hire',
 					'Deep product-specialist networks across sales, service and engineering',
-					'Feedback captured from every candidate and client interaction – then acted on',
+					'Feedback captured from every candidate and client interaction, then acted on',
 				],
 				'team_focus' => 'Technical sales & engineering search.',
 				'insights'   => [
@@ -2579,25 +2588,26 @@ class Verto_Installer {
 				],
 				/* ── Vertek-only data (the prototype renders these sections
 				      conditionally; modulr / edison-lux carry none of them) ── */
+				// Round 56 (Nov 2026, Alex): his rewrite of all three pillars.
 				'pillars' => [
-					[ 'title' => 'Product-owned desks',
-					  'body'  => "Every Vertek consultant owns a product area – fluid power, HVAC, rotating equipment, automation, advanced manufacturing. We don't generalise across engineering because our clients and candidates don't. Anyone can post a job spec; very few can tell the difference between a fluid power sales engineer with real product experience and one who just learned the words." ],
-					[ 'title' => 'Partnership, not transaction',
-					  'body'  => "94% of our clients come back. The other 6% haven't had a second role yet. We earn that by understanding the business properly, representing it well in the market and operating as an extension of the commercial team – not a vendor." ],
+					[ 'title' => 'Product owned desks',
+					  'body'  => 'Every Vertek consultant is dedicated to a specific product area, developing an in-depth understanding of the technology, applications and commercial landscape within their market. Being genuine Specialists allows us to identify the right talent, understand complex technical requirements and deliver candidates who bring real industry expertise.' ],
+					[ 'title' => 'Partnerships Built to Last',
+					  'body'  => 'We believe successful recruitment is built on relationships, not one offs. With 94% of our clients choosing to partner with us again, we take pride in understanding their businesses, representing their brands and operating as an extension of their teams. Our focus is on delivering long-term value, not simply filling vacancies.' ],
 					[ 'title' => 'Process over chance',
-					  'body'  => "Structured briefings, frequent updates at every stage and a methodology built over years to get it right first time. Recruitment isn't luck – and our 100% success rate on Verto Engage proves it." ],
+					  'body'  => 'Our recruitment methodology combines detailed briefings, targeted market mapping, thorough candidate qualification and transparent communication throughout every search. Refined over time, our approach is designed to deliver the right hire, first time. Our 100% success rate through Verto Engage proves this.' ],
 				],
 				'values' => [
 					[ 'title' => 'Straightforward. No overpromising.',
 					  'body'  => "We say what we mean and mean what we say. Candidates are sold on their merits, feedback is honest, and we never promise what we can't deliver." ],
 					[ 'title' => 'Process over chance.',
-					  'body'  => "Great recruitment isn't luck. Our methodology has been built over years to get it right first time – frequent updates, thorough briefings, structure that removes failure at every stage." ],
+					  'body'  => "Great recruitment isn't luck. Our methodology has been built over years to get it right first time. Frequent updates, thorough briefings, structure that removes failure at every stage." ],
 					[ 'title' => 'An extension of your team.',
-					  'body'  => '94% of our clients work with us again. We understand the business properly, represent it well and build relationships that outlast a single hire.' ],
+					  'body'  => '94% of our clients work with us again. We understand your business properly, represent it well and build relationships that outlast a single hire.' ],
 					[ 'title' => 'High-conviction introductions.',
 					  'body'  => "We sell the opportunity as hard as we'd want someone to sell ours. The right candidates come energised, not just informed." ],
 					[ 'title' => 'Product knowledge, non-negotiable.',
-					  'body'  => "Every consultant specialises in a product area. We don't generalise across engineering because our clients and candidates don't – and neither should we." ],
+					  'body'  => "Every consultant specialises in a product area. We don't generalise across engineering because our clients and candidates don't, and neither should we." ],
 				],
 				// Nov 2026 (Alex): journey timeline removed from the Vertek About.
 				// Round 10: the prototype's invented 'testimonials' array is GONE –

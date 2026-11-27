@@ -162,11 +162,12 @@ get_header();
 		<?php
 		$verto_media  = get_option( 'verto_installer_media', [] );
 		$verto_events = [
-			[ 'title' => 'Summer summit',        'note' => 'The whole group, one castle',            'video' => 'summit_film',     'poster' => 'summit_film_poster' ],
-			[ 'title' => 'Ibiza incentive trip', 'note' => 'The winners board the plane',            'video' => 'ibiza_trip_film', 'poster' => 'ibiza_trip_poster' ],
-			[ 'title' => 'Charity night',        'note' => 'The gala for Maeve&rsquo;s Mission',     'video' => 'charity_film',    'poster' => 'charity_film_poster' ],
-			[ 'title' => 'Milly&rsquo;s promotion', 'note' => 'Confetti in the Edison Lux corner',   'video' => 'milly_video',     'poster' => 'milly_poster' ],
-			[ 'title' => 'Sade&rsquo;s promotion',  'note' => 'The moment it landed',                'video' => 'sade_video',      'poster' => 'sade_poster' ],
+			// Round 56 (Nov 2026, Alex): his caption copy.
+			[ 'title' => 'Summer Summit',        'note' => 'The whole group, one castle. Take a look at what our Summer Summit was like.', 'video' => 'summit_film',     'poster' => 'summit_film_poster' ],
+			[ 'title' => 'Verto Takes Ibiza',    'note' => 'An incentive trip to remember.',         'video' => 'ibiza_trip_film', 'poster' => 'ibiza_trip_poster' ],
+			[ 'title' => 'Charity Night',        'note' => 'Our charity Gala for Maeve&rsquo;s Mission.', 'video' => 'charity_film', 'poster' => 'charity_film_poster' ],
+			[ 'title' => 'Milly&rsquo;s Promotion', 'note' => 'Confetti in the Edison Lux corner with Milly being promoted from Lead to Principal Power and Energy Talent Specialist.', 'video' => 'milly_video', 'poster' => 'milly_poster' ],
+			[ 'title' => 'Sade&rsquo;s Promotion',  'note' => 'The moment that Sade was promoted from Senior to Team Leader of the European Data Centre team.', 'video' => 'sade_video', 'poster' => 'sade_poster' ],
 			[ 'title' => 'Harvey&rsquo;s promotion', 'note' => 'The office knew before he did',      'video' => 'harvey_video',    'poster' => 'harvey_poster' ],
 			[ 'title' => 'Frank&rsquo;s promotion',  'note' => 'Confetti underfoot, the walk-in',    'video' => 'frank_video',     'poster' => 'frank_poster' ],
 		];

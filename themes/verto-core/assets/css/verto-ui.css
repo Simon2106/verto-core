@@ -2523,3 +2523,31 @@ body.verto-brand-modulr .vbs-hero__wash { background: linear-gradient(90deg, var
 .navigation.pagination a.page-numbers:hover { border-color: var(--brand); color: var(--brand); }
 .navigation.pagination .page-numbers.current { background: var(--brand); border-color: var(--brand); color: var(--brand-foreground, #fff); }
 .navigation.pagination .page-numbers.dots { border: 0; min-width: auto; padding: 0 0.25rem; }
+
+/* ── Round 56 (Nov 2026, Alex) ── */
+/* Vertek: the story narrative sits in a panel so it reads as deliberately
+   boxed, like the logo/stat column beside it. */
+body.verto-brand-vertek .vbs-story__narr {
+  background: color-mix(in oklab, #fff 6%, transparent);
+  border: 1px solid color-mix(in oklab, #fff 12%, transparent);
+  border-radius: 0.75rem; padding: 2rem 2.25rem;
+}
+/* Verto About: the opener panel goes navy gradient instead of the "plonked"
+   white card, and the gap to the collage above tightens. */
+body.verto-brand-verto .verto-prose--panel {
+  background: linear-gradient(135deg, #1F2A44 0%, #2C3E64 100%);
+  border: 0; box-shadow: 0 30px 70px -45px rgba(31,42,68,0.8);
+}
+body.verto-brand-verto .verto-prose--panel p { color: rgba(255,255,255,0.88); }
+body.verto-brand-verto section.verto-container-pad:has(.verto-prose--panel) { padding-top: 1.5rem !important; }
+body.verto-brand-verto section.verto-container-pad:has(.verto-collage) { padding-bottom: 2rem !important; }
+/* Verto About: the leadership intro runs the same width as the photo row. */
+body.verto-brand-verto section:has(.verto-team--leaders) .verto-intro { max-width: none; }
+body.verto-brand-verto section:has(.verto-team--leaders) .verto-intro__body { max-width: none; }
+/* WGO featured story: the film fills the frame (cover-crop) – no letterbox
+   blank space around portrait clips. */
+.verto-featured__media { overflow: hidden; }
+.verto-featured__media img,
+.verto-featured__media .verto-hovervid__video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%;
+}

@@ -19,7 +19,7 @@ class Verto_Widget_Specialist_Band extends \Elementor\Widget_Base {
 		$this->start_controls_section( 'content', [ 'label' => 'Specialist band' ] );
 		$this->add_control( 'brand', [ 'label' => 'Brand (_verto_brand meta)', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'heading', [ 'label' => 'Heading', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Speak to a specialist.' ] );
-		$this->add_control( 'body', [ 'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Real people, in your market, on the phone the same day.' ] );
+		$this->add_control( 'body', [ 'label' => 'Body', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => '' ] );
 		$this->add_control( 'cta_text', [ 'label' => 'CTA', 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Start a conversation' ] );
 		$this->add_control( 'cta_link', [ 'label' => 'CTA link', 'type' => \Elementor\Controls_Manager::URL, 'default' => [ 'url' => '#contact' ] ] );
 		$this->end_controls_section();
