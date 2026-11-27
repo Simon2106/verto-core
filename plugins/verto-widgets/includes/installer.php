@@ -2459,7 +2459,7 @@ class Verto_Installer {
 					'object_position' => 'center bottom',
 				],
 				'features' => [
-					[ 'icon' => 'crosshair',   'title' => 'Specialists, Not Generalists', 'body' => 'Every consultant specialises in a specific product area: Fluid Power, HVAC, Defense & Advanced Manufacturing, Industrial Automation, CNC & Metalworking and Compressors.' ],
+					[ 'icon' => 'crosshair',   'title' => 'Product-Area Experts', 'body' => 'Every consultant specialises in a specific product area: Fluid Power, HVAC, Defense & Advanced Manufacturing, Industrial Automation, CNC & Metalworking and Compressors.' ],
 					[ 'icon' => 'bar-chart-3', 'title' => 'Verto Engage',        'body' => 'Our flagship model with a 100% success rate, an extended candidate guarantee, and the initial fee taken off on a successful hire.' ],
 					[ 'icon' => 'trending-up', 'title' => 'Sales Floor To Shop Floor', 'body' => 'Regional and national sales & service talent, plus the onsite manufacturing, engineering and internal sales teams who deliver.' ],
 					[ 'icon' => 'handshake',   'title' => 'World-Class NPS',     'body' => 'We capture feedback from every candidate and client interaction to hold ourselves to the highest standard.' ],
@@ -2542,7 +2542,7 @@ class Verto_Installer {
 						'cta'      => 'See live roles',
 					],
 				],
-				'about_hero' => [ 'pre' => 'Product knowledge,', 'accent' => 'one desk at a time.', 'post' => 'Never generalist.' ],
+				'about_hero' => [ 'pre' => 'Product knowledge,', 'accent' => 'one desk at a time.', 'post' => '' ],
 				// Nov 2026 (Alex): "only showing 4 people - add everyone else".
 				'team_limit'  => 20,
 				// Nov 2026 (Alex): the bridge comes off the About/Clients page

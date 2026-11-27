@@ -1180,11 +1180,15 @@ class Verto_Vincere {
 		// "website_product_area" custom field – keep fetching until it has
 		// been captured once (only the handful of brand-tagged jobs refetch).
 		$prod_checked = (string) get_post_meta( $post_id, '_product_area_checked', true );
-		if ( $checked && 'verto' !== $brand && '' !== $brand && $prod_checked ) {
-			return; // brand resolved and product area captured
+		// Round 55 (Alex): a sector RE-TAGGED in Vincere (Ben's jobs went
+		// modulr -> vertek) must move sites – resolved jobs re-check their
+		// custom fields every 6 hours instead of never.
+		$fresh = is_numeric( $checked ) && ( time() - (int) $checked ) < 6 * HOUR_IN_SECONDS && '1' !== $checked;
+		if ( $fresh && 'verto' !== $brand && '' !== $brand && $prod_checked ) {
+			return; // brand resolved, product captured, checked recently
 		}
 		$json = self::api_get( 'position/' . rawurlencode( $job['vincere_id'] ) . '/customfields' );
-		update_post_meta( $post_id, '_sector_cf_checked', '1' );
+		update_post_meta( $post_id, '_sector_cf_checked', (string) time() );
 		usleep( 150000 ); // ~6 req/s worst case – inside Vincere's limits
 		if ( is_wp_error( $json ) || ! is_array( $json ) ) {
 			return;

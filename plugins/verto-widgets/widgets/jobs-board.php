@@ -42,6 +42,63 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		[ 'title' => 'Talent & Resourcing Partner – Group', 'brand' => 'verto', 'location' => 'Solent, UK', 'level' => 'Entry-level', 'package' => '£24–27k base + bonus' ],
 	];
 
+	/** Round 55 (Alex): fixed filter vocabularies per brand – the free-text
+	 *  website_product_area maps onto these chips (first keyword hit wins),
+	 *  so the filter rail can never sprawl to 50 options. */
+	const PRODUCT_CHIPS = [
+		'edison-lux' => [
+			'Combined Cycle & Gas' => [ 'combined', 'ccgt', 'gas' ],
+			'Renewables'           => [ 'renewab', 'solar', 'wind', 'battery', 'storage', 'transition' ],
+			'Biomass & EFW'        => [ 'biomass', 'efw', 'waste' ],
+			'Nuclear'              => [ 'nuclear' ],
+			'EPC'                  => [ 'epc', 'construction', 'commissioning' ],
+			'Power Generation'     => [ 'power', 'generation', 'genset', 'turbine', 'critical' ],
+		],
+		'modulr' => [
+			'Data Centres' => [ 'data cent', 'datacent', 'dc', 'facilities', 'colocation' ],
+			'Architecture' => [ 'architect', 'interior', 'design' ],
+			'MEP'          => [ 'mep', 'mechanical', 'electrical', 'plumb', 'building services', 'structural' ],
+		],
+		'vertek' => [
+			'Compressors'                     => [ 'compress' ],
+			'CNC & Metalworking'              => [ 'cnc', 'metal', 'machin', 'cutting', 'tool' ],
+			'Industrial Automation'           => [ 'automation', 'robot', 'plc', 'sensor' ],
+			'Defense & Advanced Manufacturing'=> [ 'defen', 'aerospace', 'manufactur' ],
+			'HVAC'                            => [ 'hvac', 'air', 'refriger', 'heat', 'vent' ],
+			'Fluid Power'                     => [ 'fluid', 'pump', 'hydraul', 'seal', 'valve', 'pneumatic' ],
+		],
+	];
+
+	/** Round 55: USA / Europe region from the advert's location string.
+	 *  Unknown locations return '' and pass every region filter. */
+	private static function region_of( string $loc ): string {
+		$l = strtolower( $loc );
+		if ( preg_match( '/\b(usa|u\.s\.|united states|texas|austin|new york|canada)\b/', $l ) || preg_match( '/,\s*[a-z]{2},\s*usa/', $l ) ) {
+			return 'usa';
+		}
+		if ( preg_match( '/\b(uk|united kingdom|england|scotland|wales|ireland|germany|france|spain|italy|netherlands|belgium|poland|sweden|norway|denmark|switzerland|austria|portugal|europe)\b/', $l ) ) {
+			return 'europe';
+		}
+		return '';
+	}
+
+	/** Round 55: free-text product area -> its fixed chip (or ''). */
+	private static function product_chip( string $text, string $brand ): string {
+		$map = self::PRODUCT_CHIPS[ $brand ] ?? [];
+		$t   = strtolower( $text );
+		if ( '' === trim( $t ) ) {
+			return '';
+		}
+		foreach ( $map as $label => $keys ) {
+			foreach ( $keys as $k ) {
+				if ( false !== strpos( $t, $k ) ) {
+					return $label;
+				}
+			}
+		}
+		return '';
+	}
+
 	protected function register_controls() {
 		$this->start_controls_section( 'content', [ 'label' => 'Jobs' ] );
 		// Round 9, item 1: "compact" renders a lean rows-only board (no
@@ -220,11 +277,36 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 		$jobs      = $live ? $live : self::JOBS;
 		$locations = $live ? array_values( array_unique( array_column( $live, 'location' ) ) ) : self::LOCATIONS;
 		$levels    = $live ? array_values( array_unique( array_column( $live, 'level' ) ) ) : self::LEVELS;
-		// Nov 2026 (Alex): product-area filter replaces the Senior/Manager
-		// level chips (teams like HVAC / CNC / Automation).
-		$products  = $live ? array_values( array_filter( array_unique( array_column( $live, 'product' ) ) ) ) : [];
 		sort( $locations );
-		sort( $products );
+		// Round 55 (Alex): client boards drop the per-location chips (too
+		// many) for a USA / Europe region filter + fixed product chips; the
+		// keyword search covers exact locations instead.
+		$regions    = [];
+		$prod_chips = [];
+		if ( $client ) {
+			foreach ( $jobs as $jk => $job ) {
+				$jobs[ $jk ]['region']     = self::region_of( (string) $job['location'] );
+				$jobs[ $jk ]['chip']       = self::product_chip( (string) ( $job['product'] ?? '' ), (string) $job['brand'] );
+				if ( '' !== $jobs[ $jk ]['region'] ) {
+					$regions[ $jobs[ $jk ]['region'] ] = true;
+				}
+				if ( '' !== $jobs[ $jk ]['chip'] ) {
+					$prod_chips[ $jobs[ $jk ]['chip'] ] = true;
+				}
+			}
+			// chips keep the vocabulary's order
+			$ordered = [];
+			foreach ( self::PRODUCT_CHIPS[ $brand_scope ] ?? [] as $label => $keys ) {
+				if ( isset( $prod_chips[ $label ] ) ) {
+					$ordered[] = $label;
+				}
+			}
+			$prod_chips = $ordered ?: array_keys( $prod_chips );
+		}
+		$products = $client ? $prod_chips : ( $live ? array_values( array_filter( array_unique( array_column( $live, 'product' ) ) ) ) : [] );
+		if ( ! $client ) {
+			sort( $products );
+		}
 
 		// Live (Vincere-synced) rows open the inline Apply modal instead of the
 		// click-through URL; placeholder rows keep the old behaviour. A row
@@ -296,8 +378,10 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							   <?php endif; ?>
 							   data-brand="<?php echo esc_attr( $job['brand'] ); ?>"
 							   data-location="<?php echo esc_attr( $job['location'] ); ?>"
+							   data-region="<?php echo esc_attr( $job['region'] ?? '' ); ?>"
 							   data-level="<?php echo esc_attr( $job['level'] ); ?>"
-							   data-product="<?php echo esc_attr( $job['product'] ?? '' ); ?>">
+							   data-product="<?php echo esc_attr( $client ? ( $job['chip'] ?? '' ) : ( $job['product'] ?? '' ) ); ?>"
+							   data-producttext="<?php echo esc_attr( $job['product'] ?? '' ); ?>">
 								<div class="verto-jobs__rowmain">
 									<div class="verto-jobs__meta">
 										<?php // Nov 2026 (Alex): kicker shows the brand only – the
@@ -351,6 +435,18 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 							</div>
 						</div>
 						<?php endif; ?>
+						<?php if ( $client ) : ?>
+							<?php if ( count( $regions ) >= 2 ) : // Round 55 (Alex): USA / Europe instead of every location ?>
+							<div class="verto-jobs__group">
+								<div class="verto-jobs__grouplabel">Region</div>
+								<div class="verto-jobs__chips" data-filter-group="region">
+									<button type="button" class="verto-chip is-active" data-value="all">All</button>
+									<button type="button" class="verto-chip" data-value="usa">USA</button>
+									<button type="button" class="verto-chip" data-value="europe">Europe</button>
+								</div>
+							</div>
+							<?php endif; ?>
+						<?php else : ?>
 						<div class="verto-jobs__group">
 							<div class="verto-jobs__grouplabel">Location</div>
 							<div class="verto-jobs__chips" data-filter-group="location">
@@ -360,6 +456,7 @@ class Verto_Widget_Jobs_Board extends \Elementor\Widget_Base {
 								<?php endforeach; ?>
 							</div>
 						</div>
+						<?php endif; ?>
 						<?php // Nov 2026 (Alex): no Senior/Manager chips – the product/
 						// team filter takes the slot (renders once jobs carry the
 						// website_product_area field). ?>
